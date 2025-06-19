@@ -1,0 +1,56 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Login & Register</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="css/login.css" rel="stylesheet" />
+    <link href="styles/notification.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+            crossorigin="anonymous"></script>
+    <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/ajaxCalls.js"></script>
+    <script src="js/notifications.js"></script>
+    <script src="js/loginRegister.js"></script>
+</head>
+<body>
+    <div class="notification-container" id="notificationContainer"></div> <!-- Notification container -->
+
+    <div class="container" id="container">
+        <div id="notification" class="notification"></div>
+        <!-- Register Form -->
+        <div class="register-container">
+            <form id="registerForm">
+                <h2>Create an Account</h2>
+                <p class="subtext">Fill in your details to create an account.</p>
+                <label>Name: <input type="text" id="createName" required pattern="^[A-Za-z]{2,}$" title="Name must be at least 2 letters and contain only letters."></label>
+                <label>Email: <input type="email" id="createEmail" required pattern="[^@\s]+@[^@\s]+\.[^@\s]+" title="Invalid email address"></label>
+                <label>Password: <input type="password" id="createPassword" required pattern="^(?=.*[A-Z])(?=.*\d).{8,}$" title="Password must be at least 8 characters long, include at least 1 uppercase letter and 1 number."></label>
+                <button type="submit" id="registerButton">Register</button>
+                <p>Already have an account? <a href="#" id="openLogin">Login here</a></p>
+                <button type="button" class="continue-as-guest secondary-button">Continue As Guest</button>
+            </form>
+        </div>
+
+        <!-- Login Form -->
+        <div class="login-container">
+            <form id="loginForm" class="show">
+                <h2>Sign In</h2>
+                <p class="subtext">Please Sign Into Your Account</p>
+                <label>Email: <input type="text" id="loginEmail" required></label>
+                <label>Password: <input type="password" id="loginPassword" required></label>
+                <button type="submit" id="loginButton">Login</button>
+                <p>Don't have an account? <a href="#" id="openRegister">Sign up now</a></p>
+                <button type="button" class="continue-as-guest secondary-button">Continue As Guest</button>
+            </form>
+        </div>
+
+        <!-- Black Cover -->
+        <div class="black-cover">
+            <h1>Welcome Back, We Missed You!</h1>
+        </div>
+    </div>
+</body>
+</html>
