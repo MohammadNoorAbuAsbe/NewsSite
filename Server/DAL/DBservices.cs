@@ -42,11 +42,16 @@ public class DBservices
         return GetUsersHelper("SP_NewsSite_GetUsers", new Dictionary<string, object>(), users => users);
     }
 
+    /// <summary>
+    /// Attempts to log in a user by email using a stored procedure and returns the first matching User, or null if not found.
+    /// </summary>
+    /// <param name="email">The email address of the user to log in.</param>
+    /// <returns>The matching User object if found; otherwise, null.</returns>
     public User? LoginUser(string email)
     {
         Dictionary<string, object> paramDic = new Dictionary<string, object>();
         paramDic.Add("@email", email);
-        return GetUsersHelper("SP_LoginUser_2025", paramDic, users => users.FirstOrDefault());
+        return GetUsersHelper("SP_NewsSite_LoginUser", paramDic, users => users.FirstOrDefault());
     }
 
     /// <summary>
@@ -168,7 +173,6 @@ public class DBservices
             {
                 using (var cmd = CreateCommandWithStoredProcedureGeneral(spName, con, paramDic))
                 {
-                    con.Open();
                     using (var reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())

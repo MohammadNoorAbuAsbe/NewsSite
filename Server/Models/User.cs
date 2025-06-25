@@ -62,118 +62,56 @@ namespace Server.Models
                 return null;
             }
         }
-
-        //public static User? GetByEmail(string email)
-        //{
-        //    DBservices dBservices = new DBservices();
-        //    try
-        //    {
-        //        return dBservices.GetUserByEmail(email);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return null;
-        //    }
-        //}
-
-        //public static User? GetById(int id)
-        //{
-        //    DBservices dBservices = new DBservices();
-        //    try
-        //    {
-        //        return dBservices.GetUserById(id);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return null;
-        //    }
-        //}
-
-        //public static User? GetByName(string name)
-        //{
-        //    DBservices dBservices = new DBservices();
-        //    try
-        //    {
-        //        return dBservices.GetUserByName(name);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return null;
-        //    }
-        //}
-
-        //public static List<User> GetByActive(bool isActive)
-        //{
-        //    DBservices dBservices = new DBservices();
-        //    try
-        //    {
-        //        return dBservices.GetUserByActive(isActive);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return null;
-        //    }
-        //}
-
-        //public static List<User> GetByDeletedAt(DateTime deletedAt)
-        //{
-        //    DBservices dBservices = new DBservices();
-        //    try
-        //    {
-        //        return dBservices.GetUserByDeletedAt(deletedAt);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return null;
-        //    }
-        //}
         #endregion
 
         #region Authentication Methods
-        // The registerLock ensures thread safety when multiple threads attempt to register users simultaneously.
-        // Without this lock, concurrent access to the usersList could result in concurrency Issue, 
-        // such as duplicate registrations or inconsistent state of the list.
-        private static readonly object registerLock = new object();
-       
+        /// <summary>
+        /// Registers a new user by hashing the password and saving the user to the database.
+        /// Returns a RegisterResponse indicating success, failure, or if the email already exists.
+        /// </summary>
+        /// <param name="user">The user object containing registration details.</param>
+        /// <returns>A RegisterResponse with the registration result and user information if successful.</returns>
         public static RegisterResponse Register(User user)
         {
-            lock (registerLock)
+            user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password, 15);
+            DBservices dBservices = new DBservices();
+            try
             {
-                user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password, 15);
-                DBservices dBservices = new DBservices();
-                try 
+                User? registeredUser = dBservices.RegisterUser(user);
+                if (registeredUser == null)
                 {
-                    User? registeredUser = dBservices.RegisterUser(user);
-                    if (registeredUser == null)
-                    {  
-                        return new RegisterResponse
-                        {
-                            Message = "Email already exists",
-                            Success = false
-                        };
-                    }
                     return new RegisterResponse
                     {
-                        Message = "User registered successfully",
-                        Success = true,
-                        Id = registeredUser.Id,
-                        Name = registeredUser.Name,
-                        Email = registeredUser.Email
-                    };
-
-                }
-                catch (Exception ex)
-                {
-                    return  new RegisterResponse
-                    {
-                        Message = ex.Message,
+                        Message = "Email already exists",
                         Success = false
                     };
                 }
+                return new RegisterResponse
+                {
+                    Message = "User registered successfully",
+                    Success = true,
+                    Id = registeredUser.Id,
+                    Name = registeredUser.Name,
+                    Email = registeredUser.Email
+                };
 
+            }
+            catch (Exception ex)
+            {
+                return new RegisterResponse
+                {
+                    Message = ex.Message,
+                    Success = false
+                };
             }
         }
 
+        /// <summary>
+        /// Authenticates a user by email and password, returning a UserResponse if successful, or null if authentication fails.
+        /// </summary>
+        /// <param name="email">The user's email address.</param>
+        /// <param name="password">The user's password.</param>
+        /// <returns>UserResponse object on successful login; otherwise, null.</returns>
         public static UserResponse? Login(string email, string password)
         {
             DBservices dBservices = new DBservices();
@@ -200,49 +138,6 @@ namespace Server.Models
             }
         }
         #endregion
-
-        //#region DELETE Methods
-        //public static bool DeleteUserById(int id)
-        //{
-        //    DBservices dBservices = new DBservices();
-        //    if (dBservices.DeleteUser(id) == 0)
-        //    {
-        //        return false;
-        //    }
-        //    return true;
-        //}
-        //#endregion
-
-        //#region Update Methods
-        //public static UserResponse? UpdateUser(int id, User user)
-        //{
-        //    try
-        //    {
-        //        DBservices dBservices = new DBservices();
-        //        if (user.Password != "")
-        //        {
-        //            user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password, 15);
-        //        }
-        //        if (dBservices.UpdateUser(id, user) != null) 
-        //        {
-        //            return new UserResponse
-        //            {
-        //                Id = user.Id,
-        //                Name = user.Name,
-        //                Email = user.Email
-        //            };
-        //        }
-        //        else
-        //        {
-        //            return null;
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return null;
-        //    }
-        //}
-        //#endregion
 
     }
 

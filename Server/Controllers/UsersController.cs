@@ -10,53 +10,35 @@ namespace Server.Controllers
     public class UsersController : ControllerBase
     {
         #region GET Methods
-        // GET: api/<UsersController>
         [HttpGet]
         public IEnumerable<User> Get()
         {
             return Models.User.Read();
         }
-
-        //[HttpGet("getById")]
-        //public User? GetById(int id)
-        //{
-        //    return Models.User.GetById(id);
-        //}
-
-        //[HttpGet("getByEmail")]
-        //public User? GetByEmail(string email)
-        //{
-        //    return Models.User.GetByEmail(email);
-        //}
-
-        //[HttpGet("getByName")]
-        //public User? GetByName(string name)
-        //{
-        //    return Models.User.GetByName(name);
-        //}
-
-        //[HttpGet("getByActive")]
-        //public IEnumerable<User> GetByActive(bool isActive)
-        //{
-        //    return Models.User.GetByActive(isActive);
-        //}
-
-        //[HttpGet("getByDeletedAt")]
-        //public IEnumerable<User> GetByDeletedAt(DateTime deletedAt)
-        //{
-        //    return Models.User.GetByDeletedAt(deletedAt);
-        //}
         #endregion
 
         #region POST Methods
-        // POST: api/<UsersController>/register
+        /// <summary>
+        /// Handles user registration by creating a new user and returning the registration result.
+        /// </summary>
+        /// <param name="request">The registration request containing user details.</param>
+        /// <returns>
+        /// An IActionResult containing a 200 OK response with the registration result if successful,
+        /// or a 400 Bad Request response with an error message if registration fails.
+        /// </returns>
         [HttpPost("register")]
         [ProducesResponseType(typeof(object), 200)]
         [ProducesResponseType(typeof(object), 400)]
-        public IActionResult Register([FromBody] User user)
+        public IActionResult Register([FromBody] RegisterRequest request)
         {
             try
             {
+                var user = new User
+                {
+                    Name = request.Name,
+                    Email = request.Email,
+                    Password = request.Password
+                };
                 RegisterResponse registerResponse = Models.User.Register(user);
                 if (registerResponse.Success)
                 {
@@ -64,7 +46,7 @@ namespace Server.Controllers
                 }
                 return BadRequest(registerResponse);
             }
-            catch (Exception ex) 
+            catch (Exception ex)
             {
                 return BadRequest(new RegisterResponse
                 {
@@ -74,8 +56,14 @@ namespace Server.Controllers
             }
         }
 
-
-        // POST: api/<UsersController>/login
+        /// <summary>
+        /// Authenticates a user with the provided login credentials.
+        /// </summary>
+        /// <param name="request">The login request containing email and password.</param>
+        /// <returns>
+        /// 200 OK with user information if authentication is successful; 
+        /// 401 Unauthorized with an error message if credentials are invalid.
+        /// </returns>
         [HttpPost("login")]
         [ProducesResponseType(typeof(object), 200)]
         [ProducesResponseType(typeof(string), 401)]
@@ -88,32 +76,8 @@ namespace Server.Controllers
             }
             return Unauthorized("Invalid email or password");
         }
-        
+
         #endregion
-
-        //#region Delete Methods
-        //// DELETE api/<UserController>/5
-        //[HttpDelete("{id}")]
-        //public bool Delete(int id)
-        //{
-        //    return Models.User.DeleteUserById(id);
-        //}
-        //#endregion
-
-        //#region PUT Methods
-        //// DELETE api/<MoviesController>/5
-        //[HttpPut("Update/{id}")]
-        //public IActionResult Put(int id, [FromBody] User user)
-        //{
-        //    var userResponse = Models.User.UpdateUser(id, user);
-        //    if (userResponse != null)
-        //    {
-        //        return Ok(userResponse);
-        //    }
-        //    return Unauthorized("Invalid email or password");
-        //}
-        //#endregion
-
     }
 
     public class LoginRequest
@@ -129,5 +93,12 @@ namespace Server.Controllers
         public int? Id { get; set; }
         public string? Email { get; set; }
         public string? Name { get; set; }
+    }
+
+    public class RegisterRequest
+    {
+        public string Name { get; set; }
+        public string Email { get; set; }
+        public string Password { get; set; }
     }
 }
