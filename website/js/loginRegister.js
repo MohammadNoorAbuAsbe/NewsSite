@@ -91,3 +91,121 @@ function setupListeners() {
         });
     }
 }
+
+$(document).ready(function () {
+  const loginContainer = document.getElementById("loginContainer");
+  const registerContainer = document.getElementById("registerContainer");
+
+  const openRegister = document.getElementById("openRegister");
+  const openLogin = document.getElementById("openLogin");
+
+  const loginForm = document.getElementById("loginForm");
+  const registerForm = document.getElementById("registerForm");
+
+  const continueAsGuestButtons =
+    document.querySelectorAll(".continue-as-guest");
+
+  // ✅ Toggle between forms
+  if (openRegister) {
+    openRegister.addEventListener("click", function (e) {
+      e.preventDefault();
+      loginContainer.style.display = "none";
+      registerContainer.style.display = "flex";
+    });
+  }
+
+  if (openLogin) {
+    openLogin.addEventListener("click", function (e) {
+      e.preventDefault();
+      registerContainer.style.display = "none";
+      loginContainer.style.display = "flex";
+    });
+  }
+
+  // ✅ Handle guest button clicks if used elsewhere
+  continueAsGuestButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      window.location.href = "index.html";
+    });
+  });
+
+  // ✅ Form submissions
+  $("#loginForm").submit(loginUser);
+  $("#registerForm").submit(registerUser);
+
+  function loginUser() {
+    const submitButton = $("#loginButton");
+    submitButton.prop("disabled", true);
+
+    const email = $("#loginEmail").val();
+    const password = $("#loginPassword").val();
+
+    const credentials = {
+      email: email,
+      password: password,
+    };
+
+    HandleUserAction(
+      credentials,
+      submitButton,
+      "🎉 Login successful! Redirecting to the homepage...",
+      urls.users.login
+    );
+
+    return false;
+  }
+
+  function registerUser() {
+    const submitButton = $("#registerButton");
+    submitButton.prop("disabled", true);
+
+    const name = $("#createName").val();
+    const email = $("#createEmail").val();
+    const password = $("#createPassword").val();
+
+    const user = {
+      id: 0,
+      name: name,
+      email: email,
+      password: password,
+      active: true,
+    };
+
+    HandleUserAction(
+      user,
+      submitButton,
+      "🎉 Registration successful! Redirecting to the homepage...",
+      urls.users.register,
+      true
+    );
+
+    return false;
+  }
+
+  function HandleUserAction(
+    data,
+    submitButton,
+    notificationText,
+    apiEndpoint,
+    isRegister = false
+  ) {
+    ajaxCall(
+      "POST",
+      apiEndpoint,
+      JSON.stringify(data),
+      function (res) {
+        showNotification(notificationText, "success");
+        saveUser(res);
+        setTimeout(() => {
+          window.location.replace("index.html");
+        }, 2000);
+      },
+      function (err) {
+        const errorMessage = getErrorMessage(err);
+        showNotification(errorMessage, "error");
+        submitButton.prop("disabled", false);
+      }
+    );
+  }
+});
+  

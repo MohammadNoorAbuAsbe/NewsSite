@@ -1,56 +1,130 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="utf-8" />
     <title>Login & Register</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
     <link href="css/login.css" rel="stylesheet" />
-    <link href="styles/notification.css" rel="stylesheet" />
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
-            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
-            crossorigin="anonymous"></script>
+    <link href="css/notification.css" rel="stylesheet" />
+    <script
+      src="https://code.jquery.com/jquery-3.7.1.min.js"
+      integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+      crossorigin="anonymous"
+    ></script>
     <script src="js/config.js"></script>
     <script src="js/utils.js"></script>
     <script src="js/ajaxCalls.js"></script>
     <script src="js/notifications.js"></script>
     <script src="js/loginRegister.js"></script>
-</head>
-<body>
-    <div class="notification-container" id="notificationContainer"></div> <!-- Notification container -->
+  </head>
+  <body>
+    <div class="page-container">
+      <!-- Login Container -->
+      <div class="auth-container" id="loginContainer">
+        <div class="info-panel">
+          <h1>Welcome back</h1>
+          <p>
+            By continuing with the sign in or registration, you agree to our<br />
+            <a href="#">Terms & Conditions</a> and
+            <a href="#">Privacy Statement</a>.
+          </p>
+        </div>
+        <div class="form-panel">
+          <div class="auth-box">
+            <h1>Welcome back</h1>
+            <p>Sign in to access the latest news and updates.</p>
+            <form id="loginForm">
+              <label for="loginEmail">Email address</label>
+              <input
+                type="email"
+                id="loginEmail"
+                required
+                pattern="[^@\s]+@[^@\s]+\.[^@\s]+"
+                title="Invalid email address"
+              />
 
-    <div class="container" id="container">
-        <div id="notification" class="notification"></div>
-        <!-- Register Form -->
-        <div class="register-container">
+              <label for="loginPassword">Password</label>
+              <input type="password" id="loginPassword" required />
+
+              <button type="submit" id="loginButton">Login</button>
+              <p>
+                <a href="#" id="openRegister"
+                  >Not signed up yet? Register here</a
+                >
+              </p>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Register Container -->
+      <div class="auth-container" id="registerContainer" style="display: none">
+        <div class="info-panel">
+          <h1 class="biz-title">BIZ<span>News</span></h1>
+          <p class="biz-subtitle">
+            Unlimited access to <strong>unbiased news</strong>
+          </p>
+          <ul class="biz-benefits">
+            <li>
+              <span>✅</span> Unlimited access to <strong>BIZNews.com</strong>
+            </li>
+            <li><span>✅</span> Industry-focused newsletters</li>
+            <li><span>✅</span> Personalized “My News” feed</li>
+            <li><span>✅</span> BIZNews app for quick updates</li>
+          </ul>
+        </div>
+        <div class="form-panel">
+          <div class="auth-box">
+            <h1>Create an Account</h1>
+            <p>Join our platform to get unlimited access to unbiased news.</p>
             <form id="registerForm">
-                <h2>Create an Account</h2>
-                <p class="subtext">Fill in your details to create an account.</p>
-                <label>Name: <input type="text" id="createName" required pattern="^[A-Za-z]{2,}$" title="Name must be at least 2 letters and contain only letters."></label>
-                <label>Email: <input type="email" id="createEmail" required pattern="[^@\s]+@[^@\s]+\.[^@\s]+" title="Invalid email address"></label>
-                <label>Password: <input type="password" id="createPassword" required pattern="^(?=.*[A-Z])(?=.*\d).{8,}$" title="Password must be at least 8 characters long, include at least 1 uppercase letter and 1 number."></label>
-                <button type="submit" id="registerButton">Register</button>
-                <p>Already have an account? <a href="#" id="openLogin">Login here</a></p>
-                <button type="button" class="continue-as-guest secondary-button">Continue As Guest</button>
-            </form>
-        </div>
+              <label for="createName">Full name</label>
+              <input
+                type="text"
+                id="createName"
+                required
+                pattern="^[A-Za-z]{2,}$"
+                title="Name must be at least 2 letters and contain only letters."
+              />
 
-        <!-- Login Form -->
-        <div class="login-container">
-            <form id="loginForm" class="show">
-                <h2>Sign In</h2>
-                <p class="subtext">Please Sign Into Your Account</p>
-                <label>Email: <input type="text" id="loginEmail" required></label>
-                <label>Password: <input type="password" id="loginPassword" required></label>
-                <button type="submit" id="loginButton">Login</button>
-                <p>Don't have an account? <a href="#" id="openRegister">Sign up now</a></p>
-                <button type="button" class="continue-as-guest secondary-button">Continue As Guest</button>
-            </form>
-        </div>
+              <label for="createEmail">Email address</label>
+              <input
+                type="email"
+                id="createEmail"
+                required
+                pattern="[^@\s]+@[^@\s]+\.[^@\s]+"
+                title="Invalid email address"
+              />
 
-        <!-- Black Cover -->
-        <div class="black-cover">
-            <h1>Welcome Back, We Missed You!</h1>
+              <label for="confirmEmail">Confirm email address</label>
+              <input
+                type="email"
+                id="confirmEmail"
+                required
+                pattern="[^@\s]+@[^@\s]+\.[^@\s]+"
+                title="Invalid email address"
+              />
+
+              <label for="createPassword">Password</label>
+              <input
+                type="password"
+                id="createPassword"
+                required
+                pattern="^(?=.*[A-Z])(?=.*\d).{8,}$"
+                title="Password must be at least 8 characters long, include at least 1 uppercase letter and 1 number."
+              />
+
+              <button type="submit" id="registerButton">Register</button>
+              <p>
+                <a href="#" id="openLogin">Already have an account? Sign in</a>
+              </p>
+            </form>
+          </div>
         </div>
+      </div>
     </div>
-</body>
+  </body>
 </html>

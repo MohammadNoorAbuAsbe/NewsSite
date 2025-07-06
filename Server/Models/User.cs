@@ -1,5 +1,4 @@
-﻿
-using Server.Controllers;
+﻿using Server.Controllers;
 
 namespace Server.Models
 {

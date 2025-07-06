@@ -1,6 +1,7 @@
 using NewsAPI.Constants;
 using NewsSite.Server.Services;
 using System.Text.Json;
+using NewsAPI.Models;
 
 public class NewsApiResponse
 {
@@ -15,28 +16,25 @@ public class NewsApiResponse
     public int TotalResults { get; set; }
     public List<Article> Articles { get; set; }
 
-    public static async Task<NewsApiResponse> Get(string query, string fromDate, string sortBy = "popularity")
+    public static async Task<ArticlesResult> GetSpecificNews(NewsApiService newsApiService, string query, string fromDate, string sortBy = "popularity")
     {
-        NewsApiService newsApiService = new NewsApiService();
-        var articlesResult = await newsApiService.GetNewsAsync(query, fromDate, sortBy);
-
-        // Map NewsAPI.Models.Article to your Article model
-        var articles = articlesResult.Articles.Select(a => new Article
-        {
-            Source = new Source
-            {
-                Id = a.Source.Id,
-                Name = a.Source.Name
-            },
-            Author = a.Author,
-            Title = a.Title,
-            Description = a.Description,
-            Url = a.Url,
-            UrlToImage = a.UrlToImage,
-            PublishedAt = a.PublishedAt ?? DateTime.MinValue,
-            Content = a.Content
-        }).ToList();
-
-        return new NewsApiResponse(articlesResult.Status, articlesResult.TotalResults, articles);
+        return await GetResponseAsync(() => newsApiService.GetNewsAsync(query, fromDate, sortBy));
     }
+
+    public static async Task<ArticlesResult> GetTopHeadlines(NewsApiService newsApiService, Countries country)
+    {
+        return await GetResponseAsync(() => newsApiService.GetTopHeadlinesAsync(country));
+    }
+
+    public static async Task<Dictionary<Categories, ArticlesResult>> GetTopHeadlinesByCategories(NewsApiService newsApiService, List<Categories> categories)
+    {
+        return await newsApiService.GetTopHeadlinesByCategoriesAsync(categories);
+    }
+
+    private static async Task<ArticlesResult> GetResponseAsync(Func<Task<ArticlesResult>> fetchArticlesFunc)
+    {
+        var articlesResult = await fetchArticlesFunc();
+        return articlesResult;
+    }
+
 }

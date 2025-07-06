@@ -32,6 +32,28 @@ public class DBservices
         return con;
     }
 
+    public List<Tag> GetAllTags()
+    {
+        // Fetch all tags from Tags table
+        return new List<Tag>();
+    }
+
+    public List<Tag> GetUserTags(int userId)
+    {
+        // Fetch tags for a specific user from UserInterests
+        return new List<Tag>();
+    }
+
+    public void AddUserTag(int userId, string tagName)
+    {
+        // Insert into UserInterests
+    }
+
+    public void RemoveUserTag(int userId, string tagName)
+    {
+        // Delete from UserInterests
+    }
+
     #region Getters
     /// <summary>
     /// Retrieves a list of users from the data source using a stored procedure.

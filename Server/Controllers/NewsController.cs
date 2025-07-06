@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using NewsSite.Server.Services;
 using System.Text.Json;
+using NewsAPI;
+using NewsAPI.Models;
+using NewsAPI.Constants;
 
 namespace Server.Controllers
 {
@@ -8,10 +11,35 @@ namespace Server.Controllers
     [ApiController]
     public class NewsController : ControllerBase
     {
-        [HttpGet]
-        public async Task<ActionResult<NewsApiResponse>> Get(string query, string fromDate, string sortBy = "popularity")
+
+        private readonly NewsApiService _newsApiService;
+        /// <summary>
+        /// Initializes a new instance of the NewsController class with a NewsApiService dependency.
+        /// </summary>
+        /// <param name="newsApiService">The service used to interact with the news API.</param>
+        public NewsController(NewsApiService newsApiService)
         {
-            return Ok(await NewsApiResponse.Get(query, fromDate, sortBy));
+            _newsApiService = newsApiService;
+        }
+
+
+        [HttpGet("SpecificNews")]
+        public async Task<ActionResult<ArticlesResult>> GetSpecificNews(string query, string fromDate, string sortBy = "popularity")
+        {
+            return Ok(await NewsApiResponse.GetSpecificNews(_newsApiService, query, fromDate, sortBy));
+        }
+
+        [HttpGet("TopHeadlines")]
+        public async Task<ActionResult<ArticlesResult>> GetTopHeadlines(Countries country)
+        {
+            return Ok(await NewsApiResponse.GetTopHeadlines(_newsApiService, country));
+        }
+
+        [HttpPost("TopHeadlinesByCategories")]
+        public async Task<ActionResult<Dictionary<Categories, ArticlesResult>>> GetTopHeadlinesByCategories([FromBody] List<Categories> categories)
+        {
+            var results = await NewsApiResponse.GetTopHeadlinesByCategories(_newsApiService, categories);
+            return Ok(results);
         }
     }
 }
