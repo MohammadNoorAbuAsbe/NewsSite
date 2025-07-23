@@ -15,6 +15,11 @@ namespace Server.Models
             SavedAt = savedAt;
         }
 
+<<<<<<< Updated upstream
+=======
+        public SavedArticle() { }
+
+>>>>>>> Stashed changes
         public int Id { get; set; }
         public int UserId { get; set; }
         public string Title { get; set; } = string.Empty;
@@ -24,26 +29,42 @@ namespace Server.Models
         public string Source { get; set; } = string.Empty;
         public DateTime PublishedAt { get; set; }
         public DateTime SavedAt { get; set; } = DateTime.Now;
+<<<<<<< Updated upstream
         
+=======
+
+>>>>>>> Stashed changes
         // Static methods for CRUD operations
         public static List<SavedArticle> GetUserSavedArticles(int userId)
         {
             DBservices db = new DBservices();
             return db.GetUserSavedArticles(userId);
         }
+<<<<<<< Updated upstream
         
+=======
+
+>>>>>>> Stashed changes
         public static List<SavedArticle> SearchSavedArticles(int userId, string searchTerm)
         {
             DBservices db = new DBservices();
             return db.SearchUserSavedArticles(userId, searchTerm);
         }
+<<<<<<< Updated upstream
         
+=======
+
+>>>>>>> Stashed changes
         public static bool SaveArticle(SavedArticle article)
         {
             DBservices db = new DBservices();
             return db.SaveArticle(article);
         }
+<<<<<<< Updated upstream
         
+=======
+
+>>>>>>> Stashed changes
         public static bool RemoveSavedArticle(int userId, int articleId)
         {
             DBservices db = new DBservices();
