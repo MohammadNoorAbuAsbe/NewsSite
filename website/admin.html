@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>פאנל ניהול - NewsHub</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link href="css/style.css" rel="stylesheet" />
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container">
+        <a class="navbar-brand" href="index.html">
+          <i class="fas fa-shield-alt me-2"></i>NewsHub Admin
+        </a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item">
+              <a class="nav-link active" href="admin.html">דשבורד</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="index.html">חזור לאתר</a>
+            </li>
+          </ul>
+          <ul class="navbar-nav" id="navbarUser">
+            <!-- User navigation will be loaded here -->
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container-fluid mt-4">
+      <div class="row">
+        <!-- Sidebar -->
+        <div class="col-lg-2 mb-4">
+          <div class="card">
+            <div class="card-header">
+              <h6 class="mb-0">ניהול</h6>
+            </div>
+            <div class="list-group list-group-flush">
+              <a
+                href="#"
+                class="list-group-item list-group-item-action active"
+                onclick="showSection('dashboard')"
+              >
+                <i class="fas fa-chart-bar me-2"></i>דשבורד
+              </a>
+              <a
+                href="#"
+                class="list-group-item list-group-item-action"
+                onclick="showSection('users')"
+              >
+                <i class="fas fa-users me-2"></i>ניהול משתמשים
+              </a>
+              <a
+                href="#"
+                class="list-group-item list-group-item-action"
+                onclick="showSection('reports')"
+              >
+                <i class="fas fa-flag me-2"></i>דיווחים
+              </a>
+              <a
+                href="#"
+                class="list-group-item list-group-item-action"
+                onclick="showSection('statistics')"
+              >
+                <i class="fas fa-analytics me-2"></i>סטטיסטיקות
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Content -->
+        <div class="col-lg-10">
+          <!-- Dashboard Section -->
+          <div id="dashboard" class="admin-section">
+            <h2 class="mb-4">דשבורד ניהול</h2>
+
+            <!-- Stats Cards -->
+            <div class="row mb-4">
+              <div class="col-md-3">
+                <div class="stats-card">
+                  <div class="stats-icon" style="background: #28a745">
+                    <i class="fas fa-users"></i>
+                  </div>
+                  <div class="stats-number" id="totalUsers">0</div>
+                  <div class="stats-label">סך המשתמשים</div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="stats-card">
+                  <div class="stats-icon" style="background: #007bff">
+                    <i class="fas fa-sign-in-alt"></i>
+                  </div>
+                  <div class="stats-number" id="dailyLogins">0</div>
+                  <div class="stats-label">כניסות היום</div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="stats-card">
+                  <div class="stats-icon" style="background: #ffc107">
+                    <i class="fas fa-newspaper"></i>
+                  </div>
+                  <div class="stats-number" id="dailyNewsViews">0</div>
+                  <div class="stats-label">צפיות חדשות היום</div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="stats-card">
+                  <div class="stats-icon" style="background: #dc3545">
+                    <i class="fas fa-bookmark"></i>
+                  </div>
+                  <div class="stats-number" id="dailySavedArticles">0</div>
+                  <div class="stats-label">כתבות נשמרו היום</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="card">
+              <div class="card-header">
+                <h5 class="mb-0">פעילות אחרונה</h5>
+              </div>
+              <div class="card-body">
+                <div id="recentActivity">
+                  <!-- Recent activity will be loaded here -->
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Users Management Section -->
+          <div id="users" class="admin-section" style="display: none">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+              <h2>ניהול משתמשים</h2>
+              <div class="btn-group">
+                <button
+                  class="btn btn-outline-primary"
+                  onclick="refreshUsers()"
+                >
+                  <i class="fas fa-sync-alt me-2"></i>רענן
+                </button>
+                <button class="btn btn-primary" onclick="exportUsers()">
+                  <i class="fas fa-download me-2"></i>ייצא
+                </button>
+              </div>
+            </div>
+
+            <!-- Search and Filter -->
+            <div class="card mb-4">
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-md-6">
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="userSearch"
+                      placeholder="חפש משתמשים..."
+                    />
+                  </div>
+                  <div class="col-md-3">
+                    <select class="form-select" id="userStatusFilter">
+                      <option value="">כל הסטטוסים</option>
+                      <option value="active">פעיל</option>
+                      <option value="locked">נעול</option>
+                    </select>
+                  </div>
+                  <div class="col-md-3">
+                    <button
+                      class="btn btn-primary w-100"
+                      onclick="filterUsers()"
+                    >
+                      סנן
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Users Table -->
+            <div class="card">
+              <div class="card-body">
+                <div id="usersContainer">
+                  <!-- Users will be loaded here -->
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Reports Section -->
+          <div id="reports" class="admin-section" style="display: none">
+            <h2 class="mb-4">דיווחים על תוכן פוגעני</h2>
+
+            <div class="card">
+              <div class="card-body">
+                <div id="reportsContainer">
+                  <!-- Reports will be loaded here -->
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Statistics Section -->
+          <div id="statistics" class="admin-section" style="display: none">
+            <h2 class="mb-4">סטטיסטיקות מפורטות</h2>
+
+            <div class="row">
+              <div class="col-md-6">
+                <div class="card">
+                  <div class="card-header">
+                    <h5>סטטיסטיקות שימוש יומיות</h5>
+                  </div>
+                  <div class="card-body">
+                    <canvas id="dailyStatsChart"></canvas>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="card">
+                  <div class="card-header">
+                    <h5>סטטיסטיקות משתמשים</h5>
+                  </div>
+                  <div class="card-body">
+                    <canvas id="userStatsChart"></canvas>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- User Action Modal -->
+    <div class="modal fade" id="userActionModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="userActionTitle">פעולת משתמש</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <p id="userActionMessage"></p>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              ביטול
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              id="confirmUserAction"
+            >
+              אשר
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/ajaxCalls.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/admin.js"></script>
+  </body>
+</html>

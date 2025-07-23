@@ -38,11 +38,13 @@ namespace NewsSite.Server.Services
         }
 
 
-        public async Task<ArticlesResult> GetTopHeadlinesAsync(Countries country)
+        public async Task<ArticlesResult> GetTopHeadlinesAsync(Countries country, int page, int pageSize)
         {
             var request = new TopHeadlinesRequest
             {
-                Country = country
+                Country = country,
+                Page = page,
+                PageSize = pageSize
             };
 
             return await newsApiClient.GetTopHeadlinesAsync(request);

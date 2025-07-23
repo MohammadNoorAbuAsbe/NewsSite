@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>חדשות - NewsHub</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link href="css/style.css" rel="stylesheet" />
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+      <div class="container">
+        <a class="navbar-brand" href="index.html">
+          <i class="fas fa-newspaper me-2"></i>NewsHub
+        </a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="index.html">בית</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="news.html">חדשות</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="saved-articles.html">כתבות שמורות</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="shared-content.html">תוכן משותף</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="advanced-features.html"
+                >תכונות מתקדמות</a
+              >
+            </li>
+          </ul>
+          <ul class="navbar-nav" id="navbarUser">
+            <!-- User navigation will be loaded here -->
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-4">
+      <div class="row">
+        <!-- Sidebar -->
+        <div class="col-lg-3 mb-4">
+          <div class="card">
+            <div class="card-header">
+              <h5 class="mb-0"><i class="fas fa-filter me-2"></i>סינונים</h5>
+            </div>
+            <div class="card-body">
+              <!-- Search -->
+              <div class="mb-3">
+                <label for="searchInput" class="form-label">חיפוש</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="searchInput"
+                  placeholder="חפש כתבות..."
+                />
+              </div>
+
+              <!-- Categories -->
+              <div class="mb-3">
+                <label class="form-label">קטגוריות</label>
+                <select class="form-select" id="categoryFilter">
+                  <option value="">כל הקטגוריות</option>
+                  <option value="business">עסקים</option>
+                  <option value="entertainment">בידור</option>
+                  <option value="general">כללי</option>
+                  <option value="health">בריאות</option>
+                  <option value="science">מדע</option>
+                  <option value="sports">ספורט</option>
+                  <option value="technology">טכנולוגיה</option>
+                </select>
+              </div>
+
+              <!-- Tags -->
+              <div class="mb-3">
+                <label class="form-label">התחומי עניין שלי</label>
+                <div id="userTags">
+                  <!-- User tags will be loaded here -->
+                </div>
+                <button
+                  class="btn btn-sm btn-outline-primary mt-2"
+                  onclick="openTagsModal()"
+                >
+                  <i class="fas fa-plus"></i> נהל תגיות
+                </button>
+              </div>
+
+              <!-- Country -->
+              <div class="mb-3">
+                <label class="form-label">מדינה</label>
+                <select class="form-select" id="countryFilter">
+                  <option value="us">ארצות הברית</option>
+                  <option value="il">ישראל</option>
+                  <option value="gb">בריטניה</option>
+                  <option value="fr">צרפת</option>
+                  <option value="de">גרמניה</option>
+                </select>
+              </div>
+
+              <button class="btn btn-primary w-100" onclick="loadNews()">
+                <i class="fas fa-sync-alt me-2"></i>טען חדשות
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- News Content -->
+        <div class="col-lg-9">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="fas fa-newspaper me-2"></i>חדשות אחרונות</h2>
+            <div class="btn-group" role="group">
+              <input
+                type="radio"
+                class="btn-check"
+                name="viewType"
+                id="gridView"
+                checked
+              />
+              <label class="btn btn-outline-primary" for="gridView">
+                <i class="fas fa-th-large"></i>
+              </label>
+              <input
+                type="radio"
+                class="btn-check"
+                name="viewType"
+                id="listView"
+              />
+              <label class="btn btn-outline-primary" for="listView">
+                <i class="fas fa-list"></i>
+              </label>
+            </div>
+          </div>
+
+          <!-- Loading Spinner -->
+          <div
+            id="loadingSpinner"
+            class="text-center py-5"
+            style="display: none"
+          >
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">טוען...</span>
+            </div>
+            <p class="mt-2">טוען חדשות...</p>
+          </div>
+
+          <!-- News Grid -->
+          <div id="newsContainer" class="row">
+            <!-- News articles will be loaded here -->
+          </div>
+
+          <!-- Pagination -->
+          <nav aria-label="ניווט דפים" class="mt-4">
+            <ul class="pagination justify-content-center" id="pagination">
+              <!-- Pagination will be loaded here -->
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tags Management Modal -->
+    <div class="modal fade" id="tagsModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">ניהול תחומי עניין</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="newTagInput" class="form-label"
+                >הוסף תחום עניין חדש</label
+              >
+              <div class="input-group">
+                <input
+                  type="text"
+                  class="form-control"
+                  id="newTagInput"
+                  placeholder="שם התחום..."
+                />
+                <button class="btn btn-primary" onclick="addTag()">הוסף</button>
+              </div>
+            </div>
+            <div id="allTags">
+              <!-- All tags will be loaded here -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Article Modal -->
+    <div class="modal fade" id="articleModal" tabindex="-1">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="articleTitle"></h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div id="articleContent">
+              <!-- Article content will be loaded here -->
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-success"
+              onclick="saveCurrentArticle()"
+            >
+              <i class="fas fa-bookmark"></i> שמור כתבה
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              onclick="shareCurrentArticle()"
+            >
+              <i class="fas fa-share"></i> שתף
+            </button>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              סגור
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/ajaxCalls.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/news.js"></script>
+  </body>
+</html>

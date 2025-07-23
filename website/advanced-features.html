@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>תכונות מתקדמות - NewsHub</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link href="css/style.css" rel="stylesheet" />
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+      <div class="container">
+        <a class="navbar-brand" href="index.html">
+          <i class="fas fa-newspaper me-2"></i>NewsHub
+        </a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="index.html">בית</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="news.html">חדשות</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="saved-articles.html">כתבות שמורות</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="shared-content.html">תוכן משותף</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="advanced-features.html"
+                >תכונות מתקדמות</a
+              >
+            </li>
+          </ul>
+          <ul class="navbar-nav" id="navbarUser">
+            <!-- User navigation will be loaded here -->
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-4">
+      <div class="row">
+        <div class="col-12">
+          <div class="text-center mb-5">
+            <h1 class="display-4 fw-bold">תכונות מתקדמות</h1>
+            <p class="lead text-muted">גלה את היכולות המתקדמות של NewsHub</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI Features -->
+      <div class="row mb-5">
+        <div class="col-12">
+          <h2 class="mb-4">
+            <i class="fas fa-brain me-2 text-primary"></i>בינה מלאכותית
+          </h2>
+        </div>
+        <div class="col-md-6 mb-4">
+          <div class="feature-card">
+            <div
+              class="feature-icon"
+              style="background: linear-gradient(135deg, #ff6b6b, #ee5a6f)"
+            >
+              <i class="fas fa-compress-alt"></i>
+            </div>
+            <h5>סיכום כתבות חכם</h5>
+            <p class="text-muted">
+              השתמש בבינה מלאכותית כדי לקבל סיכומים קצרים ומדויקים של כתבות
+              ארוכות
+            </p>
+            <div class="demo-section">
+              <button
+                class="btn btn-outline-primary"
+                onclick="demoAISummarization()"
+              >
+                נסה עכשיו
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 mb-4">
+          <div class="feature-card">
+            <div
+              class="feature-icon"
+              style="background: linear-gradient(135deg, #4ecdc4, #44a08d)"
+            >
+              <i class="fas fa-chart-line"></i>
+            </div>
+            <h5>ניתוח רגשות</h5>
+            <p class="text-muted">
+              גלה את הטון והרגש של כתבות - חיובי, שלילי או ניטרלי
+            </p>
+            <div class="demo-section">
+              <button
+                class="btn btn-outline-primary"
+                onclick="demoSentimentAnalysis()"
+              >
+                נסה עכשיו
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Real-time Features -->
+      <div class="row mb-5">
+        <div class="col-12">
+          <h2 class="mb-4">
+            <i class="fas fa-bolt me-2 text-warning"></i>תקשורת זמן אמת
+          </h2>
+        </div>
+        <div class="col-md-6 mb-4">
+          <div class="feature-card">
+            <div
+              class="feature-icon"
+              style="background: linear-gradient(135deg, #f093fb, #f5576c)"
+            >
+              <i class="fas fa-bell"></i>
+            </div>
+            <h5>התראות מיידיות</h5>
+            <p class="text-muted">
+              קבל התראות בזמן אמת על חדשות חמות בתחומי העניין שלך
+            </p>
+            <div class="demo-section">
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  id="notificationsToggle"
+                />
+                <label class="form-check-label" for="notificationsToggle">
+                  הפעל התראות
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 mb-4">
+          <div class="feature-card">
+            <div
+              class="feature-icon"
+              style="background: linear-gradient(135deg, #ffecd2, #fcb69f)"
+            >
+              <i class="fas fa-comments"></i>
+            </div>
+            <h5>צ'אט חי</h5>
+            <p class="text-muted">
+              דון על חדשות שוטפות עם משתמשים אחרים בזמן אמת
+            </p>
+            <div class="demo-section">
+              <button class="btn btn-outline-primary" onclick="openLiveChat()">
+                הצטרף לצ'אט
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Social Features -->
+      <div class="row mb-5">
+        <div class="col-12">
+          <h2 class="mb-4">
+            <i class="fas fa-users me-2 text-success"></i>תכונות חברתיות
+          </h2>
+        </div>
+        <div class="col-md-4 mb-4">
+          <div class="feature-card">
+            <div
+              class="feature-icon"
+              style="background: linear-gradient(135deg, #667eea, #764ba2)"
+            >
+              <i class="fas fa-thumbs-up"></i>
+            </div>
+            <h5>מערכת לייקים</h5>
+            <p class="text-muted">
+              העלה או הורד דירוג לתגובות של משתמשים אחרים
+            </p>
+            <div class="demo-section">
+              <small class="text-muted">זמין בדפי שיתוף תוכן</small>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 mb-4">
+          <div class="feature-card">
+            <div
+              class="feature-icon"
+              style="background: linear-gradient(135deg, #f093fb, #f5576c)"
+            >
+              <i class="fas fa-user-circle"></i>
+            </div>
+            <h5>אווטרים מתפתחים</h5>
+            <p class="text-muted">
+              הדמות שלך מתפתחת ומשתנה בהתאם לפעילות שלך באתר
+            </p>
+            <div class="demo-section">
+              <div id="userAvatar" class="user-avatar">
+                <i class="fas fa-user"></i>
+              </div>
+              <small class="text-muted d-block mt-2">הדמות שלך</small>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 mb-4">
+          <div class="feature-card">
+            <div
+              class="feature-icon"
+              style="background: linear-gradient(135deg, #ffecd2, #fcb69f)"
+            >
+              <i class="fas fa-trophy"></i>
+            </div>
+            <h5>מערכת נקודות</h5>
+            <p class="text-muted">
+              צבור נקודות על פעילות והגע לדירוגים גבוהים יותר
+            </p>
+            <div class="demo-section">
+              <div class="progress">
+                <div class="progress-bar" style="width: 65%"></div>
+              </div>
+              <small class="text-muted">650/1000 נקודות</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Geographic Features -->
+      <div class="row mb-5">
+        <div class="col-12">
+          <h2 class="mb-4">
+            <i class="fas fa-map me-2 text-info"></i>תכונות גיאוגרפיות
+          </h2>
+        </div>
+        <div class="col-md-12 mb-4">
+          <div class="feature-card">
+            <div class="row">
+              <div class="col-md-6">
+                <div
+                  class="feature-icon"
+                  style="background: linear-gradient(135deg, #667eea, #764ba2)"
+                >
+                  <i class="fas fa-globe"></i>
+                </div>
+                <h5>מפת חדשות אינטראקטיבית</h5>
+                <p class="text-muted">
+                  צפה בחדשות על גבי מפה אינטראקטיבית וגלה מה קורה בכל מקום בעולם
+                </p>
+                <button class="btn btn-outline-primary" onclick="openNewsMap()">
+                  פתח מפת חדשות
+                </button>
+              </div>
+              <div class="col-md-6">
+                <div
+                  id="newsMap"
+                  style="
+                    height: 300px;
+                    background: #f8f9fa;
+                    border-radius: 8px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                  "
+                >
+                  <div class="text-center">
+                    <i class="fas fa-map fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">מפת חדשות אינטראקטיבית</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- API Integration -->
+      <div class="row mb-5">
+        <div class="col-12">
+          <h2 class="mb-4">
+            <i class="fas fa-code me-2 text-dark"></i>אינטגרציות API
+          </h2>
+        </div>
+        <div class="col-md-6 mb-4">
+          <div class="feature-card">
+            <div
+              class="feature-icon"
+              style="background: linear-gradient(135deg, #667eea, #764ba2)"
+            >
+              <i class="fas fa-share-alt"></i>
+            </div>
+            <h5>שיתוף ברשתות חברתיות</h5>
+            <p class="text-muted">
+              שתף כתבות ישירות לפייסבוק, טוויטר, לינקדאין ועוד
+            </p>
+            <div class="social-buttons">
+              <a href="#" class="btn btn-outline-primary btn-sm me-2">
+                <i class="fab fa-facebook"></i>
+              </a>
+              <a href="#" class="btn btn-outline-info btn-sm me-2">
+                <i class="fab fa-twitter"></i>
+              </a>
+              <a href="#" class="btn btn-outline-primary btn-sm">
+                <i class="fab fa-linkedin"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 mb-4">
+          <div class="feature-card">
+            <div
+              class="feature-icon"
+              style="background: linear-gradient(135deg, #f093fb, #f5576c)"
+            >
+              <i class="fas fa-mobile-alt"></i>
+            </div>
+            <h5>Progressive Web App</h5>
+            <p class="text-muted">התקן את NewsHub כאפליקציה במכשיר הנייד שלך</p>
+            <button class="btn btn-outline-primary" onclick="installPWA()">
+              התקן אפליקציה
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Demo Sections -->
+      <div id="demoContent" style="display: none">
+        <!-- AI Demo Content -->
+        <div class="row">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header">
+                <h5 class="mb-0">דמו תכונות AI</h5>
+              </div>
+              <div class="card-body">
+                <div id="aiDemoResults">
+                  <!-- AI demo results will appear here -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Chat Modal -->
+    <div class="modal fade" id="liveChatModal" tabindex="-1">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">צ'אט חי - חדשות</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div
+              id="chatMessages"
+              style="
+                height: 400px;
+                overflow-y: auto;
+                border: 1px solid #dee2e6;
+                padding: 15px;
+                margin-bottom: 15px;
+              "
+            >
+              <!-- Chat messages will appear here -->
+            </div>
+            <div class="input-group">
+              <input
+                type="text"
+                class="form-control"
+                id="chatInput"
+                placeholder="כתב הודעה..."
+              />
+              <button class="btn btn-primary" onclick="sendChatMessage()">
+                שלח
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- News Map Modal -->
+    <div class="modal fade" id="newsMapModal" tabindex="-1">
+      <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">מפת חדשות עולמית</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div
+              id="interactiveMap"
+              style="
+                height: 500px;
+                background: #f8f9fa;
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              "
+            >
+              <div class="text-center">
+                <i class="fas fa-globe fa-5x text-primary mb-3"></i>
+                <h4>מפת חדשות אינטראקטיבית</h4>
+                <p class="text-muted">לחץ על מדינות כדי לראות חדשות מקומיות</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/ajaxCalls.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/advanced-features.js"></script>
+  </body>
+</html>

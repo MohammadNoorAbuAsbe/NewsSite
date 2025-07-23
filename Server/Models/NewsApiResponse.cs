@@ -21,9 +21,9 @@ public class NewsApiResponse
         return await GetResponseAsync(() => newsApiService.GetNewsAsync(query, fromDate, sortBy));
     }
 
-    public static async Task<ArticlesResult> GetTopHeadlines(NewsApiService newsApiService, Countries country)
+    public static async Task<ArticlesResult> GetTopHeadlines(NewsApiService newsApiService, Countries country, int page, int pageSize)
     {
-        return await GetResponseAsync(() => newsApiService.GetTopHeadlinesAsync(country));
+        return await GetResponseAsync(() => newsApiService.GetTopHeadlinesAsync(country, page, pageSize));
     }
 
     public static async Task<Dictionary<Categories, ArticlesResult>> GetTopHeadlinesByCategories(NewsApiService newsApiService, List<Categories> categories)

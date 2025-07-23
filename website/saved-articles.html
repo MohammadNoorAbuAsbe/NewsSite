@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>כתבות שמורות - NewsHub</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link href="css/style.css" rel="stylesheet" />
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+      <div class="container">
+        <a class="navbar-brand" href="index.html">
+          <i class="fas fa-newspaper me-2"></i>NewsHub
+        </a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="index.html">בית</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="news.html">חדשות</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="saved-articles.html"
+                >כתבות שמורות</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="shared-content.html">תוכן משותף</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="advanced-features.html"
+                >תכונות מתקדמות</a
+              >
+            </li>
+          </ul>
+          <ul class="navbar-nav" id="navbarUser">
+            <!-- User navigation will be loaded here -->
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-4">
+      <div class="row">
+        <!-- Sidebar -->
+        <div class="col-lg-3 mb-4">
+          <div class="card">
+            <div class="card-header">
+              <h5 class="mb-0">
+                <i class="fas fa-search me-2"></i>חיפוש וסינון
+              </h5>
+            </div>
+            <div class="card-body">
+              <!-- Search -->
+              <div class="mb-3">
+                <label for="searchInput" class="form-label">חיפוש בכתבות</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="searchInput"
+                  placeholder="חפש בכתבות שמורות..."
+                />
+              </div>
+
+              <!-- Date filter -->
+              <div class="mb-3">
+                <label class="form-label">תאריך שמירה</label>
+                <select class="form-select" id="dateFilter">
+                  <option value="">כל התאריכים</option>
+                  <option value="today">היום</option>
+                  <option value="week">השבוע האחרון</option>
+                  <option value="month">החודש האחרון</option>
+                  <option value="year">השנה האחרונה</option>
+                </select>
+              </div>
+
+              <!-- Source filter -->
+              <div class="mb-3">
+                <label class="form-label">מקור</label>
+                <select class="form-select" id="sourceFilter">
+                  <option value="">כל המקורות</option>
+                  <!-- Sources will be populated dynamically -->
+                </select>
+              </div>
+
+              <button
+                class="btn btn-primary w-100"
+                onclick="filterSavedArticles()"
+              >
+                <i class="fas fa-filter me-2"></i>סנן
+              </button>
+
+              <button
+                class="btn btn-outline-secondary w-100 mt-2"
+                onclick="clearFilters()"
+              >
+                <i class="fas fa-times me-2"></i>נקה סינונים
+              </button>
+            </div>
+          </div>
+
+          <!-- Statistics -->
+          <div class="card mt-3">
+            <div class="card-header">
+              <h6 class="mb-0">
+                <i class="fas fa-chart-bar me-2"></i>סטטיסטיקות
+              </h6>
+            </div>
+            <div class="card-body">
+              <div class="stat-item">
+                <span class="stat-label">סך הכל כתבות:</span>
+                <span class="stat-value" id="totalArticles">0</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">נשמרו השבוע:</span>
+                <span class="stat-value" id="weeklyArticles">0</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Articles Content -->
+        <div class="col-lg-9">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="fas fa-bookmark me-2"></i>הכתבות השמורות שלי</h2>
+            <div class="btn-group" role="group">
+              <button
+                class="btn btn-outline-primary"
+                onclick="exportArticles()"
+              >
+                <i class="fas fa-download me-2"></i>ייצא
+              </button>
+              <button
+                class="btn btn-outline-danger"
+                onclick="deleteAllArticles()"
+              >
+                <i class="fas fa-trash me-2"></i>מחק הכל
+              </button>
+            </div>
+          </div>
+
+          <!-- Loading Spinner -->
+          <div
+            id="loadingSpinner"
+            class="text-center py-5"
+            style="display: none"
+          >
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">טוען...</span>
+            </div>
+            <p class="mt-2">טוען כתבות שמורות...</p>
+          </div>
+
+          <!-- Articles Container -->
+          <div id="articlesContainer">
+            <!-- Saved articles will be loaded here -->
+          </div>
+
+          <!-- Pagination -->
+          <nav aria-label="ניווט דפים" class="mt-4">
+            <ul class="pagination justify-content-center" id="pagination">
+              <!-- Pagination will be loaded here -->
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </div>
+
+    <!-- Article Modal -->
+    <div class="modal fade" id="articleModal" tabindex="-1">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="articleTitle"></h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div id="articleContent">
+              <!-- Article content will be loaded here -->
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-danger"
+              onclick="deleteCurrentArticle()"
+            >
+              <i class="fas fa-trash"></i> מחק
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              onclick="shareCurrentArticle()"
+            >
+              <i class="fas fa-share"></i> שתף
+            </button>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              סגור
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">אישור מחיקה</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <p>האם אתה בטוח שברצונך למחוק את הכתבה?</p>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              ביטול
+            </button>
+            <button type="button" class="btn btn-danger" id="confirmDeleteBtn">
+              מחק
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/ajaxCalls.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/saved-articles.js"></script>
+  </body>
+</html>

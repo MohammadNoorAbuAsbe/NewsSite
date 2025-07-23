@@ -72,9 +72,36 @@ namespace Server.Controllers
             var userResponse = Models.User.Login(request.Email, request.Password);
             if (userResponse != null)
             {
+                // Check if user is disabled
+                var fullUser = Models.User.GetUserByEmail(request.Email);
+                if (fullUser != null && !fullUser.IsEnabled)
+                {
+                    return Unauthorized("Account has been disabled");
+                }
+                
+                // Include admin status in response
+                userResponse.IsAdmin = fullUser?.IsAdmin ?? false;
                 return Ok(userResponse);
             }
             return Unauthorized("Invalid email or password");
+        }
+
+        /// <summary>
+        /// Logout user and log the session end
+        /// </summary>
+        [HttpPost("logout")]
+        public IActionResult Logout([FromBody] LogoutRequest request)
+        {
+            try
+            {
+                // Log the logout activity for admin statistics
+                Models.User.LogUserActivity(request.UserId, "logout");
+                return Ok(new { message = "Logged out successfully" });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         #endregion
@@ -100,5 +127,10 @@ namespace Server.Controllers
         public string Name { get; set; }
         public string Email { get; set; }
         public string Password { get; set; }
+    }
+
+    public class LogoutRequest
+    {
+        public int UserId { get; set; }
     }
 }

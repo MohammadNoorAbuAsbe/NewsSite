@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>תוכן משותף - NewsHub</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link href="css/style.css" rel="stylesheet" />
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+      <div class="container">
+        <a class="navbar-brand" href="index.html">
+          <i class="fas fa-newspaper me-2"></i>NewsHub
+        </a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="index.html">בית</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="news.html">חדשות</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="saved-articles.html">כתבות שמורות</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="shared-content.html"
+                >תוכן משותף</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="advanced-features.html"
+                >תכונות מתקדמות</a
+              >
+            </li>
+          </ul>
+          <ul class="navbar-nav" id="navbarUser">
+            <!-- User navigation will be loaded here -->
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-4">
+      <div class="row">
+        <!-- Sidebar -->
+        <div class="col-lg-3 mb-4">
+          <div class="card">
+            <div class="card-header">
+              <h5 class="mb-0"><i class="fas fa-filter me-2"></i>סינונים</h5>
+            </div>
+            <div class="card-body">
+              <!-- Search -->
+              <div class="mb-3">
+                <label for="searchInput" class="form-label">חיפוש</label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="searchInput"
+                  placeholder="חפש בתוכן משותף..."
+                />
+              </div>
+
+              <!-- Filter by user -->
+              <div class="mb-3">
+                <label class="form-label">סינון לפי משתמש</label>
+                <select class="form-select" id="userFilter">
+                  <option value="">כל המשתמשים</option>
+                  <!-- Users will be populated dynamically -->
+                </select>
+              </div>
+
+              <!-- Blocked users -->
+              <div class="mb-3">
+                <h6>משתמשים חסומים</h6>
+                <div id="blockedUsers">
+                  <!-- Blocked users will be loaded here -->
+                </div>
+                <button
+                  class="btn btn-sm btn-outline-secondary mt-2"
+                  onclick="openBlockUserModal()"
+                >
+                  <i class="fas fa-ban me-1"></i>חסום משתמש
+                </button>
+              </div>
+
+              <button
+                class="btn btn-primary w-100"
+                onclick="filterSharedContent()"
+              >
+                <i class="fas fa-filter me-2"></i>סנן
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Content -->
+        <div class="col-lg-9">
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="fas fa-share-alt me-2"></i>תוכן משותף</h2>
+            <button class="btn btn-primary" onclick="openShareModal()">
+              <i class="fas fa-plus me-2"></i>שתף תוכן
+            </button>
+          </div>
+
+          <!-- Loading Spinner -->
+          <div
+            id="loadingSpinner"
+            class="text-center py-5"
+            style="display: none"
+          >
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">טוען...</span>
+            </div>
+            <p class="mt-2">טוען תוכן משותף...</p>
+          </div>
+
+          <!-- Shared Content Container -->
+          <div id="sharedContentContainer">
+            <!-- Shared content will be loaded here -->
+          </div>
+
+          <!-- Pagination -->
+          <nav aria-label="ניווט דפים" class="mt-4">
+            <ul class="pagination justify-content-center" id="pagination">
+              <!-- Pagination will be loaded here -->
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </div>
+
+    <!-- Share Content Modal -->
+    <div class="modal fade" id="shareModal" tabindex="-1">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">שתף תוכן</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form id="shareForm">
+              <div class="mb-3">
+                <label for="articleUrl" class="form-label">קישור לכתבה</label>
+                <input
+                  type="url"
+                  class="form-control"
+                  id="articleUrl"
+                  placeholder="https://..."
+                  required
+                />
+                <div class="form-text">הדבק קישור לכתבה שברצונך לשתף</div>
+              </div>
+              <div class="mb-3">
+                <label for="shareComment" class="form-label">התגובה שלך</label>
+                <textarea
+                  class="form-control"
+                  id="shareComment"
+                  rows="4"
+                  placeholder="כתב את המחשבות שלך על הכתבה..."
+                  required
+                ></textarea>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              ביטול
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              onclick="submitShare()"
+            >
+              שתף
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Block User Modal -->
+    <div class="modal fade" id="blockUserModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">חסום משתמש</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="userToBlock" class="form-label"
+                >בחר משתמש לחסימה</label
+              >
+              <select class="form-select" id="userToBlock" required>
+                <option value="">בחר משתמש...</option>
+                <!-- Users will be populated dynamically -->
+              </select>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              ביטול
+            </button>
+            <button type="button" class="btn btn-danger" onclick="blockUser()">
+              חסום
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Report Content Modal -->
+    <div class="modal fade" id="reportModal" tabindex="-1">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">דווח על תוכן פוגעני</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <form id="reportForm">
+              <div class="mb-3">
+                <label for="reportReason" class="form-label">סיבת הדיווח</label>
+                <select class="form-select" id="reportReason" required>
+                  <option value="">בחר סיבה...</option>
+                  <option value="spam">ספאם</option>
+                  <option value="harassment">הטרדה</option>
+                  <option value="hate_speech">דברי שטנה</option>
+                  <option value="fake_news">חדשות מזויפות</option>
+                  <option value="inappropriate">תוכן לא הולם</option>
+                  <option value="other">אחר</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="reportDescription" class="form-label"
+                  >תיאור נוסף (אופציונאלי)</label
+                >
+                <textarea
+                  class="form-control"
+                  id="reportDescription"
+                  rows="3"
+                ></textarea>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              ביטול
+            </button>
+            <button
+              type="button"
+              class="btn btn-danger"
+              onclick="submitReport()"
+            >
+              שלח דיווח
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/ajaxCalls.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/shared-content.js"></script>
+  </body>
+</html>

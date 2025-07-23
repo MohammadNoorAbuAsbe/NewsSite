@@ -30,9 +30,9 @@ namespace Server.Controllers
         }
 
         [HttpGet("TopHeadlines")]
-        public async Task<ActionResult<ArticlesResult>> GetTopHeadlines(Countries country)
+        public async Task<ActionResult<ArticlesResult>> GetTopHeadlines(Countries country, int page, int pageSize)
         {
-            return Ok(await NewsApiResponse.GetTopHeadlines(_newsApiService, country));
+            return Ok(await NewsApiResponse.GetTopHeadlines(_newsApiService, country, page, pageSize));
         }
 
         [HttpPost("TopHeadlinesByCategories")]

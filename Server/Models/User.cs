@@ -122,18 +122,54 @@ namespace Server.Models
                     return null;
                 }
 
+                // Log successful login for admin statistics
+                LogUserActivity(user.Id, "login");
+
                 // Return a response object excluding sensitive information
                 return new UserResponse
                 {
                     Id = user.Id,
                     Name = user.Name,
                     Email = user.Email,
+                    IsAdmin = user.IsAdmin
                 };
 
             }
             catch (Exception ex)
             {
                 return null;
+            }
+        }
+
+        /// <summary>
+        /// Get user by email for admin functions
+        /// </summary>
+        public static User? GetUserByEmail(string email)
+        {
+            DBservices dBservices = new DBservices();
+            try
+            {
+                return dBservices.LoginUser(email);
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Log user activity for admin statistics
+        /// </summary>
+        public static void LogUserActivity(int userId, string activityType)
+        {
+            DBservices dBservices = new DBservices();
+            try
+            {
+                dBservices.LogUserActivity(userId, activityType);
+            }
+            catch (Exception ex)
+            {
+                // Log error but don't throw
             }
         }
         #endregion
@@ -145,5 +181,6 @@ namespace Server.Models
         public int Id { get; set; }
         public string Name { get; set; }
         public string Email { get; set; }
+        public bool IsAdmin { get; set; }
     }
 }

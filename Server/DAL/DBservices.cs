@@ -32,27 +32,259 @@ public class DBservices
         return con;
     }
 
+    #region Tag Management
     public List<Tag> GetAllTags()
     {
-        // Fetch all tags from Tags table
-        return new List<Tag>();
+        var paramDic = new Dictionary<string, object>();
+        return ExecuteSqlCommandReturnList(paramDic, "SP_NewsSite_GetAllTags", MapTag);
     }
 
     public List<Tag> GetUserTags(int userId)
     {
-        // Fetch tags for a specific user from UserInterests
-        return new List<Tag>();
+        var paramDic = new Dictionary<string, object>
+        {
+            ["@userId"] = userId
+        };
+        return ExecuteSqlCommandReturnList(paramDic, "SP_NewsSite_GetUserTags", MapTag);
     }
 
     public void AddUserTag(int userId, string tagName)
     {
-        // Insert into UserInterests
+        var paramDic = new Dictionary<string, object>
+        {
+            ["@userId"] = userId,
+            ["@tagName"] = tagName
+        };
+        ExecuteSQLCommand(paramDic, "SP_NewsSite_AddUserTag");
     }
 
     public void RemoveUserTag(int userId, string tagName)
     {
-        // Delete from UserInterests
+        var paramDic = new Dictionary<string, object>
+        {
+            ["@userId"] = userId,
+            ["@tagName"] = tagName
+        };
+        ExecuteSQLCommand(paramDic, "SP_NewsSite_RemoveUserTag");
     }
+    #endregion
+
+    #region Saved Articles
+    public List<SavedArticle> GetUserSavedArticles(int userId)
+    {
+        var paramDic = new Dictionary<string, object>
+        {
+            ["@userId"] = userId
+        };
+        return ExecuteSqlCommandReturnList(paramDic, "SP_NewsSite_GetUserSavedArticles", MapSavedArticle);
+    }
+
+    public List<SavedArticle> SearchUserSavedArticles(int userId, string searchTerm)
+    {
+        var paramDic = new Dictionary<string, object>
+        {
+            ["@userId"] = userId,
+            ["@searchTerm"] = searchTerm
+        };
+        return ExecuteSqlCommandReturnList(paramDic, "SP_NewsSite_SearchUserSavedArticles", MapSavedArticle);
+    }
+
+    public bool SaveArticle(SavedArticle article)
+    {
+        var paramDic = new Dictionary<string, object>
+        {
+            ["@userId"] = article.UserId,
+            ["@title"] = article.Title,
+            ["@description"] = article.Description,
+            ["@url"] = article.Url,
+            ["@urlToImage"] = article.UrlToImage,
+            ["@source"] = article.Source,
+            ["@publishedAt"] = article.PublishedAt
+        };
+        return ExecuteSQLCommand(paramDic, "SP_NewsSite_SaveArticle") > 0;
+    }
+
+    public bool RemoveSavedArticle(int userId, int articleId)
+    {
+        var paramDic = new Dictionary<string, object>
+        {
+            ["@userId"] = userId,
+            ["@articleId"] = articleId
+        };
+        return ExecuteSQLCommand(paramDic, "SP_NewsSite_RemoveSavedArticle") > 0;
+    }
+    #endregion
+
+    #region Shared Content
+    public List<SharedContent> GetAllSharedContent(int currentUserId)
+    {
+        var paramDic = new Dictionary<string, object>
+        {
+            ["@currentUserId"] = currentUserId
+        };
+        return ExecuteSqlCommandReturnList(paramDic, "SP_NewsSite_GetAllSharedContent", MapSharedContent);
+    }
+
+    public List<SharedContent> GetFilteredSharedContent(int currentUserId, List<int> blockedUserIds)
+    {
+        var paramDic = new Dictionary<string, object>
+        {
+            ["@currentUserId"] = currentUserId,
+            ["@blockedUserIds"] = string.Join(",", blockedUserIds)
+        };
+        return ExecuteSqlCommandReturnList(paramDic, "SP_NewsSite_GetFilteredSharedContent", MapSharedContent);
+    }
+
+    public bool ShareContent(SharedContent content)
+    {
+        var paramDic = new Dictionary<string, object>
+        {
+            ["@userId"] = content.UserId,
+            ["@articleTitle"] = content.ArticleTitle,
+            ["@articleUrl"] = content.ArticleUrl,
+            ["@userComment"] = content.UserComment
+        };
+        return ExecuteSQLCommand(paramDic, "SP_NewsSite_ShareContent") > 0;
+    }
+
+    public bool ReportContent(int contentId, int reporterId)
+    {
+        var paramDic = new Dictionary<string, object>
+        {
+            ["@contentId"] = contentId,
+            ["@reporterId"] = reporterId
+        };
+        return ExecuteSQLCommand(paramDic, "SP_NewsSite_ReportContent") > 0;
+    }
+
+    public bool LikeContent(int contentId, int userId)
+    {
+        var paramDic = new Dictionary<string, object>
+        {
+            ["@contentId"] = contentId,
+            ["@userId"] = userId
+        };
+        return ExecuteSQLCommand(paramDic, "SP_NewsSite_LikeContent") > 0;
+    }
+
+    public bool UnlikeContent(int contentId, int userId)
+    {
+        var paramDic = new Dictionary<string, object>
+        {
+            ["@contentId"] = contentId,
+            ["@userId"] = userId
+        };
+        return ExecuteSQLCommand(paramDic, "SP_NewsSite_UnlikeContent") > 0;
+    }
+    #endregion
+
+    #region User Settings
+    public UserSettings GetUserSettings(int userId)
+    {
+        var paramDic = new Dictionary<string, object>
+        {
+            ["@userId"] = userId
+        };
+        var settings = ExecuteSqlCommandReturnList(paramDic, "SP_NewsSite_GetUserSettings", MapUserSettings).FirstOrDefault();
+        return settings ?? new UserSettings { UserId = userId };
+    }
+
+    public bool UpdateUserSettings(UserSettings settings)
+    {
+        var paramDic = new Dictionary<string, object>
+        {
+            ["@userId"] = settings.UserId,
+            ["@blockedUserIds"] = string.Join(",", settings.BlockedUserIds),
+            ["@preferredTags"] = string.Join(",", settings.PreferredTags),
+            ["@notificationsEnabled"] = settings.NotificationsEnabled
+        };
+        return ExecuteSQLCommand(paramDic, "SP_NewsSite_UpdateUserSettings") > 0;
+    }
+
+    public bool BlockUser(int userId, int userToBlockId)
+    {
+        var paramDic = new Dictionary<string, object>
+        {
+            ["@userId"] = userId,
+            ["@userToBlockId"] = userToBlockId
+        };
+        return ExecuteSQLCommand(paramDic, "SP_NewsSite_BlockUser") > 0;
+    }
+
+    public bool UnblockUser(int userId, int userToUnblockId)
+    {
+        var paramDic = new Dictionary<string, object>
+        {
+            ["@userId"] = userId,
+            ["@userToUnblockId"] = userToUnblockId
+        };
+        return ExecuteSQLCommand(paramDic, "SP_NewsSite_UnblockUser") > 0;
+    }
+    #endregion
+
+    #region Admin Functions
+    public AdminStats GetAdminStats(DateTime date)
+    {
+        var paramDic = new Dictionary<string, object>
+        {
+            ["@date"] = date
+        };
+        return ExecuteSqlCommandReturnList(paramDic, "SP_NewsSite_GetAdminStats", MapAdminStats).FirstOrDefault() ?? new AdminStats();
+    }
+
+    public List<AdminStats> GetStatsRange(DateTime fromDate, DateTime toDate)
+    {
+        var paramDic = new Dictionary<string, object>
+        {
+            ["@fromDate"] = fromDate,
+            ["@toDate"] = toDate
+        };
+        return ExecuteSqlCommandReturnList(paramDic, "SP_NewsSite_GetStatsRange", MapAdminStats);
+    }
+
+    public List<User> GetAllUsersWithStats()
+    {
+        var paramDic = new Dictionary<string, object>();
+        return ExecuteSqlCommandReturnList(paramDic, "SP_NewsSite_GetAllUsersWithStats", MapUser);
+    }
+
+    public bool ToggleUserStatus(int userId, bool isEnabled)
+    {
+        var paramDic = new Dictionary<string, object>
+        {
+            ["@userId"] = userId,
+            ["@isEnabled"] = isEnabled
+        };
+        return ExecuteSQLCommand(paramDic, "SP_NewsSite_ToggleUserStatus") > 0;
+    }
+
+    public List<SharedContent> GetReportedContent()
+    {
+        var paramDic = new Dictionary<string, object>();
+        return ExecuteSqlCommandReturnList(paramDic, "SP_NewsSite_GetReportedContent", MapSharedContent);
+    }
+
+    public bool HandleReportedContent(int contentId, bool removeContent)
+    {
+        var paramDic = new Dictionary<string, object>
+        {
+            ["@contentId"] = contentId,
+            ["@removeContent"] = removeContent
+        };
+        return ExecuteSQLCommand(paramDic, "SP_NewsSite_HandleReportedContent") > 0;
+    }
+
+    public void LogUserActivity(int userId, string activityType)
+    {
+        var paramDic = new Dictionary<string, object>
+        {
+            ["@userId"] = userId,
+            ["@activityType"] = activityType,
+            ["@timestamp"] = DateTime.Now
+        };
+        ExecuteSQLCommand(paramDic, "SP_NewsSite_LogUserActivity");
+    }
+    #endregion
 
     #region Getters
     /// <summary>
@@ -128,6 +360,84 @@ public class DBservices
             Password = reader.GetString(reader.GetOrdinal("Password")),
             IsAdmin = reader.GetBoolean(reader.GetOrdinal("IsAdmin")),
             IsEnabled = reader.GetBoolean(reader.GetOrdinal("IsEnabled"))
+        };
+    }
+
+    private Tag MapTag(SqlDataReader reader)
+    {
+        return new Tag(
+            reader.GetString(reader.GetOrdinal("Name")),
+            reader.GetBoolean(reader.GetOrdinal("Custom"))
+        );
+    }
+
+    private SavedArticle MapSavedArticle(SqlDataReader reader)
+    {
+        return new SavedArticle
+        {
+            Id = reader.GetInt32(reader.GetOrdinal("Id")),
+            UserId = reader.GetInt32(reader.GetOrdinal("UserId")),
+            Title = reader.GetString(reader.GetOrdinal("Title")),
+            Description = reader.GetString(reader.GetOrdinal("Description")),
+            Url = reader.GetString(reader.GetOrdinal("Url")),
+            UrlToImage = reader.GetString(reader.GetOrdinal("UrlToImage")),
+            Source = reader.GetString(reader.GetOrdinal("Source")),
+            PublishedAt = reader.GetDateTime(reader.GetOrdinal("PublishedAt")),
+            SavedAt = reader.GetDateTime(reader.GetOrdinal("SavedAt"))
+        };
+    }
+
+    private SharedContent MapSharedContent(SqlDataReader reader)
+    {
+        return new SharedContent
+        {
+            Id = reader.GetInt32(reader.GetOrdinal("Id")),
+            UserId = reader.GetInt32(reader.GetOrdinal("UserId")),
+            UserName = reader.GetString(reader.GetOrdinal("UserName")),
+            ArticleTitle = reader.GetString(reader.GetOrdinal("ArticleTitle")),
+            ArticleUrl = reader.GetString(reader.GetOrdinal("ArticleUrl")),
+            UserComment = reader.GetString(reader.GetOrdinal("UserComment")),
+            SharedAt = reader.GetDateTime(reader.GetOrdinal("SharedAt")),
+            IsReported = reader.GetBoolean(reader.GetOrdinal("IsReported")),
+            LikesCount = reader.GetInt32(reader.GetOrdinal("LikesCount"))
+        };
+    }
+
+    private UserSettings MapUserSettings(SqlDataReader reader)
+    {
+        var blockedUserIds = new List<int>();
+        var preferredTags = new List<string>();
+        
+        string blockedUsersStr = reader.IsDBNull(reader.GetOrdinal("BlockedUserIds")) ? "" : reader.GetString(reader.GetOrdinal("BlockedUserIds"));
+        string tagsStr = reader.IsDBNull(reader.GetOrdinal("PreferredTags")) ? "" : reader.GetString(reader.GetOrdinal("PreferredTags"));
+        
+        if (!string.IsNullOrEmpty(blockedUsersStr))
+            blockedUserIds = blockedUsersStr.Split(',').Select(int.Parse).ToList();
+        
+        if (!string.IsNullOrEmpty(tagsStr))
+            preferredTags = tagsStr.Split(',').ToList();
+
+        return new UserSettings
+        {
+            Id = reader.GetInt32(reader.GetOrdinal("Id")),
+            UserId = reader.GetInt32(reader.GetOrdinal("UserId")),
+            BlockedUserIds = blockedUserIds,
+            PreferredTags = preferredTags,
+            NotificationsEnabled = reader.GetBoolean(reader.GetOrdinal("NotificationsEnabled"))
+        };
+    }
+
+    private AdminStats MapAdminStats(SqlDataReader reader)
+    {
+        return new AdminStats
+        {
+            DailyLogins = reader.GetInt32(reader.GetOrdinal("DailyLogins")),
+            DailyNewsRequests = reader.GetInt32(reader.GetOrdinal("DailyNewsRequests")),
+            DailySavedArticles = reader.GetInt32(reader.GetOrdinal("DailySavedArticles")),
+            TotalUsers = reader.GetInt32(reader.GetOrdinal("TotalUsers")),
+            ActiveUsers = reader.GetInt32(reader.GetOrdinal("ActiveUsers")),
+            ReportedContent = reader.GetInt32(reader.GetOrdinal("ReportedContent")),
+            Date = reader.GetDateTime(reader.GetOrdinal("Date"))
         };
     }
     #endregion

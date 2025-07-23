@@ -3,10 +3,23 @@ const CONFIG = {
   localhost: {
     usersBaseURL: `https://localhost:${7259}/api/Users`,
     newsBaseURL: `https://localhost:${7259}/api/News`,
+    tagsBaseURL: `https://localhost:${7259}/api/Tags`,
+    savedArticlesBaseURL: `https://localhost:${7259}/api/SavedArticles`,
+    sharedContentBaseURL: `https://localhost:${7259}/api/SharedContent`,
+    userSettingsBaseURL: `https://localhost:${7259}/api/UserSettings`,
+    adminBaseURL: `https://localhost:${7259}/api/Admin`,
   },
   production: {
     usersBaseURL: "https://proj.ruppin.ac.il/cgroup10/test2/tar1/api/Users",
-    newsBaseURL: `https://localhost:${7259}/api/News`,
+    newsBaseURL: "https://proj.ruppin.ac.il/cgroup10/test2/tar1/api/News",
+    tagsBaseURL: "https://proj.ruppin.ac.il/cgroup10/test2/tar1/api/Tags",
+    savedArticlesBaseURL:
+      "https://proj.ruppin.ac.il/cgroup10/test2/tar1/api/SavedArticles",
+    sharedContentBaseURL:
+      "https://proj.ruppin.ac.il/cgroup10/test2/tar1/api/SharedContent",
+    userSettingsBaseURL:
+      "https://proj.ruppin.ac.il/cgroup10/test2/tar1/api/UserSettings",
+    adminBaseURL: "https://proj.ruppin.ac.il/cgroup10/test2/tar1/api/Admin",
   },
 };
 
@@ -17,6 +30,21 @@ const USERS_SERVER_PATH = isLocalHost
 const NEWS_SERVER_PATH = isLocalHost
   ? CONFIG.localhost.newsBaseURL
   : CONFIG.production.newsBaseURL;
+const TAGS_SERVER_PATH = isLocalHost
+  ? CONFIG.localhost.tagsBaseURL
+  : CONFIG.production.tagsBaseURL;
+const SAVED_ARTICLES_SERVER_PATH = isLocalHost
+  ? CONFIG.localhost.savedArticlesBaseURL
+  : CONFIG.production.savedArticlesBaseURL;
+const SHARED_CONTENT_SERVER_PATH = isLocalHost
+  ? CONFIG.localhost.sharedContentBaseURL
+  : CONFIG.production.sharedContentBaseURL;
+const USER_SETTINGS_SERVER_PATH = isLocalHost
+  ? CONFIG.localhost.userSettingsBaseURL
+  : CONFIG.production.userSettingsBaseURL;
+const ADMIN_SERVER_PATH = isLocalHost
+  ? CONFIG.localhost.adminBaseURL
+  : CONFIG.production.adminBaseURL;
 
 // User Endpoints
 const USER_ENDPOINTS = {
