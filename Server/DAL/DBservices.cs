@@ -407,7 +407,7 @@ public class DBservices
     {
         var blockedUserIds = new List<int>();
         var preferredTags = new List<string>();
-<<<<<<< Updated upstream
+
         
         string blockedUsersStr = reader.IsDBNull(reader.GetOrdinal("BlockedUserIds")) ? "" : reader.GetString(reader.GetOrdinal("BlockedUserIds"));
         string tagsStr = reader.IsDBNull(reader.GetOrdinal("PreferredTags")) ? "" : reader.GetString(reader.GetOrdinal("PreferredTags"));
@@ -415,15 +415,10 @@ public class DBservices
         if (!string.IsNullOrEmpty(blockedUsersStr))
             blockedUserIds = blockedUsersStr.Split(',').Select(int.Parse).ToList();
         
-=======
-
-        string blockedUsersStr = reader.IsDBNull(reader.GetOrdinal("BlockedUserIds")) ? "" : reader.GetString(reader.GetOrdinal("BlockedUserIds"));
-        string tagsStr = reader.IsDBNull(reader.GetOrdinal("PreferredTags")) ? "" : reader.GetString(reader.GetOrdinal("PreferredTags"));
-
         if (!string.IsNullOrEmpty(blockedUsersStr))
             blockedUserIds = blockedUsersStr.Split(',').Select(int.Parse).ToList();
 
->>>>>>> Stashed changes
+
         if (!string.IsNullOrEmpty(tagsStr))
             preferredTags = tagsStr.Split(',').ToList();
 
