@@ -408,16 +408,11 @@ public class DBservices
         var blockedUserIds = new List<int>();
         var preferredTags = new List<string>();
 
-        
         string blockedUsersStr = reader.IsDBNull(reader.GetOrdinal("BlockedUserIds")) ? "" : reader.GetString(reader.GetOrdinal("BlockedUserIds"));
         string tagsStr = reader.IsDBNull(reader.GetOrdinal("PreferredTags")) ? "" : reader.GetString(reader.GetOrdinal("PreferredTags"));
         
         if (!string.IsNullOrEmpty(blockedUsersStr))
             blockedUserIds = blockedUsersStr.Split(',').Select(int.Parse).ToList();
-        
-        if (!string.IsNullOrEmpty(blockedUsersStr))
-            blockedUserIds = blockedUsersStr.Split(',').Select(int.Parse).ToList();
-
 
         if (!string.IsNullOrEmpty(tagsStr))
             preferredTags = tagsStr.Split(',').ToList();
