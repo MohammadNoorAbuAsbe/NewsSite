@@ -62,15 +62,14 @@ function loadLatestNews() {
     NEWS_ENDPOINTS.TOP_HEADLINES_US() + "&pageSize=3",
     null,
     function (response) {
-      if (
-        response.success &&
-        response.articles &&
-        response.articles.length > 0
-      ) {
-        displayLatestNews(response.articles.slice(0, 3));
+      if ( (response.success || response.status === "Ok") &&
+            response.articles &&
+          response.articles.length > 0)
+      {
+          displayLatestNews(response.articles.slice(0, 3));
       } else {
-        showNoNewsMessage();
-      }
+          showNoNewsMessage();
+        }
     },
     function (error) {
       console.error("Error loading latest news:", error);

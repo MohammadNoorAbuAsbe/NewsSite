@@ -69,65 +69,95 @@ function setupEventListeners() {
 }
 
 function loadNews() {
-  const container = document.getElementById("newsContainer");
-  const loadingSpinner = document.getElementById("loadingSpinner");
+    const container = document.getElementById("newsContainer");
+    const loadingSpinner = document.getElementById("loadingSpinner");
 
-  if (!container) return;
+    if (!container) return;
 
-  // Show loading
-  loadingSpinner.style.display = "block";
-  container.innerHTML = "";
+    // Show loading spinner
+    loadingSpinner.style.display = "block";
+    container.innerHTML = "";
 
-  // Build API URL
-  let apiUrl = NEWS_ENDPOINTS.BASE() + "/TopHeadlines";
-  const params = new URLSearchParams();
+    const searchQuery = document.getElementById("searchInput")?.value.trim();
+    const category = document.getElementById("categoryFilter")?.value;
+    const country = (document.getElementById("countryFilter").value || "us").toLowerCase();
 
-  // Add country
-  const country = document.getElementById("countryFilter")?.value || "us";
-  params.append("country", country);
+    let apiUrl = "";
+    const params = new URLSearchParams();
 
-  // Add category
-  const category = document.getElementById("categoryFilter")?.value;
-  if (category) {
-    params.append("category", category);
-  }
+    if (searchQuery) {
+        //search by input
+        apiUrl = NEWS_ENDPOINTS.BASE() + "/SpecificNews";
+        params.append("query", searchQuery);
 
-  // Add search query
-  const searchQuery = document.getElementById("searchInput")?.value.trim();
-  if (searchQuery) {
-    params.append("q", searchQuery);
-  }
+        const fromDate = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+        params.append("fromDate", fromDate);
 
-  // Add pagination
-  params.append("page", currentPage);
-  params.append("pageSize", 12);
+        params.append("sortBy", "popularity");
+    } else if (category) {
+        //search yb category
+        apiUrl = NEWS_ENDPOINTS.BASE() + "/TopHeadlinesByCategories";
+
+       
+        ajaxCall(
+            "POST",
+            apiUrl,
+            JSON.stringify([category]), 
+            function (response) {
+                loadingSpinner.style.display = "none";
+                currentNews = Object.values(response)[0]?.articles || [];
+                totalPages = 1;
+                displayNews(currentNews);
+                updatePagination();
+            },
+            function (error) {
+                console.error("Error loading news:", error);
+                loadingSpinner.style.display = "none";
+                showErrorMessage();
+            },
+            "application/json" 
+        );
+        return;
+    }
+
+    else {
+      //search by country
+        apiUrl = NEWS_ENDPOINTS.BASE() + "/TopHeadlines";
+        params.append("country", country);
+        params.append("page", currentPage);
+        params.append("pageSize", 12);
+    }
 
     apiUrl += "?" + params.toString();
-  // Make API call
-  ajaxCall(
-    "GET",
-    apiUrl,
-    null,
-    function (response) {
-        loadingSpinner.style.display = "none";
-      if (response.status == 'Ok' && response.articles) {
-        currentNews = response.articles;
-        totalPages = Math.ceil(
-          (response.totalResults || response.articles.length) / 12
-        );
-        displayNews(currentNews);
-        updatePagination();
-      } else {
-        showNoNewsMessage();
-      }
-    },
-    function (error) {
-      console.error("Error loading news:", error);
-      loadingSpinner.style.display = "none";
-      showErrorMessage();
-    }
-  );
+
+    console.log("Requesting:", apiUrl);
+    
+    // Make API call
+    ajaxCall(
+        "GET",
+        apiUrl,
+        null,
+        function (response) {
+            loadingSpinner.style.display = "none";
+            if (response.status === 'Ok' && response.articles) {
+                currentNews = response.articles;
+                totalPages = Math.ceil(
+                    (response.totalResults || response.articles.length) / 12
+                );
+                displayNews(currentNews);
+                updatePagination();
+            } else {
+                showNoNewsMessage();
+            }
+        },
+        function (error) {
+            console.error("Error loading news:", error);
+            loadingSpinner.style.display = "none";
+            showErrorMessage();
+        }
+    );
 }
+
 
 function displayNews(articles) {
   const container = document.getElementById("newsContainer");
@@ -375,11 +405,13 @@ function saveArticle(encodedArticle) {
       UserId: authManager.currentUser.id,
       Title: article.title,
       Description: article.description,
-      Content: article.content,
+      /*Content: article.content,*/
       Url: article.url,
-      ImageUrl: article.urlToImage,
+      UrlToImage: article.urlToImage,
       PublishedAt: article.publishedAt,
       Source: article.source?.name || "Unknown",
+      SavedAt: new Date().toISOString()
+
     };
 
     authManager.makeAuthenticatedRequest(

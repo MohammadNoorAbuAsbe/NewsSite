@@ -48,6 +48,7 @@ namespace Server.Controllers
         public IActionResult SaveArticle([FromBody] SavedArticle article)
         {
             try
+
             {
                 bool success = SavedArticle.SaveArticle(article);
                 if (success)

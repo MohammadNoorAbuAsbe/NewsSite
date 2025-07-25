@@ -6,8 +6,7 @@
 -- =============================================
 
 -- Users table (existing - for reference)
-/*
-CREATE TABLE Users (
+CREATE TABLE NewsSite_Users (
     Id INT IDENTITY(1,1) PRIMARY KEY,
     Name NVARCHAR(100) NOT NULL,
     Email NVARCHAR(255) UNIQUE NOT NULL,
@@ -16,10 +15,10 @@ CREATE TABLE Users (
     IsEnabled BIT DEFAULT 1,
     CreatedAt DATETIME DEFAULT GETDATE()
 );
-*/
+
 
 -- Tags table for news categories and user interests
-CREATE TABLE Tags (
+CREATE TABLE NewsSite_Tags (
     Id INT IDENTITY(1,1) PRIMARY KEY,
     Name NVARCHAR(50) UNIQUE NOT NULL,
     Custom BIT DEFAULT 0, -- True if it's a user-created custom tag
@@ -27,17 +26,17 @@ CREATE TABLE Tags (
 );
 
 -- User interests - linking users to their preferred tags
-CREATE TABLE UserInterests (
+CREATE TABLE NewsSite_UserInterests (
     Id INT IDENTITY(1,1) PRIMARY KEY,
     UserId INT NOT NULL,
     TagName NVARCHAR(50) NOT NULL,
     CreatedAt DATETIME DEFAULT GETDATE(),
-    FOREIGN KEY (UserId) REFERENCES Users(Id) ON DELETE CASCADE,
+    FOREIGN KEY (UserId) REFERENCES NewsSite_Users(Id) ON DELETE CASCADE,
     UNIQUE(UserId, TagName)
 );
 
 -- Saved articles for each user
-CREATE TABLE SavedArticles (
+CREATE TABLE NewsSite_SavedArticles (
     Id INT IDENTITY(1,1) PRIMARY KEY,
     UserId INT NOT NULL,
     Title NVARCHAR(500) NOT NULL,
@@ -47,11 +46,11 @@ CREATE TABLE SavedArticles (
     Source NVARCHAR(100),
     PublishedAt DATETIME,
     SavedAt DATETIME DEFAULT GETDATE(),
-    FOREIGN KEY (UserId) REFERENCES Users(Id) ON DELETE CASCADE
+    FOREIGN KEY (UserId) REFERENCES NewsSite_Users(Id) ON DELETE CASCADE
 );
 
 -- Shared content - articles shared by users with comments
-CREATE TABLE SharedContent (
+CREATE TABLE NewsSite_SharedContent (
     Id INT IDENTITY(1,1) PRIMARY KEY,
     UserId INT NOT NULL,
     ArticleTitle NVARCHAR(500) NOT NULL,
@@ -60,50 +59,50 @@ CREATE TABLE SharedContent (
     SharedAt DATETIME DEFAULT GETDATE(),
     IsReported BIT DEFAULT 0,
     IsRemoved BIT DEFAULT 0,
-    FOREIGN KEY (UserId) REFERENCES Users(Id) ON DELETE CASCADE
+    FOREIGN KEY (UserId) REFERENCES NewsSite_Users(Id) ON DELETE NO ACTION
 );
 
 -- Likes for shared content
-CREATE TABLE ContentLikes (
+CREATE TABLE NewsSite_ContentLikes (
     Id INT IDENTITY(1,1) PRIMARY KEY,
     ContentId INT NOT NULL,
     UserId INT NOT NULL,
     LikedAt DATETIME DEFAULT GETDATE(),
-    FOREIGN KEY (ContentId) REFERENCES SharedContent(Id) ON DELETE CASCADE,
-    FOREIGN KEY (UserId) REFERENCES Users(Id) ON DELETE CASCADE,
+    FOREIGN KEY (ContentId) REFERENCES NewsSite_SharedContent(Id) ON DELETE CASCADE,
+    FOREIGN KEY (UserId) REFERENCES NewsSite_Users(Id) ON DELETE NO ACTION,
     UNIQUE(ContentId, UserId)
 );
 
 -- Reports for offensive content
-CREATE TABLE ContentReports (
+CREATE TABLE NewsSite_ContentReports (
     Id INT IDENTITY(1,1) PRIMARY KEY,
     ContentId INT NOT NULL,
     ReporterId INT NOT NULL,
     ReportedAt DATETIME DEFAULT GETDATE(),
     Handled BIT DEFAULT 0,
     HandledAt DATETIME,
-    FOREIGN KEY (ContentId) REFERENCES SharedContent(Id) ON DELETE CASCADE,
-    FOREIGN KEY (ReporterId) REFERENCES Users(Id)
+    FOREIGN KEY (ContentId) REFERENCES NewsSite_SharedContent(Id) ON DELETE CASCADE,
+    FOREIGN KEY (ReporterId) REFERENCES NewsSite_Users(Id)
 );
 
 -- User settings and preferences
-CREATE TABLE UserSettings (
+CREATE TABLE NewsSite_UserSettings (
     Id INT IDENTITY(1,1) PRIMARY KEY,
     UserId INT UNIQUE NOT NULL,
     BlockedUserIds NVARCHAR(1000), -- Comma-separated list of blocked user IDs
     PreferredTags NVARCHAR(1000), -- Comma-separated list of preferred tags
     NotificationsEnabled BIT DEFAULT 1,
     UpdatedAt DATETIME DEFAULT GETDATE(),
-    FOREIGN KEY (UserId) REFERENCES Users(Id) ON DELETE CASCADE
+    FOREIGN KEY (UserId) REFERENCES NewsSite_Users(Id) ON DELETE CASCADE
 );
 
 -- User activity log for admin statistics
-CREATE TABLE UserActivity (
+CREATE TABLE NewsSite_UserActivity (
     Id INT IDENTITY(1,1) PRIMARY KEY,
     UserId INT NOT NULL,
     ActivityType NVARCHAR(50) NOT NULL, -- 'login', 'logout', 'news_request', 'save_article', etc.
     ActivityDate DATETIME DEFAULT GETDATE(),
-    FOREIGN KEY (UserId) REFERENCES Users(Id) ON DELETE CASCADE
+    FOREIGN KEY (UserId) REFERENCES NewsSite_Users(Id) ON DELETE CASCADE
 );
 
 -- =============================================
@@ -111,7 +110,7 @@ CREATE TABLE UserActivity (
 -- =============================================
 
 -- Insert default tags
-INSERT INTO Tags (Name, Custom) VALUES 
+INSERT INTO NewsSite_Tags (Name, Custom) VALUES 
     ('Politics', 0),
     ('Business', 0),
     ('Technology', 0),
@@ -124,18 +123,63 @@ INSERT INTO Tags (Name, Custom) VALUES
     ('Local', 0);
 
 -- Insert admin user (password: admin - hashed with BCrypt)
-INSERT INTO Users (Name, Email, Password, IsAdmin, IsEnabled) VALUES 
-    ('Admin', 'admin@newssite.com', '$2a$15$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 1, 1);
+INSERT INTO NewsSite_Users (Name, Email, Password, IsAdmin, IsEnabled) VALUES 
+    ('admin', 'admin', '$2a$15$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 1, 1);
 
 -- =============================================
 -- Stored Procedures
 -- =============================================
 
+-- Register new user
+CREATE PROCEDURE SP_NewsSite_RegisterUser
+    @name NVARCHAR(100),
+    @email NVARCHAR(255),
+    @password NVARCHAR(255)
+AS
+BEGIN
+    -- Check if email already exists
+    IF EXISTS (SELECT 1 FROM NewsSite_Users WHERE Email = @email)
+    BEGIN
+        -- Return empty result set when email already exists
+        SELECT TOP 0 Id, Name, Email, Password, IsAdmin, IsEnabled, CreatedAt
+        FROM NewsSite_Users;
+        RETURN;
+    END
+    
+    -- Insert new user
+    INSERT INTO NewsSite_Users (Name, Email, Password, IsAdmin, IsEnabled)
+    VALUES (@name, @email, @password, 0, 1);
+    
+    -- Get the newly created user ID
+    DECLARE @newUserId INT = SCOPE_IDENTITY();
+    
+    -- Log registration activity
+    INSERT INTO NewsSite_UserActivity (UserId, ActivityType) 
+    VALUES (@newUserId, 'register');
+    
+    -- Return the newly created user information
+    SELECT Id, Name, Email, Password, IsAdmin, IsEnabled, CreatedAt
+    FROM NewsSite_Users 
+    WHERE Id = @newUserId;
+END
+GO
+
+-- Login user
+CREATE PROCEDURE SP_NewsSite_LoginUser
+    @email NVARCHAR(255)
+AS
+BEGIN
+    SELECT Id, Name, Email, Password, IsAdmin, IsEnabled, CreatedAt
+    FROM NewsSite_Users 
+    WHERE Email = @email AND IsEnabled = 1;
+END
+GO
+
 -- Get all tags
 CREATE PROCEDURE SP_NewsSite_GetAllTags
 AS
 BEGIN
-    SELECT Name, Custom FROM Tags ORDER BY Name;
+    SELECT Name, Custom FROM NewsSite_Tags ORDER BY Name;
 END
 GO
 
@@ -145,8 +189,8 @@ CREATE PROCEDURE SP_NewsSite_GetUserTags
 AS
 BEGIN
     SELECT t.Name, t.Custom 
-    FROM Tags t
-    INNER JOIN UserInterests ui ON t.Name = ui.TagName
+    FROM NewsSite_Tags t
+    INNER JOIN NewsSite_UserInterests ui ON t.Name = ui.TagName
     WHERE ui.UserId = @userId
     ORDER BY t.Name;
 END
@@ -159,15 +203,15 @@ CREATE PROCEDURE SP_NewsSite_AddUserTag
 AS
 BEGIN
     -- Insert tag if it doesn't exist (as custom tag)
-    IF NOT EXISTS (SELECT 1 FROM Tags WHERE Name = @tagName)
+    IF NOT EXISTS (SELECT 1 FROM NewsSite_Tags WHERE Name = @tagName)
     BEGIN
-        INSERT INTO Tags (Name, Custom) VALUES (@tagName, 1);
+        INSERT INTO NewsSite_Tags (Name, Custom) VALUES (@tagName, 1);
     END
     
     -- Insert user interest if it doesn't exist
-    IF NOT EXISTS (SELECT 1 FROM UserInterests WHERE UserId = @userId AND TagName = @tagName)
+    IF NOT EXISTS (SELECT 1 FROM NewsSite_UserInterests WHERE UserId = @userId AND TagName = @tagName)
     BEGIN
-        INSERT INTO UserInterests (UserId, TagName) VALUES (@userId, @tagName);
+        INSERT INTO NewsSite_UserInterests (UserId, TagName) VALUES (@userId, @tagName);
     END
 END
 GO
@@ -178,7 +222,7 @@ CREATE PROCEDURE SP_NewsSite_RemoveUserTag
     @tagName NVARCHAR(50)
 AS
 BEGIN
-    DELETE FROM UserInterests WHERE UserId = @userId AND TagName = @tagName;
+    DELETE FROM NewsSite_UserInterests WHERE UserId = @userId AND TagName = @tagName;
 END
 GO
 
@@ -188,7 +232,7 @@ CREATE PROCEDURE SP_NewsSite_GetUserSavedArticles
 AS
 BEGIN
     SELECT Id, UserId, Title, Description, Url, UrlToImage, Source, PublishedAt, SavedAt
-    FROM SavedArticles 
+    FROM NewsSite_SavedArticles 
     WHERE UserId = @userId 
     ORDER BY SavedAt DESC;
 END
@@ -201,7 +245,7 @@ CREATE PROCEDURE SP_NewsSite_SearchUserSavedArticles
 AS
 BEGIN
     SELECT Id, UserId, Title, Description, Url, UrlToImage, Source, PublishedAt, SavedAt
-    FROM SavedArticles 
+    FROM NewsSite_SavedArticles 
     WHERE UserId = @userId 
         AND (Title LIKE '%' + @searchTerm + '%' OR Description LIKE '%' + @searchTerm + '%')
     ORDER BY SavedAt DESC;
@@ -220,13 +264,13 @@ CREATE PROCEDURE SP_NewsSite_SaveArticle
 AS
 BEGIN
     -- Check if article already saved by user
-    IF NOT EXISTS (SELECT 1 FROM SavedArticles WHERE UserId = @userId AND Url = @url)
+    IF NOT EXISTS (SELECT 1 FROM NewsSite_SavedArticles WHERE UserId = @userId AND Url = @url)
     BEGIN
-        INSERT INTO SavedArticles (UserId, Title, Description, Url, UrlToImage, Source, PublishedAt)
+        INSERT INTO NewsSite_SavedArticles (UserId, Title, Description, Url, UrlToImage, Source, PublishedAt)
         VALUES (@userId, @title, @description, @url, @urlToImage, @source, @publishedAt);
         
         -- Log activity
-        INSERT INTO UserActivity (UserId, ActivityType) VALUES (@userId, 'save_article');
+        INSERT INTO NewsSite_UserActivity (UserId, ActivityType) VALUES (@userId, 'save_article');
         
         SELECT 1 AS Success;
     END
@@ -243,7 +287,7 @@ CREATE PROCEDURE SP_NewsSite_RemoveSavedArticle
     @articleId INT
 AS
 BEGIN
-    DELETE FROM SavedArticles WHERE Id = @articleId AND UserId = @userId;
+    DELETE FROM NewsSite_SavedArticles WHERE Id = @articleId AND UserId = @userId;
     SELECT @@ROWCOUNT AS RowsAffected;
 END
 GO
@@ -257,9 +301,9 @@ BEGIN
     SELECT 
         sc.Id, sc.UserId, u.Name AS UserName, sc.ArticleTitle, sc.ArticleUrl, 
         sc.UserComment, sc.SharedAt, sc.IsReported,
-        (SELECT COUNT(*) FROM ContentLikes WHERE ContentId = sc.Id) AS LikesCount
-    FROM SharedContent sc
-    INNER JOIN Users u ON sc.UserId = u.Id
+        (SELECT COUNT(*) FROM NewsSite_ContentLikes WHERE ContentId = sc.Id) AS LikesCount
+    FROM NewsSite_SharedContent sc
+    INNER JOIN NewsSite_Users u ON sc.UserId = u.Id
     WHERE sc.IsRemoved = 0
         AND (@blockedUserIds = '' OR sc.UserId NOT IN (SELECT value FROM STRING_SPLIT(@blockedUserIds, ',')))
     ORDER BY sc.SharedAt DESC;
@@ -274,7 +318,7 @@ CREATE PROCEDURE SP_NewsSite_ShareContent
     @userComment NTEXT
 AS
 BEGIN
-    INSERT INTO SharedContent (UserId, ArticleTitle, ArticleUrl, UserComment)
+    INSERT INTO NewsSite_SharedContent (UserId, ArticleTitle, ArticleUrl, UserComment)
     VALUES (@userId, @articleTitle, @articleUrl, @userComment);
     
     SELECT 1 AS Success;
@@ -288,10 +332,10 @@ CREATE PROCEDURE SP_NewsSite_ReportContent
 AS
 BEGIN
     -- Insert report if not already reported by this user
-    IF NOT EXISTS (SELECT 1 FROM ContentReports WHERE ContentId = @contentId AND ReporterId = @reporterId)
+    IF NOT EXISTS (SELECT 1 FROM NewsSite_ContentReports WHERE ContentId = @contentId AND ReporterId = @reporterId)
     BEGIN
-        INSERT INTO ContentReports (ContentId, ReporterId) VALUES (@contentId, @reporterId);
-        UPDATE SharedContent SET IsReported = 1 WHERE Id = @contentId;
+        INSERT INTO NewsSite_ContentReports (ContentId, ReporterId) VALUES (@contentId, @reporterId);
+        UPDATE NewsSite_SharedContent SET IsReported = 1 WHERE Id = @contentId;
         SELECT 1 AS Success;
     END
     ELSE
@@ -307,9 +351,9 @@ CREATE PROCEDURE SP_NewsSite_LikeContent
     @userId INT
 AS
 BEGIN
-    IF NOT EXISTS (SELECT 1 FROM ContentLikes WHERE ContentId = @contentId AND UserId = @userId)
+    IF NOT EXISTS (SELECT 1 FROM NewsSite_ContentLikes WHERE ContentId = @contentId AND UserId = @userId)
     BEGIN
-        INSERT INTO ContentLikes (ContentId, UserId) VALUES (@contentId, @userId);
+        INSERT INTO NewsSite_ContentLikes (ContentId, UserId) VALUES (@contentId, @userId);
         SELECT 1 AS Success;
     END
     ELSE
@@ -325,7 +369,7 @@ CREATE PROCEDURE SP_NewsSite_UnlikeContent
     @userId INT
 AS
 BEGIN
-    DELETE FROM ContentLikes WHERE ContentId = @contentId AND UserId = @userId;
+    DELETE FROM NewsSite_ContentLikes WHERE ContentId = @contentId AND UserId = @userId;
     SELECT @@ROWCOUNT AS Success;
 END
 GO
@@ -336,7 +380,7 @@ CREATE PROCEDURE SP_NewsSite_GetUserSettings
 AS
 BEGIN
     SELECT Id, UserId, BlockedUserIds, PreferredTags, NotificationsEnabled
-    FROM UserSettings 
+    FROM NewsSite_UserSettings 
     WHERE UserId = @userId;
 END
 GO
@@ -349,9 +393,9 @@ CREATE PROCEDURE SP_NewsSite_UpdateUserSettings
     @notificationsEnabled BIT
 AS
 BEGIN
-    IF EXISTS (SELECT 1 FROM UserSettings WHERE UserId = @userId)
+    IF EXISTS (SELECT 1 FROM NewsSite_UserSettings WHERE UserId = @userId)
     BEGIN
-        UPDATE UserSettings 
+        UPDATE NewsSite_UserSettings 
         SET BlockedUserIds = @blockedUserIds,
             PreferredTags = @preferredTags,
             NotificationsEnabled = @notificationsEnabled,
@@ -360,7 +404,7 @@ BEGIN
     END
     ELSE
     BEGIN
-        INSERT INTO UserSettings (UserId, BlockedUserIds, PreferredTags, NotificationsEnabled)
+        INSERT INTO NewsSite_UserSettings (UserId, BlockedUserIds, PreferredTags, NotificationsEnabled)
         VALUES (@userId, @blockedUserIds, @preferredTags, @notificationsEnabled);
     END
     SELECT 1 AS Success;
@@ -374,20 +418,20 @@ CREATE PROCEDURE SP_NewsSite_BlockUser
 AS
 BEGIN
     DECLARE @currentBlocked NVARCHAR(1000);
-    SELECT @currentBlocked = ISNULL(BlockedUserIds, '') FROM UserSettings WHERE UserId = @userId;
+    SELECT @currentBlocked = ISNULL(BlockedUserIds, '') FROM NewsSite_UserSettings WHERE UserId = @userId;
     
     IF @currentBlocked = ''
         SET @currentBlocked = CAST(@userToBlockId AS NVARCHAR(10));
     ELSE
         SET @currentBlocked = @currentBlocked + ',' + CAST(@userToBlockId AS NVARCHAR(10));
     
-    IF EXISTS (SELECT 1 FROM UserSettings WHERE UserId = @userId)
+    IF EXISTS (SELECT 1 FROM NewsSite_UserSettings WHERE UserId = @userId)
     BEGIN
-        UPDATE UserSettings SET BlockedUserIds = @currentBlocked WHERE UserId = @userId;
+        UPDATE NewsSite_UserSettings SET BlockedUserIds = @currentBlocked WHERE UserId = @userId;
     END
     ELSE
     BEGIN
-        INSERT INTO UserSettings (UserId, BlockedUserIds) VALUES (@userId, @currentBlocked);
+        INSERT INTO NewsSite_UserSettings (UserId, BlockedUserIds) VALUES (@userId, @currentBlocked);
     END
     
     SELECT 1 AS Success;
@@ -401,7 +445,7 @@ CREATE PROCEDURE SP_NewsSite_UnblockUser
 AS
 BEGIN
     DECLARE @currentBlocked NVARCHAR(1000);
-    SELECT @currentBlocked = ISNULL(BlockedUserIds, '') FROM UserSettings WHERE UserId = @userId;
+    SELECT @currentBlocked = ISNULL(BlockedUserIds, '') FROM NewsSite_UserSettings WHERE UserId = @userId;
     
     SET @currentBlocked = REPLACE(@currentBlocked, CAST(@userToUnblockId AS NVARCHAR(10)), '');
     SET @currentBlocked = REPLACE(@currentBlocked, ',,', ',');
@@ -409,7 +453,7 @@ BEGIN
     IF LEFT(@currentBlocked, 1) = ',' SET @currentBlocked = SUBSTRING(@currentBlocked, 2, LEN(@currentBlocked));
     IF RIGHT(@currentBlocked, 1) = ',' SET @currentBlocked = SUBSTRING(@currentBlocked, 1, LEN(@currentBlocked) - 1);
     
-    UPDATE UserSettings SET BlockedUserIds = @currentBlocked WHERE UserId = @userId;
+    UPDATE NewsSite_UserSettings SET BlockedUserIds = @currentBlocked WHERE UserId = @userId;
     SELECT 1 AS Success;
 END
 GO
@@ -424,12 +468,12 @@ CREATE PROCEDURE SP_NewsSite_GetAdminStats
 AS
 BEGIN
     SELECT 
-        (SELECT COUNT(*) FROM UserActivity WHERE ActivityType = 'login' AND CAST(ActivityDate AS DATE) = @date) AS DailyLogins,
-        (SELECT COUNT(*) FROM UserActivity WHERE ActivityType = 'news_request' AND CAST(ActivityDate AS DATE) = @date) AS DailyNewsRequests,
-        (SELECT COUNT(*) FROM UserActivity WHERE ActivityType = 'save_article' AND CAST(ActivityDate AS DATE) = @date) AS DailySavedArticles,
-        (SELECT COUNT(*) FROM Users) AS TotalUsers,
-        (SELECT COUNT(*) FROM Users WHERE IsEnabled = 1) AS ActiveUsers,
-        (SELECT COUNT(*) FROM SharedContent WHERE IsReported = 1 AND IsRemoved = 0) AS ReportedContent,
+        (SELECT COUNT(*) FROM NewsSite_UserActivity WHERE ActivityType = 'login' AND CAST(ActivityDate AS DATE) = @date) AS DailyLogins,
+        (SELECT COUNT(*) FROM NewsSite_UserActivity WHERE ActivityType = 'news_request' AND CAST(ActivityDate AS DATE) = @date) AS DailyNewsRequests,
+        (SELECT COUNT(*) FROM NewsSite_UserActivity WHERE ActivityType = 'save_article' AND CAST(ActivityDate AS DATE) = @date) AS DailySavedArticles,
+        (SELECT COUNT(*) FROM NewsSite_Users) AS TotalUsers,
+        (SELECT COUNT(*) FROM NewsSite_Users WHERE IsEnabled = 1) AS ActiveUsers,
+        (SELECT COUNT(*) FROM NewsSite_SharedContent WHERE IsReported = 1 AND IsRemoved = 0) AS ReportedContent,
         @date AS Date;
 END
 GO
@@ -448,7 +492,7 @@ BEGIN
         0 AS TotalUsers,
         0 AS ActiveUsers,
         0 AS ReportedContent
-    FROM UserActivity 
+    FROM NewsSite_UserActivity 
     WHERE CAST(ActivityDate AS DATE) BETWEEN @fromDate AND @toDate
     GROUP BY CAST(ActivityDate AS DATE)
     ORDER BY Date;
@@ -461,9 +505,9 @@ AS
 BEGIN
     SELECT 
         u.Id, u.Name, u.Email, u.IsAdmin, u.IsEnabled, u.CreatedAt,
-        (SELECT COUNT(*) FROM SavedArticles WHERE UserId = u.Id) AS SavedArticlesCount,
-        (SELECT COUNT(*) FROM SharedContent WHERE UserId = u.Id) AS SharedContentCount
-    FROM Users u
+        (SELECT COUNT(*) FROM NewsSite_SavedArticles WHERE UserId = u.Id) AS SavedArticlesCount,
+        (SELECT COUNT(*) FROM NewsSite_SharedContent WHERE UserId = u.Id) AS SharedContentCount
+    FROM NewsSite_Users u
     ORDER BY u.CreatedAt DESC;
 END
 GO
@@ -474,7 +518,7 @@ CREATE PROCEDURE SP_NewsSite_ToggleUserStatus
     @isEnabled BIT
 AS
 BEGIN
-    UPDATE Users SET IsEnabled = @isEnabled WHERE Id = @userId;
+    UPDATE NewsSite_Users SET IsEnabled = @isEnabled WHERE Id = @userId;
     SELECT @@ROWCOUNT AS Success;
 END
 GO
@@ -486,8 +530,8 @@ BEGIN
     SELECT 
         sc.Id, sc.UserId, u.Name AS UserName, sc.ArticleTitle, sc.ArticleUrl, 
         sc.UserComment, sc.SharedAt, sc.IsReported
-    FROM SharedContent sc
-    INNER JOIN Users u ON sc.UserId = u.Id
+    FROM NewsSite_SharedContent sc
+    INNER JOIN NewsSite_Users u ON sc.UserId = u.Id
     WHERE sc.IsReported = 1 AND sc.IsRemoved = 0
     ORDER BY sc.SharedAt DESC;
 END
@@ -501,11 +545,11 @@ AS
 BEGIN
     IF @removeContent = 1
     BEGIN
-        UPDATE SharedContent SET IsRemoved = 1 WHERE Id = @contentId;
+        UPDATE NewsSite_SharedContent SET IsRemoved = 1 WHERE Id = @contentId;
     END
     
-    UPDATE ContentReports SET Handled = 1, HandledAt = GETDATE() WHERE ContentId = @contentId;
-    UPDATE SharedContent SET IsReported = 0 WHERE Id = @contentId;
+    UPDATE NewsSite_ContentReports SET Handled = 1, HandledAt = GETDATE() WHERE ContentId = @contentId;
+    UPDATE NewsSite_SharedContent SET IsReported = 0 WHERE Id = @contentId;
     
     SELECT 1 AS Success;
 END
@@ -518,7 +562,7 @@ CREATE PROCEDURE SP_NewsSite_LogUserActivity
     @timestamp DATETIME
 AS
 BEGIN
-    INSERT INTO UserActivity (UserId, ActivityType, ActivityDate)
+    INSERT INTO NewsSite_UserActivity (UserId, ActivityType, ActivityDate)
     VALUES (@userId, @activityType, @timestamp);
 END
 GO
@@ -527,10 +571,10 @@ GO
 -- Create Indexes for Performance
 -- =============================================
 
-CREATE INDEX IX_UserInterests_UserId ON UserInterests(UserId);
-CREATE INDEX IX_SavedArticles_UserId ON SavedArticles(UserId);
-CREATE INDEX IX_SharedContent_UserId ON SharedContent(UserId);
-CREATE INDEX IX_SharedContent_SharedAt ON SharedContent(SharedAt);
-CREATE INDEX IX_ContentLikes_ContentId ON ContentLikes(ContentId);
-CREATE INDEX IX_UserActivity_UserId_Date ON UserActivity(UserId, ActivityDate);
-CREATE INDEX IX_UserActivity_Type_Date ON UserActivity(ActivityType, ActivityDate);
+CREATE INDEX IX_NewsSite_UserInterests_UserId ON NewsSite_UserInterests(UserId);
+CREATE INDEX IX_NewsSite_SavedArticles_UserId ON NewsSite_SavedArticles(UserId);
+CREATE INDEX IX_NewsSite_SharedContent_UserId ON NewsSite_SharedContent(UserId);
+CREATE INDEX IX_NewsSite_SharedContent_SharedAt ON NewsSite_SharedContent(SharedAt);
+CREATE INDEX IX_NewsSite_ContentLikes_ContentId ON NewsSite_ContentLikes(ContentId);
+CREATE INDEX IX_NewsSite_UserActivity_UserId_Date ON NewsSite_UserActivity(UserId, ActivityDate);
+CREATE INDEX IX_NewsSite_UserActivity_Type_Date ON NewsSite_UserActivity(ActivityType, ActivityDate);

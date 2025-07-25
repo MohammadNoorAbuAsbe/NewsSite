@@ -93,13 +93,16 @@ public class DBservices
     {
         var paramDic = new Dictionary<string, object>
         {
+    
             ["@userId"] = article.UserId,
             ["@title"] = article.Title,
             ["@description"] = article.Description,
             ["@url"] = article.Url,
             ["@urlToImage"] = article.UrlToImage,
             ["@source"] = article.Source,
-            ["@publishedAt"] = article.PublishedAt
+            ["@publishedAt"] = article.PublishedAt,
+
+          
         };
         return ExecuteSQLCommand(paramDic, "SP_NewsSite_SaveArticle") > 0;
     }
@@ -375,7 +378,7 @@ public class DBservices
     {
         return new SavedArticle
         {
-            Id = reader.GetInt32(reader.GetOrdinal("Id")),
+            
             UserId = reader.GetInt32(reader.GetOrdinal("UserId")),
             Title = reader.GetString(reader.GetOrdinal("Title")),
             Description = reader.GetString(reader.GetOrdinal("Description")),
@@ -383,7 +386,8 @@ public class DBservices
             UrlToImage = reader.GetString(reader.GetOrdinal("UrlToImage")),
             Source = reader.GetString(reader.GetOrdinal("Source")),
             PublishedAt = reader.GetDateTime(reader.GetOrdinal("PublishedAt")),
-            SavedAt = reader.GetDateTime(reader.GetOrdinal("SavedAt"))
+            SavedAt = reader.GetDateTime(reader.GetOrdinal("SavedAt")),
+            Id = reader.GetInt32(reader.GetOrdinal("Id"))
         };
     }
 
@@ -407,13 +411,13 @@ public class DBservices
     {
         var blockedUserIds = new List<int>();
         var preferredTags = new List<string>();
-
+        
         string blockedUsersStr = reader.IsDBNull(reader.GetOrdinal("BlockedUserIds")) ? "" : reader.GetString(reader.GetOrdinal("BlockedUserIds"));
         string tagsStr = reader.IsDBNull(reader.GetOrdinal("PreferredTags")) ? "" : reader.GetString(reader.GetOrdinal("PreferredTags"));
         
         if (!string.IsNullOrEmpty(blockedUsersStr))
             blockedUserIds = blockedUsersStr.Split(',').Select(int.Parse).ToList();
-
+        
         if (!string.IsNullOrEmpty(tagsStr))
             preferredTags = tagsStr.Split(',').ToList();
 
