@@ -153,6 +153,6 @@ async function sendTestNotification() {
   if (authManager.isLoggedIn()) {
     await notificationManager.sendTestNotification();
   } else {
-    authManager.showAlert("נדרש להתחבר כדי לקבל התראות", "warning");
+    Utils.toast.warning("נדרש להתחבר כדי לקבל התראות");
   }
 }

@@ -105,36 +105,22 @@ const NewsUtils = {
         }
 
         // Show toast notification
-        if (typeof Utils !== "undefined" && Utils.toast) {
-          Utils.toast.info("פותח כתבה...", 2000);
-        }
+        Utils.toast.info("פותח כתבה...", 2000);
 
         window.open(article.url, "_blank");
       } else {
-        if (typeof Utils !== "undefined" && Utils.toast) {
-          Utils.toast.warning("קישור לכתבה לא זמין");
-        } else {
-          authManager.showAlert("קישור לכתבה לא זמין", "warning");
-        }
+        Utils.toast.warning("קישור לכתבה לא זמין");
       }
     } catch (error) {
       console.error("Error opening article:", error);
-      if (typeof Utils !== "undefined" && Utils.toast) {
-        Utils.toast.error("שגיאה בפתיחת הכתבה");
-      } else {
-        authManager.showAlert("שגיאה בפתיחת הכתבה", "danger");
-      }
+      Utils.toast.error("שגיאה בפתיחת הכתבה");
     }
   },
 
   // Save article
   saveArticle: function (article) {
     if (!authManager.isLoggedIn()) {
-      if (typeof Utils !== "undefined" && Utils.toast) {
-        Utils.toast.warning("נדרש להתחבר כדי לשמור כתבות");
-      } else {
-        authManager.showAlert("נדרש להתחבר כדי לשמור כתבות", "warning");
-      }
+      Utils.toast.warning("נדרש להתחבר כדי לשמור כתבות");
       return;
     }
 
@@ -162,34 +148,19 @@ const NewsUtils = {
         saveRequest,
         function (response) {
           if (response.status === "Ok") {
-            if (typeof Utils !== "undefined" && Utils.toast) {
-              Utils.toast.success("הכתבה נשמרה בהצלחה!");
-            } else {
-              authManager.showAlert("הכתבה נשמרה בהצלחה!", "success");
-            }
+            Utils.toast.success("הכתבה נשמרה בהצלחה!");
           } else {
-            if (typeof Utils !== "undefined" && Utils.toast) {
-              Utils.toast.success("הכתבה נשמרה בהצלחה!");
-            } else {
-              authManager.showAlert(
-                response.message || "שגיאה בשמירת הכתבה",
-                "danger"
-              );
-            }
+            Utils.toast.success("הכתבה נשמרה בהצלחה!");
           }
         },
         function (error) {
           console.error("Error saving article:", error);
-          if (typeof Utils !== "undefined" && Utils.toast) {
-            Utils.toast.error("המאמר כבר נשמר");
-          } else {
-            authManager.showAlert("שגיאה בשמירת הכתבה", "danger");
-          }
+          Utils.toast.error("המאמר כבר נשמר");
         }
       );
     } catch (error) {
       console.error("Error parsing article:", error);
-      authManager.showAlert("שגיאה בשמירת הכתבה", "danger");
+      Utils.toast.error("שגיאה בשמירת הכתבה");
     }
   },
 
@@ -322,7 +293,7 @@ const NewsUtils = {
   // Share article functionality
   shareArticle: function (article) {
     if (!authManager.isLoggedIn()) {
-      authManager.showAlert("נדרש להתחבר כדי לשתף כתבות", "warning");
+      Utils.toast.warning("נדרש להתחבר כדי לשתף כתבות");
       return;
     }
 
@@ -344,20 +315,20 @@ const NewsUtils = {
       shareModal.show();
     } catch (error) {
       console.error("Error preparing share modal:", error);
-      authManager.showAlert("אירעה שגיאה בהכנת השיתוף", "error");
+      Utils.toast.error("אירעה שגיאה בהכנת השיתוף");
     }
   },
 
   // Confirm share functionality (called from modal)
   confirmShare: function () {
     if (!window.articleToShare) {
-      authManager.showAlert("שגיאה: לא נמצאה כתבה לשיתוף", "error");
+      Utils.toast.error("שגיאה: לא נמצאה כתבה לשיתוף");
       return;
     }
 
     const currentUser = authManager.getCurrentUser();
     if (!currentUser) {
-      authManager.showAlert("נדרש להתחבר כדי לשתף כתבות", "warning");
+      Utils.toast.warning("נדרש להתחבר כדי לשתף כתבות");
       return;
     }
 
@@ -387,7 +358,7 @@ const NewsUtils = {
       urls.sharedContent.shareContent,
       JSON.stringify(sharedContent),
       function (response) {
-        authManager.showAlert("הכתבה שותפה בהצלחה!", "success");
+        Utils.toast.success("הכתבה שותפה בהצלחה!");
 
         // Close the modal using jQuery
         $("#shareModal").modal("hide");
@@ -406,7 +377,7 @@ const NewsUtils = {
         } catch (e) {
           console.error("Error parsing error response:", e);
         }
-        authManager.showAlert(message, "error");
+        Utils.toast.error(message);
       }
     );
   },

@@ -304,12 +304,12 @@ function submitShare() {
   const comment = $("#shareComment").val().trim();
 
   if (!articleUrl || !comment) {
-    authManager.showAlert("אנא מלא את כל השדות", "warning");
+    Utils.toast.warning("אנא מלא את כל השדות");
     return;
   }
 
   if (!Utils.isValidUrl(articleUrl)) {
-    authManager.showAlert("אנא הזן קישור תקין", "warning");
+    Utils.toast.warning("אנא הזן קישור תקין");
     return;
   }
 
@@ -325,19 +325,16 @@ function submitShare() {
     shareData,
     function (response) {
       if (response.message || response.success) {
-        authManager.showAlert("התוכן שותף בהצלחה!", "success");
+        Utils.toast.success("התוכן שותף בהצלחה!");
         bootstrap.Modal.getInstance($("#shareModal")[0]).hide();
         $("#shareForm")[0].reset();
         loadSharedContent();
       } else {
-        authManager.showAlert(
-          response.message || "שגיאה בשיתוף התוכן",
-          "danger"
-        );
+        Utils.toast.error(response.message || "שגיאה בשיתוף התוכן");
       }
     },
     function (error) {
-      authManager.showAlert("שגיאה בשיתוף התוכן", "danger");
+      Utils.toast.error("שגיאה בשיתוף התוכן");
     }
   );
 }
@@ -390,19 +387,16 @@ function likeContent(contentId) {
     likeData,
     function (response) {
       if (response.message || response.success) {
-        authManager.showAlert(
-          response.message || "תוכן חויב בהצלחה",
-          "success"
-        );
+        Utils.toast.success(response.message || "תוכן חויב בהצלחה");
         // Refresh the content to get updated likes count
         loadSharedContent();
       } else {
-        authManager.showAlert("שגיאה בחיבת התוכן", "danger");
+        Utils.toast.error("שגיאה בחיבת התוכן");
       }
     },
     function (error) {
       console.error("Error liking content:", error);
-      authManager.showAlert("שגיאה בחיבת התוכן", "danger");
+      Utils.toast.error("שגיאה בחיבת התוכן");
     }
   );
 }
@@ -419,19 +413,16 @@ function unlikeContent(contentId) {
     unlikeData,
     function (response) {
       if (response.message || response.success) {
-        authManager.showAlert(
-          response.message || "ביטול חיבת התוכן בוצע בהצלחה",
-          "success"
-        );
+        Utils.toast.success(response.message || "ביטול חיבת התוכן בוצע בהצלחה");
         // Refresh the content to get updated likes count
         loadSharedContent();
       } else {
-        authManager.showAlert("שגיאה בביטול חיבת התוכן", "danger");
+        Utils.toast.error("שגיאה בביטול חיבת התוכן");
       }
     },
     function (error) {
       console.error("Error unliking content:", error);
-      authManager.showAlert("שגיאה בביטול חיבת התוכן", "danger");
+      Utils.toast.error("שגיאה בביטול חיבת התוכן");
     }
   );
 }
@@ -448,19 +439,16 @@ function dislikeContent(contentId) {
     dislikeData,
     function (response) {
       if (response.message || response.success) {
-        authManager.showAlert(
-          response.message || "התוכן לא חויב בהצלחה",
-          "success"
-        );
+        Utils.toast.success(response.message || "התוכן לא חויב בהצלחה");
         // Refresh the content to get updated dislikes count
         loadSharedContent();
       } else {
-        authManager.showAlert("שגיאה בחוסר חיבת התוכן", "danger");
+        Utils.toast.error("שגיאה בחוסר חיבת התוכן");
       }
     },
     function (error) {
       console.error("Error disliking content:", error);
-      authManager.showAlert("שגיאה בחוסר חיבת התוכן", "danger");
+      Utils.toast.error("שגיאה בחוסר חיבת התוכן");
     }
   );
 }
@@ -477,19 +465,16 @@ function undislikeContent(contentId) {
     undislikeData,
     function (response) {
       if (response.message || response.success) {
-        authManager.showAlert(
-          response.message || "ביטול חוסר חיבת התוכן בוצע בהצלחה",
-          "success"
-        );
+        Utils.toast.success(response.message || "ביטול חוסר חיבת התוכן בוצע בהצלחה");
         // Refresh the content to get updated dislikes count
         loadSharedContent();
       } else {
-        authManager.showAlert("שגיאה בביטול חוסר חיבת התוכן", "danger");
+        Utils.toast.error("שגיאה בביטול חוסר חיבת התוכן");
       }
     },
     function (error) {
       console.error("Error undisliking content:", error);
-      authManager.showAlert("שגיאה בביטול חוסר חיבת התוכן", "danger");
+      Utils.toast.error("שגיאה בביטול חוסר חיבת התוכן");
     }
   );
 }
@@ -562,7 +547,7 @@ function addComment(contentId) {
   const commentText = $input.val().trim();
 
   if (!commentText) {
-    authManager.showAlert("אנא כתב תגובה", "warning");
+    Utils.toast.warning("אנא כתב תגובה");
     return;
   }
 
@@ -581,15 +566,12 @@ function addComment(contentId) {
         $input.val("");
         loadComments(contentId);
       } else {
-        authManager.showAlert(
-          response.message || "שגיאה בהוספת התגובה",
-          "danger"
-        );
+        Utils.toast.error(response.message || "שגיאה בהוספת התגובה");
       }
     },
     function (error) {
       console.error("Error adding comment:", error);
-      authManager.showAlert("שגיאה בהוספת התגובה", "danger");
+      Utils.toast.error("שגיאה בהוספת התגובה");
     }
   );
 }
@@ -623,22 +605,19 @@ function submitReport() {
         bootstrap.Modal.getInstance($("#reportModal")[0]).hide();
 
         // Show success message
-        authManager.showAlert("הדיווח נשלח בהצלחה! תודה על ההתראה.", "success");
+        Utils.toast.success("הדיווח נשלח בהצלחה! תודה על ההתראה.");
 
         // Mark content as reported visually
         markContentAsReported(currentContentId);
       } else {
-        authManager.showAlert(
-          response.message || "שגיאה בשליחת הדיווח",
-          "danger"
-        );
+        Utils.toast.error(response.message || "שגיאה בשליחת הדיווח");
       }
       // Reset button
       $submitBtn.prop("disabled", false).html(originalText);
     },
     function (error) {
       console.error("Error submitting report:", error);
-      authManager.showAlert("שגיאה בשליחת הדיווח. אנא נסה שוב.", "danger");
+      Utils.toast.error("שגיאה בשליחת הדיווח. אנא נסה שוב.");
       // Reset button
       $submitBtn.prop("disabled", false).html(originalText);
     }
@@ -686,7 +665,7 @@ function blockUser(userId, userName) {
   }
 
   if (!userId) {
-    authManager.showAlert("אנא בחר משתמש", "warning");
+    Utils.toast.warning("אנא בחר משתמש");
     return;
   }
 
@@ -705,7 +684,7 @@ function blockUser(userId, userName) {
     blockData,
     function (response) {
       if (response.message || response.success) {
-        authManager.showAlert(`המשתמש ${userName} נחסם בהצלחה`, "success");
+        Utils.toast.success(`המשתמש ${userName} נחסם בהצלחה`);
         loadBlockedUsers();
         loadSharedContent(); // Refresh content
 
@@ -713,15 +692,12 @@ function blockUser(userId, userName) {
         const modal = bootstrap.Modal.getInstance($("#blockUserModal")[0]);
         if (modal) modal.hide();
       } else {
-        authManager.showAlert(
-          response.message || "שגיאה בחסימת המשתמש",
-          "danger"
-        );
+        Utils.toast.error(response.message || "שגיאה בחסימת המשתמש");
       }
     },
     function (error) {
       console.error("Error blocking user:", error);
-      authManager.showAlert("שגיאה בחסימת המשתמש", "danger");
+      Utils.toast.error("שגיאה בחסימת המשתמש");
     }
   );
 }
@@ -740,19 +716,16 @@ function unblockUser(userId, userName) {
     },
     function (response) {
       if (response.message || response.success) {
-        authManager.showAlert(`החסימה של ${userName} בוטלה בהצלחה`, "success");
+        Utils.toast.success(`החסימה של ${userName} בוטלה בהצלחה`);
         loadBlockedUsers();
         loadSharedContent(); // Refresh content
       } else {
-        authManager.showAlert(
-          response.message || "שגיאה בביטול החסימה",
-          "danger"
-        );
+        Utils.toast.error(response.message || "שגיאה בביטול החסימה");
       }
     },
     function (error) {
       console.error("Error unblocking user:", error);
-      authManager.showAlert("שגיאה בביטול החסימה", "danger");
+      Utils.toast.error("שגיאה בביטול החסימה");
     }
   );
 }

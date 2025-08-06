@@ -334,27 +334,27 @@ class AuthManager {
   }
 
   showAlert(message, type = "info") {
-    const $alertContainer = $("#alertContainer");
-    if (!$alertContainer.length) return;
-
-    const alertId = "alert-" + Date.now();
-    const alertHTML = `
-            <div class="alert alert-${type} alert-dismissible fade show" role="alert" id="${alertId}">
-                ${message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        `;
-
-    $alertContainer.html(alertHTML);
-
-    // Auto-dismiss after 5 seconds
-    setTimeout(() => {
-      const $alertElement = $("#" + alertId);
-      if ($alertElement.length) {
-        const bsAlert = new bootstrap.Alert($alertElement[0]);
-        bsAlert.close();
+    // Use toast notifications instead of alerts
+    if (typeof Utils !== "undefined" && Utils.toast) {
+      switch (type) {
+        case "success":
+          Utils.toast.success(message);
+          break;
+        case "danger":
+        case "error":
+          Utils.toast.error(message);
+          break;
+        case "warning":
+          Utils.toast.warning(message);
+          break;
+        default:
+          Utils.toast.info(message);
+          break;
       }
-    }, 5000);
+    } else {
+      // Fallback to browser alert if toast is not available
+      alert(message);
+    }
   }
 
   isLoggedIn() {

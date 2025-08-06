@@ -20,7 +20,7 @@ $(document).ready(function () {
 
     // Validation
     if (!email || !password) {
-      authManager.showAlert("אנא מלא את כל השדות", "warning");
+      Utils.toast.warning("אנא מלא את כל השדות");
       return;
     }
 
@@ -34,7 +34,7 @@ $(document).ready(function () {
       const success = await authManager.login(email, password);
     } catch (error) {
       console.error("Login error:", error);
-      authManager.showAlert("שגיאה בהתחברות", "danger");
+      Utils.toast.error("שגיאה בהתחברות");
     } finally {
       // Re-enable form
       $submitBtn.html(originalText);

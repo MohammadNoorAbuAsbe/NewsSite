@@ -106,7 +106,7 @@ function loadSavedArticles(page = null) {
     .catch((error) => {
       Utils.debug.error("Error loading saved articles:", error);
       Utils.hideLoadingSpinner();
-      AuthJWT.showAlert("שגיאה בטעינת המאמרים השמורים", "danger");
+      Utils.toast.error("שגיאה בטעינת המאמרים השמורים");
       showNoArticlesMessage();
       paginationManager.clear();
     });
@@ -330,14 +330,14 @@ function deleteCurrentArticle() {
 
 function shareArticle(articleId) {
   if (!AuthJWT.isLoggedIn()) {
-    AuthJWT.showAlert("נדרש להתחבר כדי לשתף כתבות", "warning");
+    Utils.toast.warning("נדרש להתחבר כדי לשתף כתבות");
     return;
   }
 
   // Find the article in the currentSavedArticles array
   const article = currentSavedArticles.find((a) => (a.id || a.Id) == articleId);
   if (!article) {
-    AuthJWT.showAlert("לא נמצאה הכתבה לשיתוף", "error");
+    Utils.toast.error("לא נמצאה הכתבה לשיתוף");
     return;
   }
 
@@ -393,13 +393,13 @@ function showShareModal(article) {
 
 function confirmShare() {
   if (!window.articleToShare) {
-    AuthJWT.showAlert("שגיאה: לא נמצאה כתבה לשיתוף", "error");
+    Utils.toast.error("שגיאה: לא נמצאה כתבה לשיתוף");
     return;
   }
 
   const currentUser = AuthJWT.getCurrentUser();
   if (!currentUser) {
-    AuthJWT.showAlert("נדרש להתחבר כדי לשתף כתבות", "warning");
+    Utils.toast.warning("נדרש להתחבר כדי לשתף כתבות");
     return;
   }
 
@@ -431,7 +431,7 @@ function confirmShare() {
     })
     .then((data) => {
       if (data) {
-        AuthJWT.showAlert("הכתבה שותפה בהצלחה!", "success");
+        Utils.toast.success("הכתבה שותפה בהצלחה!");
 
         // Close the modal
         const shareModal = bootstrap.Modal.getInstance(
@@ -445,7 +445,7 @@ function confirmShare() {
     })
     .catch((error) => {
       console.error("Share error:", error);
-      AuthJWT.showAlert("אירעה שגיאה בשיתוף הכתבה", "error");
+      Utils.toast.error("אירעה שגיאה בשיתוף הכתבה");
     });
 }
 
@@ -466,16 +466,16 @@ function deleteSavedArticle(articleId) {
     })
     .then((data) => {
       if (data && data.message) {
-        AuthJWT.showAlert("הכתבה נמחקה בהצלחה", "success");
+        Utils.toast.success("הכתבה נמחקה בהצלחה");
         loadSavedArticles();
         loadStatistics();
       } else {
-        AuthJWT.showAlert(data?.message || "שגיאה במחיקת הכתבה", "danger");
+        Utils.toast.error(data?.message || "שגיאה במחיקת הכתבה");
       }
     })
     .catch((error) => {
       console.error("Error deleting article:", error);
-      AuthJWT.showAlert("שגיאה במחיקת הכתבה", "danger");
+      Utils.toast.error("שגיאה במחיקת הכתבה");
     });
 }
 
@@ -488,7 +488,7 @@ function deleteAllArticles() {
   }
 
   if (currentSavedArticles.length === 0) {
-    AuthJWT.showAlert("אין כתבות למחיקה", "info");
+    Utils.toast.info("אין כתבות למחיקה");
     return;
   }
 
@@ -502,11 +502,11 @@ function deleteAllArticles() {
     })
     .then((data) => {
       if (data && data.success) {
-        AuthJWT.showAlert(data.message || "כל הכתבות נמחקו בהצלחה", "success");
+        Utils.toast.success(data.message || "כל הכתבות נמחקו בהצלחה", "success");
         loadSavedArticles();
         loadStatistics();
       } else {
-        AuthJWT.showAlert(data?.message || "שגיאה במחיקת הכתבות", "danger");
+        Utils.toast.error(data?.message || "שגיאה במחיקת הכתבות", "danger");
       }
     })
     .catch((error) => {
@@ -523,7 +523,7 @@ function deleteAllArticlesIndividually() {
   const totalArticles = currentSavedArticles.length;
 
   // Show progress
-  AuthJWT.showAlert(`מוחק ${totalArticles} כתבות...`, "info");
+  Utils.toast.info(`מוחק ${totalArticles} כתבות...`);
 
   currentSavedArticles.forEach((article, index) => {
     const articleId = article.id || article.Id;
@@ -544,12 +544,9 @@ function deleteAllArticlesIndividually() {
         // Check if this is the last article
         if (deletedCount + errors === totalArticles) {
           if (errors === 0) {
-            AuthJWT.showAlert("כל הכתבות נמחקו בהצלחה", "success");
+            Utils.toast.success("כל הכתבות נמחקו בהצלחה");
           } else {
-            AuthJWT.showAlert(
-              `נמחקו ${deletedCount} כתבות, ${errors} שגיאות`,
-              "warning"
-            );
+            Utils.toast.warning(`נמחקו ${deletedCount} כתבות, ${errors} שגיאות`);
           }
           loadSavedArticles();
           loadStatistics();
@@ -562,12 +559,9 @@ function deleteAllArticlesIndividually() {
         // Check if this is the last article
         if (deletedCount + errors === totalArticles) {
           if (deletedCount > 0) {
-            AuthJWT.showAlert(
-              `נמחקו ${deletedCount} כתבות, ${errors} שגיאות`,
-              "warning"
-            );
+            Utils.toast.warning(`נמחקו ${deletedCount} כתבות, ${errors} שגיאות`);
           } else {
-            AuthJWT.showAlert("שגיאה במחיקת הכתבות", "danger");
+            Utils.toast.error("שגיאה במחיקת הכתבות");
           }
           loadSavedArticles();
           loadStatistics();
@@ -679,19 +673,16 @@ function searchSavedArticles(searchTerm) {
 
         // Update stats
         const resultsCount = searchResults.length;
-        AuthJWT.showAlert(
-          `נמצאו ${resultsCount} תוצאות עבור "${searchTerm}"`,
-          "info"
-        );
+        Utils.toast.info(`נמצאו ${resultsCount} תוצאות עבור "${searchTerm}"`);
       } else {
         showNoArticlesMessage();
-        AuthJWT.showAlert("לא נמצאו תוצאות עבור החיפוש", "warning");
+        Utils.toast.warning("לא נמצאו תוצאות עבור החיפוש");
       }
     })
     .catch((error) => {
       loadingSpinner.style.display = "none";
       console.error("Error searching articles:", error);
-      AuthJWT.showAlert("שגיאה בחיפוש כתבות", "danger");
+      Utils.toast.error("שגיאה בחיפוש כתבות");
 
       // Fallback to client-side search
       fallbackClientSearch(searchTerm);
@@ -791,7 +782,7 @@ function calculateStatisticsClientSide() {
 
 function exportArticles() {
   if (!currentSavedArticles || currentSavedArticles.length === 0) {
-    AuthJWT.showAlert("אין כתבות לייצוא", "warning");
+    Utils.toast.warning("אין כתבות לייצוא");
     return;
   }
 
@@ -837,7 +828,7 @@ function exportArticles() {
   // Clean up
   URL.revokeObjectURL(url);
 
-  AuthJWT.showAlert("הכתבות יוצאו בהצלחה", "success");
+  Utils.toast.success("הכתבות יוצאו בהצלחה");
 }
 
 function showNoArticlesMessage() {

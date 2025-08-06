@@ -19,22 +19,22 @@ $(document).ready(function () {
 
     // Validation
     if (!firstName || !lastName || !email || !password || !confirmPassword) {
-      authManager.showAlert("אנא מלא את כל השדות הנדרשים", "warning");
+      Utils.toast.warning("אנא מלא את כל השדות הנדרשים");
       return;
     }
 
     if (!isValidEmail(email)) {
-      authManager.showAlert("אנא הזן כתובת אימייל תקינה", "warning");
+      Utils.toast.warning("אנא הזן כתובת אימייל תקינה");
       return;
     }
 
     if (password.length < 6) {
-      authManager.showAlert("הסיסמה חייבת להכיל לפחות 6 תווים", "warning");
+      Utils.toast.warning("הסיסמה חייבת להכיל לפחות 6 תווים");
       return;
     }
 
     if (password !== confirmPassword) {
-      authManager.showAlert("הסיסמאות אינן תואמות", "warning");
+      Utils.toast.warning("הסיסמאות אינן תואמות");
       return;
     }
 
@@ -55,7 +55,7 @@ $(document).ready(function () {
       await authManager.register(userData);
     } catch (error) {
       console.error("Registration error:", error);
-      authManager.showAlert("שגיאה ברישום", "danger");
+      Utils.toast.error("שגיאה ברישום");
     } finally {
       // Re-enable form
       $submitBtn.html(originalText);

@@ -182,8 +182,8 @@ class NotificationManager {
         $(notificationEl).remove();
       }, 5000);
     } else {
-      // Fallback to alert if no container
-      authManager.showAlert(Message, this.getAlertType(Type));
+      // Fallback to toast if no container
+      Utils.toast.info(Message);
     }
   }
 
@@ -257,7 +257,7 @@ class NotificationManager {
 
   handleSecurityNotification(notification) {
     // Special handling for security notifications
-    authManager.showAlert(notification.Message, "warning");
+    Utils.toast.error(notification.Message);
   }
 
   handleDashboardUpdate(data) {

@@ -122,7 +122,7 @@ function updateProfile() {
   const lastName = $("#lastName").val().trim();
 
   if (!firstName || !lastName) {
-    showAlert("אנא מלא את כל השדות הנדרשים", "warning");
+    Utils.toast.warning("אנא מלא את כל השדות הנדרשים");
     return;
   }
 
@@ -139,7 +139,7 @@ function updateProfile() {
     `${USERS_SERVER_PATH}/${currentUser.Id}`,
     JSON.stringify(userData),
     function (response) {
-      showAlert("הפרופיל עודכן בהצלחה", "success");
+      Utils.toast.success("הפרופיל עודכן בהצלחה");
 
       // Update current user data
       currentUser.FirstName = firstName;
@@ -149,7 +149,7 @@ function updateProfile() {
     },
     function (error) {
       console.error("Error updating profile:", error);
-      showAlert("שגיאה בעדכון הפרופיל", "danger");
+      Utils.toast.error("שגיאה בעדכון הפרופיל");
     }
   );
 }
@@ -176,7 +176,7 @@ function updateNotificationSettings() {
     })
     .then((data) => {
       if (data) {
-        showAlert("הגדרות ההתראות עודכנו בהצלחה", "success");
+        Utils.toast.success("הגדרות ההתראות עודכנו בהצלחה");
       }
     })
     .catch((error) => {
@@ -192,12 +192,12 @@ function updateNotificationSettings() {
         })
         .then((data) => {
           if (data) {
-            showAlert("הגדרות ההתראות נשמרו בהצלחה", "success");
+            Utils.toast.success("הגדרות ההתראות נשמרו בהצלחה");
           }
         })
         .catch((createError) => {
           console.error("Error creating notification settings:", createError);
-          showAlert("שגיאה בשמירת הגדרות ההתראות", "danger");
+          Utils.toast.error("שגיאה בשמירת הגדרות ההתראות");
         });
     });
 }
@@ -219,7 +219,7 @@ function updatePrivacySettings() {
     `${USER_SETTINGS_SERVER_PATH}/${currentUser.Id}`,
     JSON.stringify(settings),
     function (response) {
-      showAlert("הגדרות הפרטיות עודכנו בהצלחה", "success");
+      Utils.toast.success("הגדרות הפרטיות עודכנו בהצלחה");
     },
     function (error) {
       console.error("Error updating privacy settings:", error);
@@ -229,11 +229,11 @@ function updatePrivacySettings() {
         USER_SETTINGS_SERVER_PATH,
         JSON.stringify(settings),
         function (response) {
-          showAlert("הגדרות הפרטיות נשמרו בהצלחה", "success");
+          Utils.toast.success("הגדרות הפרטיות נשמרו בהצלחה");
         },
         function (createError) {
           console.error("Error creating privacy settings:", createError);
-          showAlert("שגיאה בשמירת הגדרות הפרטיות", "danger");
+          Utils.toast.error("שגיאה בשמירת הגדרות הפרטיות");
         }
       );
     }
@@ -342,12 +342,12 @@ function addInterest(tagName) {
     `${TAGS_SERVER_PATH}/${currentUser.Id}/interests/${tagName}`,
     null,
     function (response) {
-      showAlert(`התחום "${tagName}" נוסף בהצלחה`, "success");
+      Utils.toast.success(`התחום "${tagName}" נוסף בהצלחה`);
       loadUserInterests(); // Reload to update display
     },
     function (error) {
       console.error("Error adding interest:", error);
-      showAlert("שגיאה בהוספת התחום", "error");
+      Utils.toast.error("שגיאה בהוספת התחום");
     }
   );
 }
@@ -362,12 +362,12 @@ function removeInterest(tagName) {
     `${TAGS_SERVER_PATH}/${currentUser.Id}/interests/${tagName}`,
     null,
     function (response) {
-      showAlert(`התחום "${tagName}" הוסר בהצלחה`, "success");
+      Utils.toast.success(`התחום "${tagName}" הוסר בהצלחה`);
       loadUserInterests(); // Reload to update display
     },
     function (error) {
       console.error("Error removing interest:", error);
-      showAlert("שגיאה בהסרת התחום", "error");
+      Utils.toast.error("שגיאה בהסרת התחום");
     }
   );
 }
@@ -377,7 +377,7 @@ function addCustomTag() {
   const tagName = $("#customTag").val().trim();
 
   if (!tagName) {
-    showAlert("נא להזין שם תגית", "warning");
+    Utils.toast.warning("נא להזין שם תגית");
     return;
   }
 
@@ -389,14 +389,14 @@ function addCustomTag() {
     `${TAGS_SERVER_PATH}/${currentUser.Id}/interests/${tagName}`,
     null,
     function (response) {
-      showAlert(`התגית "${tagName}" נוצרה ונוספה בהצלחה`, "success");
+      Utils.toast.success(`התגית "${tagName}" נוצרה ונוספה בהצלחה`);
       $("#customTag").val(""); // Clear input
       loadUserInterests(); // Reload to update display
       loadTags(); // Reload available tags
     },
     function (error) {
       console.error("Error adding custom tag:", error);
-      showAlert("שגיאה ביצירת התגית", "error");
+      Utils.toast.error("שגיאה ביצירת התגית");
     }
   );
 }

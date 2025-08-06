@@ -312,22 +312,18 @@ function performUserAction(userId, action) {
     requestData,
     function (response) {
       if (response.success || response.message) {
-        authManager.showAlert(
+        Utils.toast.success(
           response.message ||
-            `המשתמש ${action === "lock" ? "ננעל" : "שוחרר"} בהצלחה`,
-          "success"
+            `המשתמש ${action === "lock" ? "ננעל" : "שוחרר"} בהצלחה`
         );
         loadUsers(); // Refresh users list
       } else {
-        authManager.showAlert(
-          response.message || "שגיאה בביצוע הפעולה",
-          "danger"
-        );
+        Utils.toast.error(response.message || "שגיאה בביצוע הפעולה");
       }
     },
     function (error) {
       console.error("Error performing user action:", error);
-      authManager.showAlert("שגיאה בביצוע הפעולה", "danger");
+      Utils.toast.error("שגיאה בביצוע הפעולה");
     }
   );
 }
@@ -344,17 +340,14 @@ function viewUserDetails(userId) {
     },
     function (error) {
       console.error("Error loading user details:", error);
-      authManager.showAlert("שגיאה בטעינת פרטי המשתמש", "danger");
+      Utils.toast.error("שגיאה בטעינת פרטי המשתמש");
     }
   );
 }
 
 function displayUserDetails(user) {
   // Create a modal or update existing content to show user details
-  authManager.showAlert(
-    `פרטי משתמש: ${user.FirstName} ${user.LastName}`,
-    "info"
-  );
+  Utils.toast.info(`פרטי משתמש: ${user.FirstName} ${user.LastName}`);
   // TODO: Implement detailed user view
 }
 
@@ -393,7 +386,7 @@ function filterUsers() {
 
 function refreshUsers() {
   loadUsers();
-  authManager.showAlert("רשימת המשתמשים רועננה", "success");
+  Utils.toast.success("רשימת המשתמשים רועננה");
 }
 
 function exportUsers() {
@@ -428,7 +421,7 @@ function exportUsers() {
   // Clean up
   URL.revokeObjectURL(url);
 
-  authManager.showAlert("רשימת המשתמשים יוצאה בהצלחה", "success");
+  Utils.toast.success("רשימת המשתמשים יוצאה בהצלחה");
 }
 
 function loadReports() {
@@ -561,7 +554,7 @@ function displayReports(reports) {
 
 function viewReportedContent(reportId) {
   // TODO: Implement view reported content
-  authManager.showAlert("צפייה בתוכן המדווח תהיה זמינה בקרוב", "info");
+  Utils.toast.info("צפייה בתוכן המדווח תהיה זמינה בקרוב");
 }
 
 function resolveReport(contentId, removeContent) {
@@ -577,21 +570,17 @@ function resolveReport(contentId, removeContent) {
     { RemoveContent: removeContent },
     function (response) {
       if (response.success || response.message) {
-        authManager.showAlert(
-          `הדיווח טופל בהצלחה - ${removeContent ? "התוכן הוסר" : "התוכן נשאר"}`,
-          "success"
+        Utils.toast.success(
+          `הדיווח טופל בהצלחה - ${removeContent ? "התוכן הוסר" : "התוכן נשאר"}`
         );
         loadReports(); // Refresh reports
       } else {
-        authManager.showAlert(
-          response.message || "שגיאה בטיפול בדיווח",
-          "danger"
-        );
+        Utils.toast.error(response.message || "שגיאה בטיפול בדיווח");
       }
     },
     function (error) {
       console.error("Error resolving report:", error);
-      authManager.showAlert("שגיאה בטיפול בדיווח", "danger");
+      Utils.toast.error("שגיאה בטיפול בדיווח");
     }
   );
 }
