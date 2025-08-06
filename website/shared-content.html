@@ -186,48 +186,40 @@
 
     <!-- Report Content Modal -->
     <div class="modal fade" id="reportModal" tabindex="-1">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">דווח על תוכן פוגעני</h5>
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-warning">
+          <div class="modal-header bg-warning bg-opacity-10">
+            <h5 class="modal-title text-warning">
+              <i class="fas fa-exclamation-triangle me-2"></i>
+              דווח על תוכן פוגעני
+            </h5>
             <button
               type="button"
               class="btn-close"
               data-bs-dismiss="modal"
             ></button>
           </div>
-          <div class="modal-body">
-            <form id="reportForm">
-              <div class="mb-3">
-                <label for="reportReason" class="form-label">סיבת הדיווח</label>
-                <select class="form-select" id="reportReason" required>
-                  <option value="">בחר סיבה...</option>
-                  <option value="spam">ספאם</option>
-                  <option value="harassment">הטרדה</option>
-                  <option value="hate_speech">דברי שטנה</option>
-                  <option value="fake_news">חדשות מזויפות</option>
-                  <option value="inappropriate">תוכן לא הולם</option>
-                  <option value="other">אחר</option>
-                </select>
-              </div>
-              <div class="mb-3">
-                <label for="reportDescription" class="form-label"
-                  >תיאור נוסף (אופציונאלי)</label
-                >
-                <textarea
-                  class="form-control"
-                  id="reportDescription"
-                  rows="3"
-                ></textarea>
-              </div>
-            </form>
+          <div class="modal-body text-center py-4">
+            <div class="mb-4">
+              <i class="fas fa-flag text-danger" style="font-size: 3rem"></i>
+            </div>
+            <h6 class="mb-3">האם אתה בטוח שברצונך לדווח על התוכן הזה?</h6>
+            <p class="text-muted mb-4">
+              הדיווח יישלח למנהלי המערכת לבדיקה.<br />
+              תוכן פוגעני יוסר מהמערכת.
+            </p>
+            <div class="alert alert-info">
+              <i class="fas fa-info-circle me-2"></i>
+              <small>דיווחים כוזבים עלולים להוביל לחסימת החשבון</small>
+            </div>
           </div>
-          <div class="modal-footer">
+          <div class="modal-footer justify-content-center">
             <button
               type="button"
-              class="btn btn-secondary"
+              class="btn btn-outline-secondary me-2"
               data-bs-dismiss="modal"
             >
+              <i class="fas fa-times me-1"></i>
               ביטול
             </button>
             <button
@@ -235,6 +227,7 @@
               class="btn btn-danger"
               onclick="submitReport()"
             >
+              <i class="fas fa-flag me-1"></i>
               שלח דיווח
             </button>
           </div>

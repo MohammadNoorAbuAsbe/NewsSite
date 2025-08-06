@@ -559,18 +559,6 @@ function displayReports(reports) {
   );
 }
 
-function getReportReasonText(reason) {
-  const reasons = {
-    spam: "ספאם",
-    harassment: "הטרדה",
-    hate_speech: "דברי שטנה",
-    fake_news: "חדשות מזויפות",
-    inappropriate: "תוכן לא הולם",
-    other: "אחר",
-  };
-  return reasons[reason] || reason;
-}
-
 function viewReportedContent(reportId) {
   // TODO: Implement view reported content
   authManager.showAlert("צפייה בתוכן המדווח תהיה זמינה בקרוב", "info");

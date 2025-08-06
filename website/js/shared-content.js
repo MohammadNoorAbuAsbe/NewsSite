@@ -601,13 +601,12 @@ function reportContent(contentId) {
 }
 
 function submitReport() {
-  const reason = $("#reportReason").val();
-  const description = $("#reportDescription").val().trim();
-
-  if (!reason) {
-    authManager.showAlert("אנא בחר סיבת דיווח", "warning");
-    return;
-  }
+  // Show loading state
+  const $submitBtn = $('button[onclick="submitReport()"]');
+  const originalText = $submitBtn.html();
+  $submitBtn
+    .prop("disabled", true)
+    .html('<i class="fas fa-spinner fa-spin me-1"></i>שולח...');
 
   const reportData = {
     ContentId: currentContentId,
@@ -620,21 +619,58 @@ function submitReport() {
     reportData,
     function (response) {
       if (response.message || response.success) {
-        authManager.showAlert("הדיווח נשלח בהצלחה", "success");
+        // Close modal first
         bootstrap.Modal.getInstance($("#reportModal")[0]).hide();
-        $("#reportForm")[0].reset();
+
+        // Show success message
+        authManager.showAlert("הדיווח נשלח בהצלחה! תודה על ההתראה.", "success");
+
+        // Mark content as reported visually
+        markContentAsReported(currentContentId);
       } else {
         authManager.showAlert(
           response.message || "שגיאה בשליחת הדיווח",
           "danger"
         );
       }
+      // Reset button
+      $submitBtn.prop("disabled", false).html(originalText);
     },
     function (error) {
       console.error("Error submitting report:", error);
-      authManager.showAlert("שגיאה בשליחת הדיווח", "danger");
+      authManager.showAlert("שגיאה בשליחת הדיווח. אנא נסה שוב.", "danger");
+      // Reset button
+      $submitBtn.prop("disabled", false).html(originalText);
     }
   );
+}
+
+function markContentAsReported(contentId) {
+  // Find the content item and add visual feedback
+  $(`.card`).each(function () {
+    const $card = $(this);
+    const $reportBtn = $card.find(
+      `button[onclick*="reportContent(${contentId})"]`
+    );
+
+    if ($reportBtn.length) {
+      // Update the report button to show it's been reported
+      $reportBtn
+        .removeClass("btn-outline-warning")
+        .addClass("btn-success")
+        .prop("disabled", true)
+        .html('<i class="fas fa-check me-1"></i>דווח');
+
+      // Add a small badge to the card
+      if (!$card.find(".reported-badge").length) {
+        $card.find(".card-header, .card-body").first().prepend(`
+          <span class="badge bg-warning text-dark reported-badge mb-2">
+            <i class="fas fa-flag me-1"></i>דווח על ידך
+          </span>
+        `);
+      }
+    }
+  });
 }
 
 function openBlockUserModal() {
