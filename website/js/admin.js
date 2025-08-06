@@ -362,7 +362,6 @@ function filterUsers() {
   const searchTerm = $("#userSearch").val()?.toLowerCase() || "";
   const statusFilter = $("#userStatusFilter").val() || "";
 
-
   let filteredUsers = currentUsers;
 
   // Apply search filter - handle both PascalCase and camelCase
@@ -398,28 +397,36 @@ function refreshUsers() {
 }
 
 function exportUsers() {
-  // Create CSV content
-  const csvContent =
-    "data:text/csv;charset=utf-8," +
-    "שם פרטי,שם משפחה,אימייל,תאריך רישום,סטטוס\n" +
-    currentUsers
-      .map((user) => {
-        return `"${user.FirstName}","${user.LastName}","${
-          user.Email
-        }","${formatDate(user.CreatedAt)}","${
-          user.IsLocked ? "נעול" : "פעיל"
-        }"`;
-      })
-      .join("\n");
+  // Create CSV content with BOM for Hebrew support
+  const BOM = "\uFEFF";
+  const headers = "Name,Email,Role,Status\n";
+  const csvData = currentUsers
+    .map((user) => {
+      const name = user.name || user.Name || "";
+      const email = user.email || user.Email || "";
+      const role = user.isAdmin ?? user.IsAdmin ? "Admin" : "User";
+      const status = user.isEnabled ?? user.IsEnabled ? "Active" : "Locked";
+
+      return `"${name}","${email}","${role}","${status}"`;
+    })
+    .join("\n");
+
+  const csvContent = BOM + headers + csvData;
+
+  // Create blob with proper encoding
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
 
   // Create download link
-  const encodedUri = encodeURI(csvContent);
   const link = document.createElement("a");
-  link.setAttribute("href", encodedUri);
+  link.setAttribute("href", url);
   link.setAttribute("download", "users.csv");
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
+
+  // Clean up
+  URL.revokeObjectURL(url);
 
   authManager.showAlert("רשימת המשתמשים יוצאה בהצלחה", "success");
 }
@@ -616,7 +623,6 @@ function loadWeeklyTrends() {
   const fromDate = startDate.toISOString().split("T")[0];
   const toDate = endDate.toISOString().split("T")[0];
 
-
   authManager.makeAuthenticatedRequest(
     "GET",
     ADMIN_SERVER_PATH +
@@ -650,7 +656,6 @@ function loadTodaysStatsForChart() {
     ADMIN_SERVER_PATH + "/stats/daily?date=" + today,
     null,
     function (response) {
-
       if (response) {
         // The /stats/daily endpoint returns the AdminStats object directly with PascalCase
         const todayData = [
@@ -681,7 +686,6 @@ function createWeeklyTrendsChart(data) {
   if (charts.dailyStats) {
     charts.dailyStats.destroy();
   }
-
 
   // Log the first item to see the exact structure
   if (data && data.length > 0) {
@@ -773,7 +777,6 @@ function createWeeklyTrendsChart(data) {
   const savedArticlesData = data.map(
     (d) => d.DailySavedArticles || d.dailySavedArticles || 0
   );
-
 
   charts.dailyStats = new Chart(ctx, {
     type: "line",

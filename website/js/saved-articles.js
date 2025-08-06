@@ -430,7 +430,6 @@ function confirmShare() {
     UserComment: comment,
   };
 
-
   authenticatedFetch(SHARED_CONTENT_SERVER_PATH, {
     method: "POST",
     headers: {
@@ -808,34 +807,47 @@ function exportArticles() {
     return;
   }
 
-  // Create CSV content
-  const csvContent =
-    "data:text/csv;charset=utf-8," +
-    "כותרת,תיאור,מקור,תאריך שמירה,קישור\n" +
-    currentSavedArticles
-      .map((article) => {
-        const actualArticle = article.article || article.Article || article;
-        const savedAt = article.savedAt || article.SavedAt;
-        const formattedDate =
-          typeof Utils !== "undefined" && Utils.formatDate
-            ? Utils.formatDate(savedAt, "absolute")
-            : new Date(savedAt).toLocaleDateString("he-IL");
-        return `"${actualArticle.title || ""}","${
-          actualArticle.description || ""
-        }","${
-          actualArticle.source?.name || actualArticle.source || ""
-        }","${formattedDate}","${actualArticle.url || ""}"`;
-      })
-      .join("\n");
+  // Create CSV content with BOM for proper encoding
+  const BOM = "\uFEFF";
+  const headers = "Title,Description,Source,Date Saved,URL\n";
+  const csvData = currentSavedArticles
+    .map((article) => {
+      const actualArticle = article.article || article.Article || article;
+      const savedAt = article.savedAt || article.SavedAt;
+      // Format date in English to avoid encoding issues in CSV
+      const formattedDate = new Date(savedAt).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      });
+      const title = actualArticle.title || "";
+      const description = actualArticle.description || "";
+      const source = actualArticle.source?.name || actualArticle.source || "";
+      const url = actualArticle.url || "";
+
+      return `"${title}","${description}","${source}","${formattedDate}","${url}"`;
+    })
+    .join("\n");
+
+  const csvContent = BOM + headers + csvData;
+
+  // Create blob with proper encoding
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
 
   // Create download link
-  const encodedUri = encodeURI(csvContent);
   const link = document.createElement("a");
-  link.setAttribute("href", encodedUri);
+  link.setAttribute("href", url);
   link.setAttribute("download", "saved_articles.csv");
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
+
+  // Clean up
+  URL.revokeObjectURL(url);
 
   AuthJWT.showAlert("הכתבות יוצאו בהצלחה", "success");
 }
