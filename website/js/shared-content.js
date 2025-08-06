@@ -19,10 +19,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
 function setupEventListeners() {
   // Search input
-  const searchInput = document.getElementById("searchInput");
-  if (searchInput) {
+  const $searchInput = $("#searchInput");
+  if ($searchInput.length) {
     let searchTimeout;
-    searchInput.addEventListener("input", function () {
+    $searchInput.on("input", function () {
       clearTimeout(searchTimeout);
       searchTimeout = setTimeout(() => {
         filterSharedContent();
@@ -32,36 +32,34 @@ function setupEventListeners() {
 }
 
 function loadSharedContent() {
-  const container = document.getElementById("sharedContentContainer");
-  const loadingSpinner = document.getElementById("loadingSpinner");
+  const $container = $("#sharedContentContainer");
+  const $loadingSpinner = $("#loadingSpinner");
 
-  if (!container) return;
+  if (!$container.length) return;
 
   // Show loading
-  loadingSpinner.style.display = "block";
-  container.innerHTML = "";
+  Utils.showLoadingSpinner();
+  $container.empty();
 
-  // Build API URL
-  let apiUrl = SHARED_CONTENT_SERVER_PATH;
-  const params = new URLSearchParams();
-  params.append("page", currentPage);
-  params.append("pageSize", 10);
-  params.append("userId", authManager.currentUser.UserId); // For filtering blocked users
-
-  apiUrl += "?" + params.toString();
+  // Build API URL - Use the correct endpoint from config
+  let apiUrl = `${urls.sharedContent.getSharedContent}?userId=${authManager.currentUser.Id}`;
 
   authManager.makeAuthenticatedRequest(
     "GET",
     apiUrl,
     null,
     function (response) {
-      loadingSpinner.style.display = "none";
+      Utils.hideLoadingSpinner();
 
-      if (response.success && response.sharedContent) {
-        currentSharedContent = response.sharedContent;
-        totalPages = Math.ceil(
-          (response.totalCount || response.sharedContent.length) / 10
-        );
+      // The SharedContent API returns the array directly, not wrapped in a response object
+      if (Array.isArray(response)) {
+        currentSharedContent = response;
+        totalPages = Math.ceil(response.length / 10);
+        displaySharedContent(currentSharedContent);
+        updatePagination();
+      } else if (response && response.length !== undefined) {
+        currentSharedContent = response;
+        totalPages = Math.ceil(response.length / 10);
         displaySharedContent(currentSharedContent);
         updatePagination();
       } else {
@@ -69,167 +67,231 @@ function loadSharedContent() {
       }
     },
     function (error) {
-      console.error("Error loading shared content:", error);
-      loadingSpinner.style.display = "none";
+      Utils.debug.error("Error loading shared content:", error);
+      Utils.hideLoadingSpinner();
       showErrorMessage();
     }
   );
 }
 
 function displaySharedContent(content) {
-  const container = document.getElementById("sharedContentContainer");
+  const $container = $("#sharedContentContainer");
 
   if (!content || content.length === 0) {
     showNoContentMessage();
     return;
   }
 
-  container.innerHTML = content
-    .map(
-      (item) => `
-        <div class="shared-content-item">
-            <div class="row">
-                <div class="col">
-                    <div class="d-flex align-items-start">
-                        <div class="user-avatar me-3">
-                            ${getUserInitials(
-                              item.User?.FirstName,
-                              item.User?.LastName
-                            )}
-                        </div>
-                        <div class="flex-grow-1">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <div>
-                                    <h6 class="mb-1">${item.User?.FirstName} ${
-        item.User?.LastName
-      }</h6>
-                                    <small class="text-muted">
-                                        <i class="fas fa-clock me-1"></i>${formatDate(
-                                          item.SharedAt
-                                        )}
-                                    </small>
-                                </div>
-                                <div class="dropdown">
-                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
-                                        <i class="fas fa-ellipsis-h"></i>
-                                    </button>
-                                    <ul class="dropdown-menu">
-                                        <li><a class="dropdown-item" href="#" onclick="reportContent(${
-                                          item.SharedContentId
-                                        })">
-                                            <i class="fas fa-flag me-2"></i>דווח כפוגעני
-                                        </a></li>
-                                        <li><a class="dropdown-item" href="#" onclick="blockUser(${
-                                          item.UserId
-                                        }, '${item.User?.FirstName} ${
-        item.User?.LastName
-      }')">
-                                            <i class="fas fa-ban me-2"></i>חסום משתמש
-                                        </a></li>
-                                    </ul>
-                                </div>
-                            </div>
-                            
-                            <div class="mt-3">
-                                <p class="mb-2">${item.Comment}</p>
-                                
-                                ${
-                                  item.ArticleTitle
-                                    ? `
-                                    <div class="card mt-3">
-                                        <div class="card-body">
-                                            <div class="row">
-                                                ${
-                                                  item.ArticleImageUrl
-                                                    ? `
-                                                    <div class="col-auto">
-                                                        <img src="${item.ArticleImageUrl}" class="rounded" 
-                                                             style="width: 100px; height: 80px; object-fit: cover;"
-                                                             alt="${item.ArticleTitle}" onerror="this.style.display='none'">
-                                                    </div>
-                                                `
-                                                    : ""
-                                                }
-                                                <div class="col">
-                                                    <h6 class="card-title mb-1">${
-                                                      item.ArticleTitle
-                                                    }</h6>
-                                                    <p class="card-text text-muted small">${truncateText(
-                                                      item.ArticleDescription ||
-                                                        "",
-                                                      100
-                                                    )}</p>
-                                                    ${
-                                                      item.ArticleUrl
-                                                        ? `
-                                                        <a href="${item.ArticleUrl}" target="_blank" class="btn btn-sm btn-outline-primary">
-                                                            <i class="fas fa-external-link-alt me-1"></i>קרא כתבה
-                                                        </a>
-                                                    `
-                                                        : ""
-                                                    }
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                `
-                                    : ""
-                                }
-                            </div>
-                            
-                            <div class="mt-3 d-flex justify-content-between align-items-center">
-                                <div class="btn-group btn-group-sm">
-                                    <button class="btn btn-outline-primary" onclick="likeContent(${
-                                      item.SharedContentId
-                                    })">
-                                        <i class="fas fa-thumbs-up"></i> <span id="likes-${
-                                          item.SharedContentId
-                                        }">${item.LikesCount || 0}</span>
-                                    </button>
-                                    <button class="btn btn-outline-secondary" onclick="toggleComments(${
-                                      item.SharedContentId
-                                    })">
-                                        <i class="fas fa-comments"></i> תגובות
-                                    </button>
-                                </div>
-                                <small class="text-muted">
-                                    <i class="fas fa-eye me-1"></i>${
-                                      item.ViewsCount || 0
-                                    } צפיות
-                                </small>
-                            </div>
-                            
-                            <!-- Comments section (initially hidden) -->
-                            <div id="comments-${
-                              item.SharedContentId
-                            }" class="comments-section mt-3" style="display: none;">
-                                <div class="comment-box">
-                                    <div class="input-group input-group-sm">
-                                        <input type="text" class="form-control" placeholder="כתב תגובה..." 
-                                               id="comment-input-${
-                                                 item.SharedContentId
-                                               }">
-                                        <button class="btn btn-primary" onclick="addComment(${
-                                          item.SharedContentId
-                                        })">
-                                            <i class="fas fa-paper-plane"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                                <div id="comments-list-${
-                                  item.SharedContentId
-                                }" class="mt-2">
-                                    <!-- Comments will be loaded here -->
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `
-    )
-    .join("");
+  $container.empty();
+
+  content.forEach((item) => {
+    const $contentItem = createSharedContentItem(item);
+    $container.append($contentItem);
+  });
+}
+
+function createSharedContentItem(item) {
+  const $item = $("<div>").addClass("shared-content-item");
+  const $row = $("<div>").addClass("row");
+  const $col = $("<div>").addClass("col");
+  const $mainFlex = $("<div>").addClass("d-flex align-items-start");
+
+  // User avatar
+  const $avatar = $("<div>")
+    .addClass("user-avatar me-3")
+    .text(Utils.getUserInitials(item.userName));
+
+  // Content container
+  const $contentContainer = $("<div>").addClass("flex-grow-1");
+
+  // Header with user info and dropdown
+  const $header = createContentHeader(item);
+  $contentContainer.append($header);
+
+  // Main content
+  const $content = createMainContent(item);
+  $contentContainer.append($content);
+
+  // Action buttons
+  const $actions = createActionButtons(item);
+  $contentContainer.append($actions);
+
+  // Comments section
+  const $comments = createCommentsSection(item);
+  $contentContainer.append($comments);
+
+  $mainFlex.append($avatar, $contentContainer);
+  $col.append($mainFlex);
+  $row.append($col);
+  $item.append($row);
+
+  return $item;
+}
+
+function createContentHeader(item) {
+  const $header = $("<div>").addClass(
+    "d-flex justify-content-between align-items-start"
+  );
+
+  const $userInfo = $("<div>");
+  const $userName = $("<h6>").addClass("mb-1").text(item.userName);
+  const $time = $("<small>")
+    .addClass("text-muted")
+    .append($("<i>").addClass("fas fa-clock me-1"))
+    .append(Utils.formatDate(item.sharedAt));
+
+  $userInfo.append($userName, $time);
+
+  const $dropdown = createDropdownMenu(item);
+
+  $header.append($userInfo, $dropdown);
+  return $header;
+}
+
+function createDropdownMenu(item) {
+  const $dropdown = $("<div>").addClass("dropdown");
+  const $button = $("<button>")
+    .addClass("btn btn-sm btn-outline-secondary dropdown-toggle")
+    .attr("data-bs-toggle", "dropdown")
+    .append($("<i>").addClass("fas fa-ellipsis-h"));
+
+  const $menu = $("<ul>").addClass("dropdown-menu");
+
+  const $reportItem = $("<li>");
+  const $reportLink = $("<a>")
+    .addClass("dropdown-item")
+    .attr("href", "#")
+    .click((e) => {
+      e.preventDefault();
+      reportContent(item.id);
+    })
+    .append($("<i>").addClass("fas fa-flag me-2"))
+    .append("דווח כפוגעני");
+
+  const $blockItem = $("<li>");
+  const $blockLink = $("<a>")
+    .addClass("dropdown-item")
+    .attr("href", "#")
+    .click((e) => {
+      e.preventDefault();
+      blockUser(item.userId, item.userName);
+    })
+    .append($("<i>").addClass("fas fa-ban me-2"))
+    .append("חסום משתמש");
+
+  $reportItem.append($reportLink);
+  $blockItem.append($blockLink);
+  $menu.append($reportItem, $blockItem);
+  $dropdown.append($button, $menu);
+
+  return $dropdown;
+}
+
+function createMainContent(item) {
+  const $content = $("<div>").addClass("mt-3");
+  const $comment = $("<p>").addClass("mb-2").text(item.userComment);
+  $content.append($comment);
+
+  if (item.article && item.article.title) {
+    const $articleCard = NewsUtils.createArticleCard({ article: item.article });
+    if ($articleCard) {
+      const $cardContent = $articleCard.find(".card").first();
+      $content.append($cardContent);
+    }
+  }
+
+  return $content;
+}
+
+function createActionButtons(item) {
+  const $actions = $("<div>").addClass(
+    "mt-3 d-flex justify-content-between align-items-center"
+  );
+
+  const $buttonGroup = $("<div>").addClass("btn-group btn-group-sm");
+
+  // Determine button styles based on user's current reaction
+  const likeButtonClass = item.userHasLiked
+    ? "btn btn-primary"
+    : "btn btn-outline-primary";
+  const dislikeButtonClass = item.userHasDisliked
+    ? "btn btn-danger"
+    : "btn btn-outline-danger";
+
+  const $likeButton = $("<button>")
+    .addClass(likeButtonClass)
+    .attr("data-content-id", item.id)
+    .attr("data-user-liked", item.userHasLiked || false)
+    .click(() => toggleLike(item.id))
+    .append($("<i>").addClass("fas fa-thumbs-up"))
+    .append(" ")
+    .append(
+      $("<span>")
+        .attr("id", `likes-${item.id}`)
+        .text(item.likesCount || 0)
+    );
+
+  const $dislikeButton = $("<button>")
+    .addClass(dislikeButtonClass)
+    .attr("data-content-id", item.id)
+    .attr("data-user-disliked", item.userHasDisliked || false)
+    .click(() => toggleDislike(item.id))
+    .append($("<i>").addClass("fas fa-thumbs-down"))
+    .append(" ")
+    .append(
+      $("<span>")
+        .attr("id", `dislikes-${item.id}`)
+        .text(item.dislikesCount || 0)
+    );
+
+  const $commentsButton = $("<button>")
+    .addClass("btn btn-outline-secondary")
+    .click(() => toggleComments(item.id))
+    .append($("<i>").addClass("fas fa-comments"))
+    .append(" תגובות");
+
+  $buttonGroup.append($likeButton, $dislikeButton, $commentsButton);
+
+  const $views = $("<small>")
+    .addClass("text-muted")
+    .append($("<i>").addClass("fas fa-eye me-1"))
+    .append(`${item.viewsCount || 0} צפיות`);
+
+  $actions.append($buttonGroup, $views);
+  return $actions;
+}
+
+function createCommentsSection(item) {
+  const $commentsSection = $("<div>")
+    .addClass("comments-section mt-3")
+    .attr("id", `comments-${item.id}`)
+    .hide();
+
+  const $commentBox = $("<div>").addClass("comment-box");
+  const $inputGroup = $("<div>").addClass("input-group input-group-sm");
+
+  const $input = $("<input>")
+    .addClass("form-control")
+    .attr({
+      type: "text",
+      placeholder: "כתב תגובה...",
+      id: `comment-input-${item.id}`,
+    });
+
+  const $button = $("<button>")
+    .addClass("btn btn-primary")
+    .click(() => addComment(item.id))
+    .append($("<i>").addClass("fas fa-paper-plane"));
+
+  $inputGroup.append($input, $button);
+  $commentBox.append($inputGroup);
+
+  const $commentsList = $("<div>")
+    .addClass("mt-2")
+    .attr("id", `comments-list-${item.id}`);
+
+  $commentsSection.append($commentBox, $commentsList);
+  return $commentsSection;
 }
 
 function openShareModal() {
@@ -238,36 +300,34 @@ function openShareModal() {
 }
 
 function submitShare() {
-  const articleUrl = document.getElementById("articleUrl").value.trim();
-  const comment = document.getElementById("shareComment").value.trim();
+  const articleUrl = $("#articleUrl").val().trim();
+  const comment = $("#shareComment").val().trim();
 
   if (!articleUrl || !comment) {
     authManager.showAlert("אנא מלא את כל השדות", "warning");
     return;
   }
 
-  if (!isValidUrl(articleUrl)) {
+  if (!Utils.isValidUrl(articleUrl)) {
     authManager.showAlert("אנא הזן קישור תקין", "warning");
     return;
   }
 
   const shareData = {
-    UserId: authManager.currentUser.UserId,
+    UserId: authManager.currentUser.Id,
     ArticleUrl: articleUrl,
     Comment: comment,
   };
 
   authManager.makeAuthenticatedRequest(
     "POST",
-    SHARED_CONTENT_SERVER_PATH,
+    urls.sharedContent.shareContent,
     shareData,
     function (response) {
-      if (response.success) {
+      if (response.message || response.success) {
         authManager.showAlert("התוכן שותף בהצלחה!", "success");
-        bootstrap.Modal.getInstance(
-          document.getElementById("shareModal")
-        ).hide();
-        document.getElementById("shareForm").reset();
+        bootstrap.Modal.getInstance($("#shareModal")[0]).hide();
+        $("#shareForm")[0].reset();
         loadSharedContent();
       } else {
         authManager.showAlert(
@@ -283,88 +343,224 @@ function submitShare() {
   );
 }
 
+function toggleLike(contentId) {
+  const $likeButton = $(`button[data-content-id="${contentId}"]`).filter(
+    function () {
+      return $(this).find(".fa-thumbs-up").length > 0;
+    }
+  );
+
+  const userHasLiked = $likeButton.attr("data-user-liked") === "true";
+
+  if (userHasLiked) {
+    // User has already liked, so unlike
+    unlikeContent(contentId);
+  } else {
+    // User hasn't liked, so like
+    likeContent(contentId);
+  }
+}
+
+function toggleDislike(contentId) {
+  const $dislikeButton = $(`button[data-content-id="${contentId}"]`).filter(
+    function () {
+      return $(this).find(".fa-thumbs-down").length > 0;
+    }
+  );
+
+  const userHasDisliked = $dislikeButton.attr("data-user-disliked") === "true";
+
+  if (userHasDisliked) {
+    // User has already disliked, so undislike
+    undislikeContent(contentId);
+  } else {
+    // User hasn't disliked, so dislike
+    dislikeContent(contentId);
+  }
+}
+
 function likeContent(contentId) {
   const likeData = {
-    SharedContentId: contentId,
-    UserId: authManager.currentUser.UserId,
+    userId: authManager.currentUser.Id,
+    contentId: contentId,
   };
 
   authManager.makeAuthenticatedRequest(
     "POST",
-    SHARED_CONTENT_SERVER_PATH + "/" + contentId + "/like",
+    urls.sharedContent.likeContent,
     likeData,
     function (response) {
-      if (response.success) {
-        // Update likes count
-        const likesElement = document.getElementById(`likes-${contentId}`);
-        if (likesElement) {
-          likesElement.textContent = response.likesCount;
-        }
+      if (response.message || response.success) {
+        authManager.showAlert(
+          response.message || "תוכן חויב בהצלחה",
+          "success"
+        );
+        // Refresh the content to get updated likes count
+        loadSharedContent();
+      } else {
+        authManager.showAlert("שגיאה בחיבת התוכן", "danger");
       }
     },
     function (error) {
       console.error("Error liking content:", error);
+      authManager.showAlert("שגיאה בחיבת התוכן", "danger");
+    }
+  );
+}
+
+function unlikeContent(contentId) {
+  const unlikeData = {
+    userId: authManager.currentUser.Id,
+    contentId: contentId,
+  };
+
+  authManager.makeAuthenticatedRequest(
+    "POST",
+    urls.sharedContent.unlikeContent,
+    unlikeData,
+    function (response) {
+      if (response.message || response.success) {
+        authManager.showAlert(
+          response.message || "ביטול חיבת התוכן בוצע בהצלחה",
+          "success"
+        );
+        // Refresh the content to get updated likes count
+        loadSharedContent();
+      } else {
+        authManager.showAlert("שגיאה בביטול חיבת התוכן", "danger");
+      }
+    },
+    function (error) {
+      console.error("Error unliking content:", error);
+      authManager.showAlert("שגיאה בביטול חיבת התוכן", "danger");
+    }
+  );
+}
+
+function dislikeContent(contentId) {
+  const dislikeData = {
+    userId: authManager.currentUser.Id,
+    contentId: contentId,
+  };
+
+  authManager.makeAuthenticatedRequest(
+    "POST",
+    urls.sharedContent.dislikeContent,
+    dislikeData,
+    function (response) {
+      if (response.message || response.success) {
+        authManager.showAlert(
+          response.message || "התוכן לא חויב בהצלחה",
+          "success"
+        );
+        // Refresh the content to get updated dislikes count
+        loadSharedContent();
+      } else {
+        authManager.showAlert("שגיאה בחוסר חיבת התוכן", "danger");
+      }
+    },
+    function (error) {
+      console.error("Error disliking content:", error);
+      authManager.showAlert("שגיאה בחוסר חיבת התוכן", "danger");
+    }
+  );
+}
+
+function undislikeContent(contentId) {
+  const undislikeData = {
+    userId: authManager.currentUser.Id,
+    contentId: contentId,
+  };
+
+  authManager.makeAuthenticatedRequest(
+    "POST",
+    urls.sharedContent.undislikeContent,
+    undislikeData,
+    function (response) {
+      if (response.message || response.success) {
+        authManager.showAlert(
+          response.message || "ביטול חוסר חיבת התוכן בוצע בהצלחה",
+          "success"
+        );
+        // Refresh the content to get updated dislikes count
+        loadSharedContent();
+      } else {
+        authManager.showAlert("שגיאה בביטול חוסר חיבת התוכן", "danger");
+      }
+    },
+    function (error) {
+      console.error("Error undisliking content:", error);
+      authManager.showAlert("שגיאה בביטול חוסר חיבת התוכן", "danger");
     }
   );
 }
 
 function toggleComments(contentId) {
-  const commentsSection = document.getElementById(`comments-${contentId}`);
+  const $commentsSection = $(`#comments-${contentId}`);
 
-  if (commentsSection.style.display === "none") {
-    commentsSection.style.display = "block";
+  if ($commentsSection.is(":hidden")) {
+    $commentsSection.show();
     loadComments(contentId);
   } else {
-    commentsSection.style.display = "none";
+    $commentsSection.hide();
   }
 }
 
 function loadComments(contentId) {
   authManager.makeAuthenticatedRequest(
     "GET",
-    SHARED_CONTENT_SERVER_PATH + "/" + contentId + "/comments",
+    `${urls.sharedContent.base}/${contentId}/comments`,
     null,
     function (response) {
-      if (response.success && response.comments) {
-        displayComments(contentId, response.comments);
+      // Assume comments are returned as an array directly
+      if (Array.isArray(response)) {
+        displayComments(contentId, response);
+      } else if (response && response.length !== undefined) {
+        displayComments(contentId, response);
+      } else {
+        displayComments(contentId, []);
       }
     },
     function (error) {
       console.error("Error loading comments:", error);
+      displayComments(contentId, []);
     }
   );
 }
 
 function displayComments(contentId, comments) {
-  const container = document.getElementById(`comments-list-${contentId}`);
+  const $container = $(`#comments-list-${contentId}`);
 
   if (comments.length === 0) {
-    container.innerHTML = '<p class="text-muted small">אין תגובות עדיין</p>';
+    $container.html('<p class="text-muted small">אין תגובות עדיין</p>');
     return;
   }
 
-  container.innerHTML = comments
-    .map(
-      (comment) => `
-        <div class="comment">
-            <div class="d-flex justify-content-between">
-                <strong class="small">${comment.User?.FirstName} ${
-        comment.User?.LastName
-      }</strong>
-                <small class="text-muted">${formatDate(
-                  comment.CreatedAt
-                )}</small>
-            </div>
-            <p class="mb-0 small">${comment.CommentText}</p>
-        </div>
-    `
-    )
-    .join("");
+  $container.empty();
+
+  comments.forEach((comment) => {
+    const $comment = $("<div>").addClass("comment");
+
+    const $header = $("<div>").addClass("d-flex justify-content-between");
+    const $userName = $("<strong>")
+      .addClass("small")
+      .text(`${comment.User?.FirstName} ${comment.User?.LastName}`);
+    const $date = $("<small>")
+      .addClass("text-muted")
+      .text(Utils.formatDate(comment.CreatedAt));
+
+    $header.append($userName, $date);
+
+    const $text = $("<p>").addClass("mb-0 small").text(comment.CommentText);
+
+    $comment.append($header, $text);
+    $container.append($comment);
+  });
 }
 
 function addComment(contentId) {
-  const input = document.getElementById(`comment-input-${contentId}`);
-  const commentText = input.value.trim();
+  const $input = $(`#comment-input-${contentId}`);
+  const commentText = $input.val().trim();
 
   if (!commentText) {
     authManager.showAlert("אנא כתב תגובה", "warning");
@@ -373,17 +569,17 @@ function addComment(contentId) {
 
   const commentData = {
     SharedContentId: contentId,
-    UserId: authManager.currentUser.UserId,
+    UserId: authManager.currentUser.Id,
     CommentText: commentText,
   };
 
   authManager.makeAuthenticatedRequest(
     "POST",
-    SHARED_CONTENT_SERVER_PATH + "/" + contentId + "/comments",
+    `${urls.sharedContent.base}/${contentId}/comments`,
     commentData,
     function (response) {
-      if (response.success) {
-        input.value = "";
+      if (response.success || response.message) {
+        $input.val("");
         loadComments(contentId);
       } else {
         authManager.showAlert(
@@ -406,8 +602,8 @@ function reportContent(contentId) {
 }
 
 function submitReport() {
-  const reason = document.getElementById("reportReason").value;
-  const description = document.getElementById("reportDescription").value.trim();
+  const reason = $("#reportReason").val();
+  const description = $("#reportDescription").val().trim();
 
   if (!reason) {
     authManager.showAlert("אנא בחר סיבת דיווח", "warning");
@@ -415,23 +611,19 @@ function submitReport() {
   }
 
   const reportData = {
-    SharedContentId: currentContentId,
-    ReportedByUserId: authManager.currentUser.UserId,
-    ReportReason: reason,
-    ReportDescription: description,
+    ContentId: currentContentId,
+    ReporterId: authManager.currentUser.Id,
   };
 
   authManager.makeAuthenticatedRequest(
     "POST",
-    SHARED_CONTENT_SERVER_PATH + "/report",
+    urls.sharedContent.reportContent,
     reportData,
     function (response) {
-      if (response.success) {
+      if (response.message || response.success) {
         authManager.showAlert("הדיווח נשלח בהצלחה", "success");
-        bootstrap.Modal.getInstance(
-          document.getElementById("reportModal")
-        ).hide();
-        document.getElementById("reportForm").reset();
+        bootstrap.Modal.getInstance($("#reportModal")[0]).hide();
+        $("#reportForm")[0].reset();
       } else {
         authManager.showAlert(
           response.message || "שגיאה בשליחת הדיווח",
@@ -454,11 +646,8 @@ function openBlockUserModal() {
 function blockUser(userId, userName) {
   if (!userId) {
     // Called from modal
-    userId = document.getElementById("userToBlock").value;
-    userName =
-      document.getElementById("userToBlock").options[
-        document.getElementById("userToBlock").selectedIndex
-      ].text;
+    userId = $("#userToBlock").val();
+    userName = $("#userToBlock option:selected").text();
   }
 
   if (!userId) {
@@ -471,24 +660,22 @@ function blockUser(userId, userName) {
   }
 
   const blockData = {
-    BlockedUserId: userId,
-    BlockingUserId: authManager.currentUser.UserId,
+    userId: authManager.currentUser.Id,
+    userToBlockId: userId,
   };
 
   authManager.makeAuthenticatedRequest(
     "POST",
-    USER_SETTINGS_SERVER_PATH + "/block-user",
+    urls.userSettings.blockUser,
     blockData,
     function (response) {
-      if (response.success) {
+      if (response.message || response.success) {
         authManager.showAlert(`המשתמש ${userName} נחסם בהצלחה`, "success");
         loadBlockedUsers();
         loadSharedContent(); // Refresh content
 
         // Close modal if open
-        const modal = bootstrap.Modal.getInstance(
-          document.getElementById("blockUserModal")
-        );
+        const modal = bootstrap.Modal.getInstance($("#blockUserModal")[0]);
         if (modal) modal.hide();
       } else {
         authManager.showAlert(
@@ -510,11 +697,14 @@ function unblockUser(userId, userName) {
   }
 
   authManager.makeAuthenticatedRequest(
-    "DELETE",
-    USER_SETTINGS_SERVER_PATH + "/block-user/" + userId,
-    null,
+    "POST",
+    urls.userSettings.unblockUser,
+    {
+      userId: authManager.currentUser.Id,
+      userToUnblockId: userId,
+    },
     function (response) {
-      if (response.success) {
+      if (response.message || response.success) {
         authManager.showAlert(`החסימה של ${userName} בוטלה בהצלחה`, "success");
         loadBlockedUsers();
         loadSharedContent(); // Refresh content
@@ -535,52 +725,64 @@ function unblockUser(userId, userName) {
 function loadBlockedUsers() {
   authManager.makeAuthenticatedRequest(
     "GET",
-    USER_SETTINGS_SERVER_PATH +
-      "/blocked-users/" +
-      authManager.currentUser.UserId,
+    `${urls.userSettings.getUserSettings}?userId=${authManager.currentUser.Id}`,
     null,
     function (response) {
-      if (response.success && response.blockedUsers) {
+      if (response && response.blockedUsers) {
+        // Response contains the user settings with blockedUsers array (full user objects)
         blockedUsers = response.blockedUsers;
+        displayBlockedUsers();
+      } else {
+        blockedUsers = [];
         displayBlockedUsers();
       }
     },
     function (error) {
       console.error("Error loading blocked users:", error);
+      blockedUsers = [];
+      displayBlockedUsers();
     }
   );
 }
 
 function displayBlockedUsers() {
-  const container = document.getElementById("blockedUsers");
+  const $container = $("#blockedUsers");
 
   if (blockedUsers.length === 0) {
-    container.innerHTML = '<p class="text-muted small">אין משתמשים חסומים</p>';
+    $container.html('<p class="text-muted small">אין משתמשים חסומים</p>');
     return;
   }
 
-  container.innerHTML = blockedUsers
-    .map(
-      (user) => `
-        <div class="d-flex justify-content-between align-items-center mb-2">
-            <small>${user.FirstName} ${user.LastName}</small>
-            <button class="btn btn-sm btn-outline-secondary" onclick="unblockUser(${user.UserId}, '${user.FirstName} ${user.LastName}')">
-                בטל חסימה
-            </button>
-        </div>
-    `
-    )
-    .join("");
+  $container.empty();
+
+  blockedUsers.forEach((user) => {
+    const $userItem = $("<div>").addClass(
+      "d-flex justify-content-between align-items-center mb-2"
+    );
+
+    const $userName = $("<small>").text(user.name);
+
+    const $unblockBtn = $("<button>")
+      .addClass("btn btn-sm btn-outline-secondary")
+      .text("בטל חסימה")
+      .click(() => unblockUser(user.id, user.name));
+
+    $userItem.append($userName, $unblockBtn);
+    $container.append($userItem);
+  });
 }
 
 function loadUsers() {
   authManager.makeAuthenticatedRequest(
     "GET",
-    USERS_SERVER_PATH,
+    urls.users.base,
     null,
     function (response) {
-      if (response.success && response.users) {
-        populateUserFilters(response.users);
+      // The Users API returns an array of users directly, not wrapped in a response object
+      if (Array.isArray(response)) {
+        populateUserFilters(response);
+      } else if (response && response.length !== undefined) {
+        populateUserFilters(response);
       }
     },
     function (error) {
@@ -590,40 +792,39 @@ function loadUsers() {
 }
 
 function populateUserFilters(users) {
-  const userFilter = document.getElementById("userFilter");
-  const userToBlock = document.getElementById("userToBlock");
+  const $userFilter = $("#userFilter");
+  const $userToBlock = $("#userToBlock");
 
   // Filter out current user and blocked users
   const availableUsers = users.filter(
     (user) =>
       user.UserId !== authManager.currentUser.UserId &&
-      !blockedUsers.some((blocked) => blocked.UserId === user.UserId)
+      !blockedUsers.some((blocked) => blocked.id === user.UserId)
   );
 
-  if (userFilter) {
+  if ($userFilter.length) {
     availableUsers.forEach((user) => {
-      const option = document.createElement("option");
-      option.value = user.UserId;
-      option.textContent = `${user.FirstName} ${user.LastName}`;
-      userFilter.appendChild(option);
+      const $option = $("<option>")
+        .val(user.UserId)
+        .text(`${user.FirstName} ${user.LastName}`);
+      $userFilter.append($option);
     });
   }
 
-  if (userToBlock) {
-    userToBlock.innerHTML = '<option value="">בחר משתמש...</option>';
+  if ($userToBlock.length) {
+    $userToBlock.empty().append('<option value="">בחר משתמש...</option>');
     availableUsers.forEach((user) => {
-      const option = document.createElement("option");
-      option.value = user.UserId;
-      option.textContent = `${user.FirstName} ${user.LastName}`;
-      userToBlock.appendChild(option);
+      const $option = $("<option>")
+        .val(user.UserId)
+        .text(`${user.FirstName} ${user.LastName}`);
+      $userToBlock.append($option);
     });
   }
 }
 
 function filterSharedContent() {
-  const searchTerm =
-    document.getElementById("searchInput")?.value.toLowerCase() || "";
-  const userFilter = document.getElementById("userFilter")?.value || "";
+  const searchTerm = $("#searchInput").val()?.toLowerCase() || "";
+  const userFilter = $("#userFilter").val() || "";
 
   let filteredContent = currentSharedContent;
 
@@ -631,16 +832,19 @@ function filterSharedContent() {
   if (searchTerm) {
     filteredContent = filteredContent.filter(
       (item) =>
-        (item.Comment && item.Comment.toLowerCase().includes(searchTerm)) ||
-        (item.ArticleTitle &&
-          item.ArticleTitle.toLowerCase().includes(searchTerm))
+        (item.userComment &&
+          item.userComment.toLowerCase().includes(searchTerm)) ||
+        (item.article?.title &&
+          item.article.title.toLowerCase().includes(searchTerm)) ||
+        (item.article?.description &&
+          item.article.description.toLowerCase().includes(searchTerm))
     );
   }
 
   // Apply user filter
   if (userFilter) {
     filteredContent = filteredContent.filter(
-      (item) => item.UserId == userFilter
+      (item) => item.userId == userFilter
     );
   }
 
@@ -648,45 +852,63 @@ function filterSharedContent() {
 }
 
 function updatePagination() {
-  const pagination = document.getElementById("pagination");
-  if (!pagination || totalPages <= 1) {
-    pagination.innerHTML = "";
+  const $pagination = $("#pagination");
+  if (!$pagination.length || totalPages <= 1) {
+    $pagination.empty();
     return;
   }
 
-  let paginationHTML = "";
+  $pagination.empty();
 
   // Previous button
-  paginationHTML += `
-        <li class="page-item ${currentPage === 1 ? "disabled" : ""}">
-            <a class="page-link" href="#" onclick="changePage(${
-              currentPage - 1
-            })">הקודם</a>
-        </li>
-    `;
+  const $prevItem = $("<li>").addClass(
+    `page-item ${currentPage === 1 ? "disabled" : ""}`
+  );
+  const $prevLink = $("<a>")
+    .addClass("page-link")
+    .attr("href", "#")
+    .text("הקודם")
+    .click((e) => {
+      e.preventDefault();
+      changePage(currentPage - 1);
+    });
+  $prevItem.append($prevLink);
+  $pagination.append($prevItem);
 
   // Page numbers
   const startPage = Math.max(1, currentPage - 2);
   const endPage = Math.min(totalPages, currentPage + 2);
 
   for (let i = startPage; i <= endPage; i++) {
-    paginationHTML += `
-            <li class="page-item ${i === currentPage ? "active" : ""}">
-                <a class="page-link" href="#" onclick="changePage(${i})">${i}</a>
-            </li>
-        `;
+    const $pageItem = $("<li>").addClass(
+      `page-item ${i === currentPage ? "active" : ""}`
+    );
+    const $pageLink = $("<a>")
+      .addClass("page-link")
+      .attr("href", "#")
+      .text(i)
+      .click((e) => {
+        e.preventDefault();
+        changePage(i);
+      });
+    $pageItem.append($pageLink);
+    $pagination.append($pageItem);
   }
 
   // Next button
-  paginationHTML += `
-        <li class="page-item ${currentPage === totalPages ? "disabled" : ""}">
-            <a class="page-link" href="#" onclick="changePage(${
-              currentPage + 1
-            })">הבא</a>
-        </li>
-    `;
-
-  pagination.innerHTML = paginationHTML;
+  const $nextItem = $("<li>").addClass(
+    `page-item ${currentPage === totalPages ? "disabled" : ""}`
+  );
+  const $nextLink = $("<a>")
+    .addClass("page-link")
+    .attr("href", "#")
+    .text("הבא")
+    .click((e) => {
+      e.preventDefault();
+      changePage(currentPage + 1);
+    });
+  $nextItem.append($nextLink);
+  $pagination.append($nextItem);
 }
 
 function changePage(page) {
@@ -700,72 +922,41 @@ function changePage(page) {
 }
 
 function showNoContentMessage() {
-  const container = document.getElementById("sharedContentContainer");
-  container.innerHTML = `
-        <div class="text-center py-5">
-            <i class="fas fa-share-alt fa-3x text-muted mb-3"></i>
-            <h5 class="text-muted">אין תוכן משותף</h5>
-            <p class="text-muted">היה הראשון לשתף תוכן מעניין!</p>
-            <button class="btn btn-primary" onclick="openShareModal()">שתף תוכן</button>
-        </div>
-    `;
+  const $container = $("#sharedContentContainer");
+
+  const $message = $("<div>").addClass("text-center py-5");
+
+  const $icon = $("<i>").addClass("fas fa-share-alt fa-3x text-muted mb-3");
+  const $title = $("<h5>").addClass("text-muted").text("אין תוכן משותף");
+  const $text = $("<p>")
+    .addClass("text-muted")
+    .text("היה הראשון לשתף תוכן מעניין!");
+  const $button = $("<button>")
+    .addClass("btn btn-primary")
+    .text("שתף תוכן")
+    .click(openShareModal);
+
+  $message.append($icon, $title, $text, $button);
+  $container.html($message);
 }
 
 function showErrorMessage() {
-  const container = document.getElementById("sharedContentContainer");
-  container.innerHTML = `
-        <div class="text-center py-5">
-            <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
-            <h5 class="text-warning">שגיאה בטעינת התוכן</h5>
-            <p class="text-muted">לא ניתן לטעון את התוכן כרגע</p>
-            <button class="btn btn-primary" onclick="loadSharedContent()">נסה שוב</button>
-        </div>
-    `;
-}
+  const $container = $("#sharedContentContainer");
 
-// Utility functions
-function getUserInitials(firstName, lastName) {
-  const first = firstName ? firstName.charAt(0).toUpperCase() : "";
-  const last = lastName ? lastName.charAt(0).toUpperCase() : "";
-  return first + last || "U";
-}
+  const $message = $("<div>").addClass("text-center py-5");
 
-function truncateText(text, maxLength) {
-  if (!text) return "";
-  if (text.length <= maxLength) return text;
-  return text.substring(0, maxLength) + "...";
-}
+  const $icon = $("<i>").addClass(
+    "fas fa-exclamation-triangle fa-3x text-warning mb-3"
+  );
+  const $title = $("<h5>").addClass("text-warning").text("שגיאה בטעינת התוכן");
+  const $text = $("<p>")
+    .addClass("text-muted")
+    .text("לא ניתן לטעון את התוכן כרגע");
+  const $button = $("<button>")
+    .addClass("btn btn-primary")
+    .text("נסה שוב")
+    .click(loadSharedContent);
 
-function formatDate(dateString) {
-  if (!dateString) return "תאריך לא זמין";
-
-  try {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffInHours = Math.floor((now - date) / (1000 * 60 * 60));
-
-    if (diffInHours < 1) {
-      return "לפני פחות משעה";
-    } else if (diffInHours < 24) {
-      return `לפני ${diffInHours} שעות`;
-    } else {
-      const diffInDays = Math.floor(diffInHours / 24);
-      if (diffInDays === 1) {
-        return "אתמול";
-      } else {
-        return `לפני ${diffInDays} ימים`;
-      }
-    }
-  } catch (error) {
-    return "תאריך לא זמין";
-  }
-}
-
-function isValidUrl(string) {
-  try {
-    new URL(string);
-    return true;
-  } catch (_) {
-    return false;
-  }
+  $message.append($icon, $title, $text, $button);
+  $container.html($message);
 }

@@ -1,7 +1,9 @@
 using NewsAPI.Constants;
-using NewsSite.Server.Services;
-using System.Text.Json;
 using NewsAPI.Models;
+using NewsSite.Server.Services;
+using System.Reflection;
+using System.Text.Json;
+using Server.Models;
 
 public class NewsApiResponse
 {
@@ -16,19 +18,22 @@ public class NewsApiResponse
     public int TotalResults { get; set; }
     public List<Article> Articles { get; set; }
 
-    public static async Task<ArticlesResult> GetSpecificNews(NewsApiService newsApiService, string query, string fromDate, string sortBy = "popularity")
+    public static async Task<ArticlesResult> GetSpecificNews(NewsApiService newsApiService, string query, int userId, int page = 1, int pageSize = 12)
     {
-        return await GetResponseAsync(() => newsApiService.GetNewsAsync(query, fromDate, sortBy));
+        User.LogUserActivity(userId, "news_request");
+        return await GetResponseAsync(() => newsApiService.GetNewsAsync(query, page, pageSize));
     }
 
-    public static async Task<ArticlesResult> GetTopHeadlines(NewsApiService newsApiService, Countries country, int page, int pageSize)
+    public static async Task<ArticlesResult> GetTopHeadlines(NewsApiService newsApiService, int page, int pageSize, int userId)
     {
-        return await GetResponseAsync(() => newsApiService.GetTopHeadlinesAsync(country, page, pageSize));
+        User.LogUserActivity(userId, "news_request");
+        return await GetResponseAsync(() => newsApiService.GetTopHeadlinesAsync(page, pageSize));
     }
 
-    public static async Task<Dictionary<Categories, ArticlesResult>> GetTopHeadlinesByCategories(NewsApiService newsApiService, List<Categories> categories)
+    public static async Task<Dictionary<Categories, ArticlesResult>> GetTopHeadlinesByCategories(NewsApiService newsApiService, List<Categories> categories, int userId, int page = 1, int pageSize = 12)
     {
-        return await newsApiService.GetTopHeadlinesByCategoriesAsync(categories);
+        User.LogUserActivity(userId, "news_request");
+        return await newsApiService.GetTopHeadlinesByCategoriesAsync(categories, page, pageSize);
     }
 
     private static async Task<ArticlesResult> GetResponseAsync(Func<Task<ArticlesResult>> fetchArticlesFunc)

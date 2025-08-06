@@ -21,28 +21,30 @@ namespace NewsSite.Server.Services
         /// Asynchronously retrieves news articles based on the specified query, date, and sorting preference.
         /// </summary>
         /// <param name="query">The search query for the news articles.</param>
-        /// <param name="fromDate">The starting date for the news articles in string format.</param>
-        /// <param name="sortBy">The sorting preference for the articles, default is "popularity".</param>
+        /// <param name="page">The page number (default: 1).</param>
+        /// <param name="pageSize">The number of items per page (default: 12).</param>
         /// <returns>A task representing the asynchronous operation, with a result of type ArticlesResult containing the news articles.</returns>
-        public async Task<ArticlesResult> GetNewsAsync(string query, string fromDate, string sortBy = "popularity")
+        public async Task<ArticlesResult> GetNewsAsync(string query, int page = 1, int pageSize = 12)
         {
             var request = new EverythingRequest
             {
                 Q = query,
-                From = DateTime.Parse(fromDate),
-                SortBy = (SortBys)Enum.Parse(typeof(SortBys), sortBy, true),
-                Language = Languages.EN
+                From = DateTime.Now.AddMonths(-1),
+                SortBy = (SortBys)Enum.Parse(typeof(SortBys), "popularity", true),
+                Language = Languages.EN,
+                Page = page,
+                PageSize = pageSize
             };
 
             return await newsApiClient.GetEverythingAsync(request);
         }
 
 
-        public async Task<ArticlesResult> GetTopHeadlinesAsync(Countries country, int page, int pageSize)
+        public async Task<ArticlesResult> GetTopHeadlinesAsync(int page, int pageSize)
         {
             var request = new TopHeadlinesRequest
             {
-                Country = country,
+                Country = Countries.US, //newsApi only work with US
                 Page = page,
                 PageSize = pageSize
             };
@@ -50,7 +52,7 @@ namespace NewsSite.Server.Services
             return await newsApiClient.GetTopHeadlinesAsync(request);
         }
 
-        public async Task<Dictionary<Categories, ArticlesResult>> GetTopHeadlinesByCategoriesAsync(List<Categories> categories)
+        public async Task<Dictionary<Categories, ArticlesResult>> GetTopHeadlinesByCategoriesAsync(List<Categories> categories, int page = 1, int pageSize = 12)
         {
             if (categories == null || categories.Count == 0)
             {
@@ -61,7 +63,9 @@ namespace NewsSite.Server.Services
             {
                 var request = new TopHeadlinesRequest
                 {
-                    Category = category
+                    Category = category,
+                    Page = page,
+                    PageSize = pageSize
                 };
                 var result = await newsApiClient.GetTopHeadlinesAsync(request);
                 results[category] = result;

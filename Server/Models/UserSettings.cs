@@ -1,23 +1,21 @@
 namespace Server.Models
 {
-    public class UserSettings
+    public class BlockedUser
     {
         public int Id { get; set; }
+        public string Name { get; set; }
+    }
+    
+    public class UserSettings
+    {
         public int UserId { get; set; }
         public List<int> BlockedUserIds { get; set; } = new List<int>();
-        public List<string> PreferredTags { get; set; } = new List<string>();
-        public bool NotificationsEnabled { get; set; } = true;
+        public List<BlockedUser> BlockedUsers { get; set; } = new List<BlockedUser>();
         
         public static UserSettings GetUserSettings(int userId)
         {
             DBservices db = new DBservices();
             return db.GetUserSettings(userId);
-        }
-        
-        public static bool UpdateUserSettings(UserSettings settings)
-        {
-            DBservices db = new DBservices();
-            return db.UpdateUserSettings(settings);
         }
         
         public static bool BlockUser(int userId, int userToBlockId)

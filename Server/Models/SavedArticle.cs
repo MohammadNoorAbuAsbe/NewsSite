@@ -1,57 +1,42 @@
+using NewsAPI.Models;
+
 namespace Server.Models
 {
     public class SavedArticle
     {
-        public SavedArticle(int userId, string title, string description, string url, string urlToImage, string source, DateTime publishedAt, DateTime savedAt, int id = 0 )
-        {
-            Id = id;
-            UserId = userId;
-            Title = title;
-            Description = description;
-            Url = url;
-            UrlToImage = urlToImage;
-            Source = source;
-            PublishedAt = publishedAt;
-            SavedAt = savedAt;
-
-        }
-
         public int Id { get; set; }
-        public int UserId { get; set; }
-        public string Title { get; set; } = string.Empty;
-        public string Description { get; set; } = string.Empty;
-        public string Url { get; set; } = string.Empty;
-        public string UrlToImage { get; set; } = string.Empty;
-        public string Source { get; set; } = string.Empty;
-        public DateTime PublishedAt { get; set; }
+        public Article Article { get; set; } = new Article();
         public DateTime SavedAt { get; set; } = DateTime.Now;
 
         public SavedArticle() { }
 
+        public SavedArticle(int id, Article article, DateTime savedAt)
+        {
+            Id = id;
+            Article = article;
+            SavedAt = savedAt;
+        }
 
-        // Static methods for CRUD operations
+
+        // Static methods for CRUD operations using DataService
         public static List<SavedArticle> GetUserSavedArticles(int userId)
         {
-            DBservices db = new DBservices();
-            return db.GetUserSavedArticles(userId);
+            return DataService.ExecuteList(db => db.GetUserSavedArticles(userId));
         }
         
         public static List<SavedArticle> SearchSavedArticles(int userId, string searchTerm)
         {
-            DBservices db = new DBservices();
-            return db.SearchUserSavedArticles(userId, searchTerm);
+            return DataService.ExecuteList(db => db.SearchUserSavedArticles(userId, searchTerm));
         }
         
-        public static bool SaveArticle(SavedArticle article)
+        public static bool SaveArticle(Article article , int userId)
         {
-            DBservices db = new DBservices();
-            return db.SaveArticle(article);
+            return DataService.ExecuteBool(db => db.SaveArticle(article, userId));
         }
-        
+  
         public static bool RemoveSavedArticle(int userId, int articleId)
         {
-            DBservices db = new DBservices();
-            return db.RemoveSavedArticle(userId, articleId);
+            return DataService.ExecuteBool(db => db.RemoveSavedArticle(userId, articleId));
         }
     }
 }

@@ -15,81 +15,6 @@
     <link href="css/style.css" rel="stylesheet" />
   </head>
   <body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-      <div class="container">
-        <a class="navbar-brand" href="index.html">
-          <i class="fas fa-newspaper me-2"></i>NewsHub
-        </a>
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav me-auto">
-            <li class="nav-item">
-              <a class="nav-link active" href="index.html">בית</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="news.html">חדשות</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="saved-articles.html">כתבות שמורות</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="shared-content.html">תוכן משותף</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="advanced-features.html"
-                >תכונות מתקדמות</a
-              >
-            </li>
-          </ul>
-          <ul class="navbar-nav">
-            <li
-              class="nav-item dropdown"
-              id="userDropdown"
-              style="display: none"
-            >
-              <a
-                class="nav-link dropdown-toggle"
-                href="#"
-                role="button"
-                data-bs-toggle="dropdown"
-              >
-                <i class="fas fa-user"></i> <span id="username"></span>
-              </a>
-              <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="profile.html">פרופיל</a></li>
-                <li>
-                  <a class="dropdown-item" href="settings.html">הגדרות</a>
-                </li>
-                <li><hr class="dropdown-divider" /></li>
-                <li>
-                  <a class="dropdown-item" href="#" onclick="logout()"
-                    >התנתקות</a
-                  >
-                </li>
-              </ul>
-            </li>
-            <li class="nav-item" id="loginBtn">
-              <a class="nav-link" href="login.html">התחברות</a>
-            </li>
-            <li class="nav-item" id="registerBtn">
-              <a class="nav-link" href="register.html">רישום</a>
-            </li>
-            <li class="nav-item" id="adminBtn" style="display: none">
-              <a class="nav-link" href="admin.html">ניהול</a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
-
     <!-- Hero Section -->
     <div class="hero-section">
       <div class="container">
@@ -157,6 +82,40 @@
             <p class="text-muted">שתף כתבות עם תגובות ותקשר עם משתמשים אחרים</p>
           </div>
         </div>
+        <div class="col-md-4">
+          <div class="feature-card text-center">
+            <div class="feature-icon">
+              <i class="fas fa-brain"></i>
+            </div>
+            <h5>בינה מלאכותית</h5>
+            <p class="text-muted">ניתוח רגשות וסיכום חדשות באמצעות AI מתקדם</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="feature-card text-center">
+            <div class="feature-icon">
+              <i class="fas fa-shield-alt"></i>
+            </div>
+            <h5>אבטחה מתקדמת</h5>
+            <p class="text-muted">הגנה מקצועית עם JWT ו-BCrypt הצפנה</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Advanced Features CTA -->
+      <div class="row mt-5">
+        <div class="col text-center">
+          <h4 class="mb-3">גלה עוד תכונות מתקדמות</h4>
+          <p class="text-muted mb-4">
+            למד על הטכנולוגיות החדשניות והתכונות החכמות שמותקנות בפלטפורמה
+          </p>
+          <a
+            href="advanced-features.html"
+            class="btn btn-outline-primary btn-lg"
+          >
+            <i class="fas fa-rocket me-2"></i>צפה בתכונות המתקדמות
+          </a>
+        </div>
       </div>
     </div>
 
@@ -178,7 +137,7 @@
     </div>
 
     <!-- Footer -->
-    <footer class="bg-dark text-white py-4">
+    <footer class="footer bg-dark text-white py-4">
       <div class="container">
         <div class="row">
           <div class="col-md-6">
@@ -206,8 +165,20 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
     <script src="js/ajaxCalls.js"></script>
-    <script src="js/auth.js"></script>
+    <script src="js/auth-jwt.js"></script>
+    <script src="js/navbar.js"></script>
+    <script src="js/news-utils.js"></script>
     <script src="js/index.js"></script>
+
+    <script>
+      // Initialize theme on page load
+      $(document).ready(function () {
+        if (typeof Utils !== "undefined" && Utils.darkMode) {
+          Utils.darkMode.init();
+        }
+      });
+    </script>
   </body>
 </html>

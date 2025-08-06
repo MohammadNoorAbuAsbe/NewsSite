@@ -13,433 +13,1070 @@
       rel="stylesheet"
     />
     <link href="css/style.css" rel="stylesheet" />
+    <style>
+      .feature-section {
+        margin-bottom: 3rem;
+        border-left: 4px solid #007bff;
+        padding-left: 1.5rem;
+      }
+      .tech-badge {
+        background: linear-gradient(45deg, #007bff, #0056b3);
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 1rem;
+        font-size: 0.875rem;
+        margin: 0.25rem;
+        display: inline-block;
+      }
+      .feature-icon {
+        font-size: 2rem;
+        color: #007bff;
+        margin-bottom: 1rem;
+      }
+      .code-snippet {
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 0.375rem;
+        padding: 1rem;
+        font-family: "Consolas", "Monaco", monospace;
+        font-size: 0.875rem;
+        margin: 1rem 0;
+      }
+      .hero-advanced {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 4rem 0;
+        margin-bottom: 3rem;
+      }
+    </style>
   </head>
   <body>
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div id="navbar-placeholder"></div>
+
+    <!-- Hero Section -->
+    <div class="hero-advanced">
       <div class="container">
-        <a class="navbar-brand" href="index.html">
-          <i class="fas fa-newspaper me-2"></i>NewsHub
-        </a>
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav me-auto">
-            <li class="nav-item">
-              <a class="nav-link" href="index.html">בית</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="news.html">חדשות</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="saved-articles.html">כתבות שמורות</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="shared-content.html">תוכן משותף</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link active" href="advanced-features.html"
-                >תכונות מתקדמות</a
-              >
-            </li>
-          </ul>
-          <ul class="navbar-nav" id="navbarUser">
-            <!-- User navigation will be loaded here -->
-          </ul>
-        </div>
-      </div>
-    </nav>
-
-    <!-- Main Content -->
-    <div class="container mt-4">
-      <div class="row">
-        <div class="col-12">
-          <div class="text-center mb-5">
+        <div class="row align-items-center">
+          <div class="col-lg-8">
             <h1 class="display-4 fw-bold">תכונות מתקדמות</h1>
-            <p class="lead text-muted">גלה את היכולות המתקדמות של NewsHub</p>
+            <p class="lead">
+              גלה את הטכנולוגיות המתקדמות והתכונות החכמות המותקנות ב-NewsHub
+            </p>
+          </div>
+          <div class="col-lg-4 text-center">
+            <i class="fas fa-rocket" style="font-size: 6rem; opacity: 0.8"></i>
           </div>
         </div>
       </div>
+    </div>
 
-      <!-- AI Features -->
-      <div class="row mb-5">
-        <div class="col-12">
-          <h2 class="mb-4">
-            <i class="fas fa-brain me-2 text-primary"></i>בינה מלאכותית
-          </h2>
-        </div>
-        <div class="col-md-6 mb-4">
-          <div class="feature-card">
-            <div
-              class="feature-icon"
-              style="background: linear-gradient(135deg, #ff6b6b, #ee5a6f)"
-            >
-              <i class="fas fa-compress-alt"></i>
-            </div>
-            <h5>סיכום כתבות חכם</h5>
-            <p class="text-muted">
-              השתמש בבינה מלאכותית כדי לקבל סיכומים קצרים ומדויקים של כתבות
-              ארוכות
+    <div class="container">
+      <!-- AI & Machine Learning Features -->
+      <div class="feature-section">
+        <div class="d-flex align-items-center mb-4">
+          <div class="feature-icon me-3">
+            <i class="fas fa-brain"></i>
+          </div>
+          <div>
+            <h2 class="mb-1">בינה מלאכותית וניתוח רגשות</h2>
+            <p class="text-muted mb-0">
+              תכונות AI מתקדמות עם מודלים של Hugging Face
             </p>
-            <div class="demo-section">
-              <button
-                class="btn btn-outline-primary"
-                onclick="demoAISummarization()"
-              >
-                נסה עכשיו
-              </button>
-            </div>
           </div>
         </div>
-        <div class="col-md-6 mb-4">
-          <div class="feature-card">
-            <div
-              class="feature-icon"
-              style="background: linear-gradient(135deg, #4ecdc4, #44a08d)"
-            >
-              <i class="fas fa-chart-line"></i>
-            </div>
-            <h5>ניתוח רגשות</h5>
-            <p class="text-muted">
-              גלה את הטון והרגש של כתבות - חיובי, שלילי או ניטרלי
-            </p>
-            <div class="demo-section">
-              <button
-                class="btn btn-outline-primary"
-                onclick="demoSentimentAnalysis()"
-              >
-                נסה עכשיו
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
 
-      <!-- Real-time Features -->
-      <div class="row mb-5">
-        <div class="col-12">
-          <h2 class="mb-4">
-            <i class="fas fa-bolt me-2 text-warning"></i>תקשורת זמן אמת
-          </h2>
-        </div>
-        <div class="col-md-6 mb-4">
-          <div class="feature-card">
-            <div
-              class="feature-icon"
-              style="background: linear-gradient(135deg, #f093fb, #f5576c)"
-            >
-              <i class="fas fa-bell"></i>
-            </div>
-            <h5>התראות מיידיות</h5>
-            <p class="text-muted">
-              קבל התראות בזמן אמת על חדשות חמות בתחומי העניין שלך
-            </p>
-            <div class="demo-section">
-              <div class="form-check">
-                <input
-                  class="form-check-input"
-                  type="checkbox"
-                  id="notificationsToggle"
-                />
-                <label class="form-check-label" for="notificationsToggle">
-                  הפעל התראות
-                </label>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-6 mb-4">
-          <div class="feature-card">
-            <div
-              class="feature-icon"
-              style="background: linear-gradient(135deg, #ffecd2, #fcb69f)"
-            >
-              <i class="fas fa-comments"></i>
-            </div>
-            <h5>צ'אט חי</h5>
-            <p class="text-muted">
-              דון על חדשות שוטפות עם משתמשים אחרים בזמן אמת
-            </p>
-            <div class="demo-section">
-              <button class="btn btn-outline-primary" onclick="openLiveChat()">
-                הצטרף לצ'אט
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Social Features -->
-      <div class="row mb-5">
-        <div class="col-12">
-          <h2 class="mb-4">
-            <i class="fas fa-users me-2 text-success"></i>תכונות חברתיות
-          </h2>
-        </div>
-        <div class="col-md-4 mb-4">
-          <div class="feature-card">
-            <div
-              class="feature-icon"
-              style="background: linear-gradient(135deg, #667eea, #764ba2)"
-            >
-              <i class="fas fa-thumbs-up"></i>
-            </div>
-            <h5>מערכת לייקים</h5>
-            <p class="text-muted">
-              העלה או הורד דירוג לתגובות של משתמשים אחרים
-            </p>
-            <div class="demo-section">
-              <small class="text-muted">זמין בדפי שיתוף תוכן</small>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4 mb-4">
-          <div class="feature-card">
-            <div
-              class="feature-icon"
-              style="background: linear-gradient(135deg, #f093fb, #f5576c)"
-            >
-              <i class="fas fa-user-circle"></i>
-            </div>
-            <h5>אווטרים מתפתחים</h5>
-            <p class="text-muted">
-              הדמות שלך מתפתחת ומשתנה בהתאם לפעילות שלך באתר
-            </p>
-            <div class="demo-section">
-              <div id="userAvatar" class="user-avatar">
-                <i class="fas fa-user"></i>
-              </div>
-              <small class="text-muted d-block mt-2">הדמות שלך</small>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4 mb-4">
-          <div class="feature-card">
-            <div
-              class="feature-icon"
-              style="background: linear-gradient(135deg, #ffecd2, #fcb69f)"
-            >
-              <i class="fas fa-trophy"></i>
-            </div>
-            <h5>מערכת נקודות</h5>
-            <p class="text-muted">
-              צבור נקודות על פעילות והגע לדירוגים גבוהים יותר
-            </p>
-            <div class="demo-section">
-              <div class="progress">
-                <div class="progress-bar" style="width: 65%"></div>
-              </div>
-              <small class="text-muted">650/1000 נקודות</small>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Geographic Features -->
-      <div class="row mb-5">
-        <div class="col-12">
-          <h2 class="mb-4">
-            <i class="fas fa-map me-2 text-info"></i>תכונות גיאוגרפיות
-          </h2>
-        </div>
-        <div class="col-md-12 mb-4">
-          <div class="feature-card">
-            <div class="row">
-              <div class="col-md-6">
-                <div
-                  class="feature-icon"
-                  style="background: linear-gradient(135deg, #667eea, #764ba2)"
-                >
-                  <i class="fas fa-globe"></i>
-                </div>
-                <h5>מפת חדשות אינטראקטיבית</h5>
-                <p class="text-muted">
-                  צפה בחדשות על גבי מפה אינטראקטיבית וגלה מה קורה בכל מקום בעולם
+        <div class="row">
+          <div class="col-md-6">
+            <div class="card h-100">
+              <div class="card-body">
+                <h5 class="card-title">
+                  <i class="fas fa-smile text-success me-2"></i>ניתוח רגשות בזמן
+                  אמת
+                </h5>
+                <p class="card-text">
+                  השימוש במודל DistilRoBERTa של Hugging Face לניתוח רגשות של
+                  כתבות חדשות בזמן אמת.
                 </p>
-                <button class="btn btn-outline-primary" onclick="openNewsMap()">
-                  פתח מפת חדשות
-                </button>
+                <div class="mb-2">
+                  <span class="tech-badge">Hugging Face API</span>
+                  <span class="tech-badge">DistilRoBERTa</span>
+                  <span class="tech-badge">Financial Sentiment</span>
+                </div>
+                <ul class="list-unstyled">
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>זיהוי רגש
+                    חיובי/שלילי/נייטרלי
+                  </li>
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>רמת ביטחון
+                    (גבוהה/בינונית/נמוכה)
+                  </li>
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>סינון לפי
+                    רגשות
+                  </li>
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>תצוגה ויזואלית
+                    עם אייקונים
+                  </li>
+                </ul>
               </div>
-              <div class="col-md-6">
-                <div
-                  id="newsMap"
-                  style="
-                    height: 300px;
-                    background: #f8f9fa;
-                    border-radius: 8px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                  "
-                >
-                  <div class="text-center">
-                    <i class="fas fa-map fa-3x text-muted mb-3"></i>
-                    <p class="text-muted">מפת חדשות אינטראקטיבית</p>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card h-100">
+              <div class="card-body">
+                <h5 class="card-title">
+                  <i class="fas fa-file-alt text-info me-2"></i>סיכום יומי
+                  אוטומטי
+                </h5>
+                <p class="card-text">
+                  יצירת סיכום יומי חכם של החדשות באמצעות מודל AI לסיכום טקסטים.
+                </p>
+                <div class="mb-2">
+                  <span class="tech-badge">Text Summarization</span>
+                  <span class="tech-badge">Falconsai Model</span>
+                  <span class="tech-badge">Auto-Generated</span>
+                </div>
+                <ul class="list-unstyled">
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>עיבוד אוטומטי
+                    של 10 כתבות מובילות
+                  </li>
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>סיכום תמציתי
+                    וקריא
+                  </li>
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>עדכון זמן
+                    יצירה
+                  </li>
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>רענון ידני
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Enhanced User Experience Features -->
+      <div class="feature-section">
+        <div class="d-flex align-items-center mb-4">
+          <div class="feature-icon me-3">
+            <i class="fas fa-palette"></i>
+          </div>
+          <div>
+            <h2 class="mb-1">חוויית משתמש משופרת</h2>
+            <p class="text-muted mb-0">תכונות מתקדמות לשיפור הנוחות והנגישות</p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-4">
+            <div class="card h-100">
+              <div class="card-body">
+                <h5 class="card-title">
+                  <i class="fas fa-moon text-dark me-2"></i>מצב תצוגה כהה
+                </h5>
+                <p class="card-text">
+                  מעבר חלק בין מצב תצוגה בהיר לכהה לקריאה נוחה בכל שעות היום.
+                </p>
+                <div class="mb-2">
+                  <span class="tech-badge">CSS Variables</span>
+                  <span class="tech-badge">LocalStorage</span>
+                  <span class="tech-badge">Auto-Save</span>
+                </div>
+                <ul class="list-unstyled small">
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>שמירה אוטומטית
+                    של העדפות
+                  </li>
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>מעבר חלק עם
+                    אנימציות
+                  </li>
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>תצוגה נוחה
+                    לעיניים
+                  </li>
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>כפתור מעבר
+                    במקום נוח
+                  </li>
+                </ul>
+
+                <!-- Dark Mode Demo -->
+                <div class="mt-3">
+                  <button
+                    class="btn btn-outline-dark btn-sm"
+                    id="demoThemeToggle"
+                  >
+                    <i class="fas fa-moon me-1"></i>נסה מצב כהה
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="card h-100">
+              <div class="card-body">
+                <h5 class="card-title">
+                  <i class="fas fa-history text-info me-2"></i>כתבות שנצפו
+                  לאחרונה
+                </h5>
+                <p class="card-text">
+                  מעקב אוטומטי אחר הכתבות שקראת לצפייה מהירה והמשך הקריאה.
+                </p>
+                <div class="mb-2">
+                  <span class="tech-badge">LocalStorage</span>
+                  <span class="tech-badge">Auto-Tracking</span>
+                  <span class="tech-badge">Quick Access</span>
+                </div>
+                <ul class="list-unstyled small">
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>שמירה של 10
+                    כתבות אחרונות
+                  </li>
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>תמונה זעירה
+                    ותאריך צפייה
+                  </li>
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>פתיחה מהירה
+                    בלחיצה
+                  </li>
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>ניקוי רשימה
+                    אוטומטי
+                  </li>
+                </ul>
+
+                <!-- Recently Viewed Demo -->
+                <div class="mt-3">
+                  <div
+                    id="recentlyViewedContainer"
+                    style="max-height: 200px; overflow-y: auto"
+                  >
+                    <p class="text-muted text-center small">
+                      צפה בכתבות כדי לראות את הרשימה
+                    </p>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </div>
 
-      <!-- API Integration -->
-      <div class="row mb-5">
-        <div class="col-12">
-          <h2 class="mb-4">
-            <i class="fas fa-code me-2 text-dark"></i>אינטגרציות API
-          </h2>
-        </div>
-        <div class="col-md-6 mb-4">
-          <div class="feature-card">
-            <div
-              class="feature-icon"
-              style="background: linear-gradient(135deg, #667eea, #764ba2)"
-            >
-              <i class="fas fa-share-alt"></i>
-            </div>
-            <h5>שיתוף ברשתות חברתיות</h5>
-            <p class="text-muted">
-              שתף כתבות ישירות לפייסבוק, טוויטר, לינקדאין ועוד
-            </p>
-            <div class="social-buttons">
-              <a href="#" class="btn btn-outline-primary btn-sm me-2">
-                <i class="fab fa-facebook"></i>
-              </a>
-              <a href="#" class="btn btn-outline-info btn-sm me-2">
-                <i class="fab fa-twitter"></i>
-              </a>
-              <a href="#" class="btn btn-outline-primary btn-sm">
-                <i class="fab fa-linkedin"></i>
-              </a>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-6 mb-4">
-          <div class="feature-card">
-            <div
-              class="feature-icon"
-              style="background: linear-gradient(135deg, #f093fb, #f5576c)"
-            >
-              <i class="fas fa-mobile-alt"></i>
-            </div>
-            <h5>Progressive Web App</h5>
-            <p class="text-muted">התקן את NewsHub כאפליקציה במכשיר הנייד שלך</p>
-            <button class="btn btn-outline-primary" onclick="installPWA()">
-              התקן אפליקציה
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Demo Sections -->
-      <div id="demoContent" style="display: none">
-        <!-- AI Demo Content -->
-        <div class="row">
-          <div class="col-12">
-            <div class="card">
-              <div class="card-header">
-                <h5 class="mb-0">דמו תכונות AI</h5>
-              </div>
+          <div class="col-md-4">
+            <div class="card h-100">
               <div class="card-body">
-                <div id="aiDemoResults">
-                  <!-- AI demo results will appear here -->
+                <h5 class="card-title">
+                  <i class="fas fa-bell text-warning me-2"></i>התראות מתקדמות
+                </h5>
+                <p class="card-text">
+                  מערכת התראות מאובטחת עם הודעות Toast מעוצבות ותמיכה בזמן אמת.
+                </p>
+                <div class="mb-2">
+                  <span class="tech-badge">SignalR</span>
+                  <span class="tech-badge">Toast System</span>
+                  <span class="tech-badge">Real-time</span>
+                </div>
+                <ul class="list-unstyled small">
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>הודעות Toast
+                    מעוצבות
+                  </li>
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>התראות זמן אמת
+                  </li>
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>סוגי התראות
+                    שונים
+                  </li>
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>שליטה על זמן
+                    תצוגה
+                  </li>
+                </ul>
+
+                <!-- Toast Notification Demo -->
+                <div class="mt-3">
+                  <button
+                    class="btn btn-outline-success btn-sm me-1"
+                    onclick="demoToast('success')"
+                  >
+                    הצלחה
+                  </button>
+                  <button
+                    class="btn btn-outline-danger btn-sm me-1"
+                    onclick="demoToast('error')"
+                  >
+                    שגיאה
+                  </button>
+                  <button
+                    class="btn btn-outline-warning btn-sm me-1"
+                    onclick="demoToast('warning')"
+                  >
+                    אזהרה
+                  </button>
+                  <button
+                    class="btn btn-outline-info btn-sm"
+                    onclick="demoToast('info')"
+                  >
+                    מידע
+                  </button>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Live Chat Modal -->
-    <div class="modal fade" id="liveChatModal" tabindex="-1">
-      <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">צ'אט חי - חדשות</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-            ></button>
+      <!-- Advanced Search & Filtering -->
+      <div class="feature-section">
+        <div class="d-flex align-items-center mb-4">
+          <div class="feature-icon me-3">
+            <i class="fas fa-search"></i>
           </div>
-          <div class="modal-body">
-            <div
-              id="chatMessages"
-              style="
-                height: 400px;
-                overflow-y: auto;
-                border: 1px solid #dee2e6;
-                padding: 15px;
-                margin-bottom: 15px;
-              "
-            >
-              <!-- Chat messages will appear here -->
-            </div>
-            <div class="input-group">
-              <input
-                type="text"
-                class="form-control"
-                id="chatInput"
-                placeholder="כתב הודעה..."
-              />
-              <button class="btn btn-primary" onclick="sendChatMessage()">
-                שלח
-              </button>
-            </div>
+          <div>
+            <h2 class="mb-1">חיפוש וסינון מתקדמים</h2>
+            <p class="text-muted mb-0">מערכת חיפוש חכמה עם מספר פרמטרים</p>
           </div>
         </div>
-      </div>
-    </div>
 
-    <!-- News Map Modal -->
-    <div class="modal fade" id="newsMapModal" tabindex="-1">
-      <div class="modal-dialog modal-xl">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">מפת חדשות עולמית</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-            ></button>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="card h-100">
+              <div class="card-body">
+                <h5 class="card-title">
+                  <i class="fas fa-tags text-primary me-2"></i>חיפוש לפי תגיות
+                </h5>
+                <p class="card-text">
+                  חיפוש מתקדם המשלב תגיות מערכת וקטגוריות מותאמות אישית.
+                </p>
+                <ul class="list-unstyled small">
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>תגיות מערכת
+                    (קטגוריות NewsAPI)
+                  </li>
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>תגיות מותאמות
+                    אישית
+                  </li>
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>שילוב מספר
+                    תגיות
+                  </li>
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>הסרת כפילויות
+                    אוטומטית
+                  </li>
+                </ul>
+              </div>
+            </div>
           </div>
-          <div class="modal-body">
-            <div
-              id="interactiveMap"
-              style="
-                height: 500px;
-                background: #f8f9fa;
-                border-radius: 8px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-              "
-            >
-              <div class="text-center">
-                <i class="fas fa-globe fa-5x text-primary mb-3"></i>
-                <h4>מפת חדשות אינטראקטיבית</h4>
-                <p class="text-muted">לחץ על מדינות כדי לראות חדשות מקומיות</p>
+          <div class="col-md-4">
+            <div class="card h-100">
+              <div class="card-body">
+                <h5 class="card-title">
+                  <i class="fas fa-filter text-warning me-2"></i>סינון דינמי
+                </h5>
+                <p class="card-text">
+                  מערכת סינון מתקדמת עם מספר פרמטרים בו-זמנית.
+                </p>
+                <ul class="list-unstyled small">
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>סינון לפי
+                    תאריך
+                  </li>
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>סינון לפי מקור
+                  </li>
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>סינון לפי
+                    רגשות
+                  </li>
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>חיפוש טקסט
+                    חופשי
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card h-100">
+              <div class="card-body">
+                <h5 class="card-title">
+                  <i class="fas fa-sort text-info me-2"></i>דף מתקדם
+                </h5>
+                <p class="card-text">מערכת דף מתקדמת עם ביצועים מיטבליים.</p>
+                <ul class="list-unstyled small">
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>דף סרבר-צד
+                  </li>
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>גדלי עמוד
+                    משתנים
+                  </li>
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>מידע על סך
+                    התוצאות
+                  </li>
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>ניווט מהיר
+                  </li>
+                </ul>
               </div>
             </div>
           </div>
         </div>
       </div>
+
+      <!-- Security & Authentication -->
+      <div class="feature-section">
+        <div class="d-flex align-items-center mb-4">
+          <div class="feature-icon me-3">
+            <i class="fas fa-shield-alt"></i>
+          </div>
+          <div>
+            <h2 class="mb-1">אבטחה ואימות מתקדמים</h2>
+            <p class="text-muted mb-0">מערכת אבטחה מקצועית עם תקני תעשייה</p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-4">
+            <div class="card h-100">
+              <div class="card-body">
+                <h5 class="card-title">
+                  <i class="fas fa-key text-primary me-2"></i>JWT Authentication
+                </h5>
+                <p class="card-text">
+                  מערכת אימות מבוססת טוקנים עם תקן JWT מתקדם.
+                </p>
+                <div class="mb-2">
+                  <span class="tech-badge">JWT Tokens</span>
+                  <span class="tech-badge">Bearer Authentication</span>
+                  <span class="tech-badge">Role-based Access</span>
+                </div>
+                <ul class="list-unstyled">
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>אבטחת API עם
+                    Bearer Tokens
+                  </li>
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>תוקף טוקן 24
+                    שעות
+                  </li>
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>Claims מותאמים
+                    אישית
+                  </li>
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>הרשאות מבוססות
+                    תפקידים
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card h-100">
+              <div class="card-body">
+                <h5 class="card-title">
+                  <i class="fas fa-lock text-danger me-2"></i>הצפנת סיסמאות
+                </h5>
+                <p class="card-text">
+                  הצפנה מתקדמת של סיסמאות עם אלגוריתם BCrypt.
+                </p>
+                <div class="mb-2">
+                  <span class="tech-badge">BCrypt Hashing</span>
+                  <span class="tech-badge">Salt Generation</span>
+                  <span class="tech-badge">Secure Storage</span>
+                </div>
+                <ul class="list-unstyled">
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>Hash חזק עם
+                    Salt יחודי
+                  </li>
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>עמידות בפני
+                    Rainbow Tables
+                  </li>
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>אימות מאובטח
+                  </li>
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>תקן תעשייתי
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card h-100">
+              <div class="card-body">
+                <h5 class="card-title">
+                  <i class="fab fa-google text-success me-2"></i>התחברות עם
+                  Google
+                </h5>
+                <p class="card-text">
+                  אימות מאובטח באמצעות חשבון Google עם Google OAuth 2.0.
+                </p>
+                <div class="mb-2">
+                  <span class="tech-badge">Google OAuth 2.0</span>
+                  <span class="tech-badge">ID Token Verification</span>
+                  <span class="tech-badge">Auto Account Creation</span>
+                </div>
+                <ul class="list-unstyled">
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>התחברות מהירה
+                    ללא סיסמה
+                  </li>
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>יצירת חשבון
+                    אוטומטית בכניסה ראשונה
+                  </li>
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>אימות מאובטח
+                    דרך Google
+                  </li>
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>אינטגרציה
+                    שקופה עם המערכת הקיימת
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Advanced Admin Features -->
+      <div class="feature-section">
+        <div class="d-flex align-items-center mb-4">
+          <div class="feature-icon me-3">
+            <i class="fas fa-chart-line"></i>
+          </div>
+          <div>
+            <h2 class="mb-1">לוח בקרה מנהל מתקדם</h2>
+            <p class="text-muted mb-0">כלים מתקדמים לניהול ומעקב</p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6">
+            <div class="card h-100">
+              <div class="card-body">
+                <h5 class="card-title">
+                  <i class="fas fa-analytics text-info me-2"></i>אנליטיקס מתקדם
+                </h5>
+                <p class="card-text">
+                  מעקב מפורט אחר פעילות המשתמשים והתנהגות באתר.
+                </p>
+                <ul class="list-unstyled">
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>סטטיסטיקות
+                    יומיות מפורטות
+                  </li>
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>מעקב לוגינים
+                    ופעילות
+                  </li>
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>דוחות טווח
+                    תאריכים
+                  </li>
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>גרפים ותרשימים
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card h-100">
+              <div class="card-body">
+                <h5 class="card-title">
+                  <i class="fas fa-flag text-warning me-2"></i>ניהול דיווחים
+                </h5>
+                <p class="card-text">
+                  מערכת מתקדמת לניהול תוכן מדווח ומודרציה.
+                </p>
+                <ul class="list-unstyled">
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>צפייה בכל
+                    התוכן המדווח
+                  </li>
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>פעולות מהירות
+                    (הסר/השאר)
+                  </li>
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>מעקב אחר מצב
+                    הדיווח
+                  </li>
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>היסטוריית
+                    פעולות
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- User Experience Enhancements -->
+      <div class="feature-section">
+        <div class="d-flex align-items-center mb-4">
+          <div class="feature-icon me-3">
+            <i class="fas fa-magic"></i>
+          </div>
+          <div>
+            <h2 class="mb-1">שיפורי חווית משתמש</h2>
+            <p class="text-muted mb-0">תכונות UX מתקדמות לחוויה משופרת</p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-4">
+            <div class="card h-100">
+              <div class="card-body">
+                <h5 class="card-title">
+                  <i class="fas fa-mobile-alt text-success me-2"></i>עיצוב
+                  רספונסיבי
+                </h5>
+                <p class="card-text small">
+                  התאמה מושלמת לכל סוגי המכשירים והמסכים.
+                </p>
+                <ul class="list-unstyled small">
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>Bootstrap 5
+                    responsive
+                  </li>
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>Mobile-first
+                    design
+                  </li>
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>Touch-friendly
+                    interface
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card h-100">
+              <div class="card-body">
+                <h5 class="card-title">
+                  <i class="fas fa-clock text-primary me-2"></i>טעינה אסינכרונית
+                </h5>
+                <p class="card-text small">
+                  טעינת תוכן מהירה ויעילה עם loading states.
+                </p>
+                <ul class="list-unstyled small">
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>AJAX calls עם
+                    jQuery
+                  </li>
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>Loading
+                    skeletons
+                  </li>
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>Error handling
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card h-100">
+              <div class="card-body">
+                <h5 class="card-title">
+                  <i class="fas fa-palette text-warning me-2"></i>ממשק משתמש
+                  מתקדם
+                </h5>
+                <p class="card-text small">
+                  ממשק מודרני עם אנימציות ואלמנטים אינטראקטיביים.
+                </p>
+                <ul class="list-unstyled small">
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>FontAwesome
+                    icons
+                  </li>
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>CSS animations
+                  </li>
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>Interactive
+                    components
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Technical Architecture -->
+      <div class="feature-section">
+        <div class="d-flex align-items-center mb-4">
+          <div class="feature-icon me-3">
+            <i class="fas fa-server"></i>
+          </div>
+          <div>
+            <h2 class="mb-1">ארכיטקטורה טכנית מתקדמת</h2>
+            <p class="text-muted mb-0">בנייה מודולרית ומקצועית</p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6">
+            <div class="card h-100">
+              <div class="card-body">
+                <h5 class="card-title">
+                  <i class="fas fa-code text-primary me-2"></i>Backend
+                  Architecture
+                </h5>
+                <div class="mb-3">
+                  <span class="tech-badge">ASP.NET Core 6</span>
+                  <span class="tech-badge">RESTful API</span>
+                  <span class="tech-badge">Dependency Injection</span>
+                  <span class="tech-badge">SQL Server</span>
+                </div>
+                <ul class="list-unstyled">
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>MVC Pattern
+                    מתקדם
+                  </li>
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>Repository
+                    Pattern
+                  </li>
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>Service Layer
+                  </li>
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>Error Handling
+                    מקיף
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card h-100">
+              <div class="card-body">
+                <h5 class="card-title">
+                  <i class="fas fa-laptop-code text-info me-2"></i>Frontend
+                  Architecture
+                </h5>
+                <div class="mb-3">
+                  <span class="tech-badge">Vanilla JavaScript</span>
+                  <span class="tech-badge">jQuery</span>
+                  <span class="tech-badge">Bootstrap 5</span>
+                  <span class="tech-badge">Modular Design</span>
+                </div>
+                <ul class="list-unstyled">
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>Utility
+                    Classes
+                  </li>
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>Reusable
+                    Components
+                  </li>
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>State
+                    Management
+                  </li>
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>Configuration
+                    Management
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- API Integrations -->
+      <div class="feature-section">
+        <div class="d-flex align-items-center mb-4">
+          <div class="feature-icon me-3">
+            <i class="fas fa-plug"></i>
+          </div>
+          <div>
+            <h2 class="mb-1">אינטגרציות API חיצוניות</h2>
+            <p class="text-muted mb-0">חיבור לשירותים חיצוניים מתקדמים</p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-4">
+            <div class="card h-100">
+              <div class="card-body text-center">
+                <div class="mb-3">
+                  <i
+                    class="fas fa-newspaper"
+                    style="font-size: 3rem; color: #ff6b35"
+                  ></i>
+                </div>
+                <h5 class="card-title">NewsAPI Integration</h5>
+                <p class="card-text small">
+                  אינטגרציה מלאה עם NewsAPI לקבלת חדשות עדכניות מכל העולם.
+                </p>
+                <div class="mb-2">
+                  <span class="tech-badge">NewsAPI.org</span>
+                  <span class="tech-badge">Real-time Data</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card h-100">
+              <div class="card-body text-center">
+                <div class="mb-3">
+                  <i
+                    class="fas fa-robot"
+                    style="font-size: 3rem; color: #4a90e2"
+                  ></i>
+                </div>
+                <h5 class="card-title">Hugging Face AI</h5>
+                <p class="card-text small">
+                  שימוש במודלים מתקדמים לניתוח רגשות וסיכום טקסטים.
+                </p>
+                <div class="mb-2">
+                  <span class="tech-badge">HuggingFace</span>
+                  <span class="tech-badge">AI Models</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card h-100">
+              <div class="card-body text-center">
+                <div class="mb-3">
+                  <i
+                    class="fas fa-database"
+                    style="font-size: 3rem; color: #50e3c2"
+                  ></i>
+                </div>
+                <h5 class="card-title">SQL Server Database</h5>
+                <p class="card-text small">
+                  מסד נתונים מתקדם עם Stored Procedures ואינדקסים.
+                </p>
+                <div class="mb-2">
+                  <span class="tech-badge">SQL Server</span>
+                  <span class="tech-badge">Optimized Queries</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Development Features -->
+      <div class="feature-section">
+        <div class="d-flex align-items-center mb-4">
+          <div class="feature-icon me-3">
+            <i class="fas fa-tools"></i>
+          </div>
+          <div>
+            <h2 class="mb-1">תכונות פיתוח מתקדמות</h2>
+            <p class="text-muted mb-0">כלים וטכניקות פיתוח מקצועיות</p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6">
+            <div class="card h-100">
+              <div class="card-body">
+                <h5 class="card-title">
+                  <i class="fas fa-bug text-danger me-2"></i>Error Handling &
+                  Logging
+                </h5>
+                <p class="card-text">
+                  מערכת טיפול בשגיאות מקיפה עם logging מתקדם.
+                </p>
+                <ul class="list-unstyled">
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>Try-catch
+                    blocks כוללים
+                  </li>
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>Console
+                    logging מפורט
+                  </li>
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>User-friendly
+                    error messages
+                  </li>
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>Graceful
+                    degradation
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card h-100">
+              <div class="card-body">
+                <h5 class="card-title">
+                  <i class="fas fa-tachometer-alt text-success me-2"></i
+                  >Performance Optimization
+                </h5>
+                <p class="card-text">
+                  אופטימיזציות ביצועים למהירות ויעילות מקסימלית.
+                </p>
+                <ul class="list-unstyled">
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>Pagination
+                    יעילה
+                  </li>
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>Caching
+                    strategies
+                  </li>
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>Optimized
+                    database queries
+                  </li>
+                  <li>
+                    <i class="fas fa-check text-success me-2"></i>Lazy loading
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Summary -->
+      <div class="card border-primary mb-5">
+        <div class="card-header bg-primary text-white">
+          <h3 class="mb-0">
+            <i class="fas fa-star me-2"></i>סיכום התכונות המתקדמות
+          </h3>
+        </div>
+        <div class="card-body">
+          <p class="lead">
+            האתר NewsHub כולל מגוון רחב של תכונות מתקדמות הפונות למפתחים
+            ומשתמשים כאחד:
+          </p>
+          <div class="row">
+            <div class="col-md-6">
+              <h5>
+                <i class="fas fa-brain text-primary me-2"></i>טכנולוגיות AI
+              </h5>
+              <ul>
+                <li>ניתוח רגשות בזמן אמת</li>
+                <li>סיכום טקסטים אוטומטי</li>
+                <li>מודלים מתקדמים של Hugging Face</li>
+              </ul>
+            </div>
+            <div class="col-md-6">
+              <h5>
+                <i class="fas fa-shield-alt text-success me-2"></i>אבטחה מתקדמת
+              </h5>
+              <ul>
+                <li>JWT Authentication</li>
+                <li>הצפנת BCrypt</li>
+                <li>הרשאות מבוססות תפקידים</li>
+              </ul>
+            </div>
+          </div>
+          <div class="row mt-3">
+            <div class="col-md-6">
+              <h5>
+                <i class="fas fa-chart-line text-info me-2"></i>אנליטיקס מקיף
+              </h5>
+              <ul>
+                <li>מעקב פעילות משתמשים</li>
+                <li>דוחות סטטיסטיים</li>
+                <li>ניהול דיווחים מתקדם</li>
+              </ul>
+            </div>
+            <div class="col-md-6">
+              <h5><i class="fas fa-search text-warning me-2"></i>חיפוש חכם</h5>
+              <ul>
+                <li>סינון רב-פרמטרי</li>
+                <li>חיפוש לפי תגיות</li>
+                <li>חיפוש טקסט מלא</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4 mt-5">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-6">
+            <h5>NewsHub - Advanced Features</h5>
+            <p class="mb-0">פלטפורמה מתקדמת לחדשות עם טכנולוגיות חדשניות</p>
+          </div>
+          <div class="col-md-6 text-end">
+            <a href="index.html" class="btn btn-outline-light"
+              >חזרה לעמוד הבית</a
+            >
+          </div>
+        </div>
+      </div>
+    </footer>
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="js/config.js"></script>
-    <script src="js/ajaxCalls.js"></script>
-    <script src="js/auth.js"></script>
-    <script src="js/advanced-features.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/navbar.js"></script>
+
+    <script>
+      // Initialize enhanced features when page loads
+      $(document).ready(function () {
+        // Initialize dark mode
+        if (typeof Utils !== "undefined" && Utils.darkMode) {
+          Utils.darkMode.init();
+        }
+
+        // Initialize recently viewed articles display
+        if (typeof Utils !== "undefined" && Utils.recentlyViewed) {
+          Utils.recentlyViewed.updateRecentlyViewedDisplay();
+        }
+
+        // Demo theme toggle functionality
+        $("#demoThemeToggle").on("click", function () {
+          if (typeof Utils !== "undefined" && Utils.darkMode) {
+            Utils.darkMode.toggle();
+            Utils.toast.info("מצב תצוגה שונה! ההעדפה נשמרה אוטומטית.");
+          }
+        });
+      });
+
+      // Demo toast notifications
+      function demoToast(type) {
+        if (typeof Utils !== "undefined" && Utils.toast) {
+          const messages = {
+            success: "פעולה הושלמה בהצלחה!",
+            error: "אירעה שגיאה במערכת",
+            warning: "שים לב - דרושה פעולה נוספת",
+            info: "מידע חשוב למשתמש",
+          };
+
+          Utils.toast[type](messages[type] || "הודעה דמו");
+        }
+      }
+    </script>
   </body>
 </html>

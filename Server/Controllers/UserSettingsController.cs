@@ -1,91 +1,61 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Server.Models;
 
 namespace Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class UserSettingsController : ControllerBase
+    [Authorize]
+    public class UserSettingsController : BaseController
     {
-        /// <summary>
-        /// Get user settings and preferences
-        /// </summary>
-        [HttpGet("{userId}")]
-        public IActionResult GetUserSettings(int userId)
+        public class BlockUserRequest
         {
-            try
-            {
-                var settings = UserSettings.GetUserSettings(userId);
-                return Ok(settings);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+            public int UserToBlockId { get; set; }
+        }
+
+        public class UnblockUserRequest
+        {
+            public int UserToUnblockId { get; set; }
         }
         
         /// <summary>
-        /// Update user settings
+        /// Get user settings and preferences for the authenticated user
         /// </summary>
-        [HttpPut("{userId}")]
-        public IActionResult UpdateUserSettings(int userId, [FromBody] UserSettings settings)
+        [HttpGet]
+        public IActionResult GetUserSettings()
         {
-            try
+            return ExecuteWithUserValidation(userId =>
             {
-                settings.UserId = userId; // Ensure correct user ID
-                bool success = UserSettings.UpdateUserSettings(settings);
-                if (success)
-                {
-                    return Ok(new { message = "Settings updated successfully" });
-                }
-                return BadRequest(new { message = "Failed to update settings" });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+                return (object)UserSettings.GetUserSettings(userId);
+            });
         }
+        
         
         /// <summary>
         /// Block another user
         /// </summary>
-        [HttpPost("{userId}/block/{userToBlockId}")]
-        public IActionResult BlockUser(int userId, int userToBlockId)
+        [HttpPost("block")]
+        public IActionResult BlockUser([FromBody] BlockUserRequest request)
         {
-            try
-            {
-                bool success = UserSettings.BlockUser(userId, userToBlockId);
-                if (success)
-                {
-                    return Ok(new { message = "User blocked successfully" });
-                }
-                return BadRequest(new { message = "Failed to block user" });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+            return ExecuteWithUserValidationConditional(
+                userId => UserSettings.BlockUser(userId, request.UserToBlockId),
+                "user blocked successfully",
+                "Failed to block user"
+            );
         }
         
         /// <summary>
         /// Unblock a user
         /// </summary>
-        [HttpDelete("{userId}/block/{userToUnblockId}")]
-        public IActionResult UnblockUser(int userId, int userToUnblockId)
+        [HttpPost("unblock")]
+        public IActionResult UnblockUser([FromBody] UnblockUserRequest request)
         {
-            try
-            {
-                bool success = UserSettings.UnblockUser(userId, userToUnblockId);
-                if (success)
-                {
-                    return Ok(new { message = "User unblocked successfully" });
-                }
-                return BadRequest(new { message = "Failed to unblock user" });
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
+            return ExecuteWithUserValidationConditional(
+                userId => UserSettings.UnblockUser(userId, request.UserToUnblockId),
+                "user unblocked successfully",
+                "Failed to unblock user"
+            );
         }
     }
 }

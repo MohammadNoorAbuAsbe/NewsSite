@@ -15,47 +15,6 @@
     <link href="css/style.css" rel="stylesheet" />
   </head>
   <body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-      <div class="container">
-        <a class="navbar-brand" href="index.html">
-          <i class="fas fa-newspaper me-2"></i>NewsHub
-        </a>
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav me-auto">
-            <li class="nav-item">
-              <a class="nav-link" href="index.html">בית</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link active" href="news.html">חדשות</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="saved-articles.html">כתבות שמורות</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="shared-content.html">תוכן משותף</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="advanced-features.html"
-                >תכונות מתקדמות</a
-              >
-            </li>
-          </ul>
-          <ul class="navbar-nav" id="navbarUser">
-            <!-- User navigation will be loaded here -->
-          </ul>
-        </div>
-      </div>
-    </nav>
-
     <!-- Main Content -->
     <div class="container mt-4">
       <div class="row">
@@ -77,79 +36,153 @@
                 />
               </div>
 
-              <!-- Categories -->
-              <div class="mb-3">
-                <label class="form-label">קטגוריות</label>
-                <select class="form-select" id="categoryFilter">
-                  <option value="">כל הקטגוריות</option>
-                  <option value="business">עסקים</option>
-                  <option value="entertainment">בידור</option>
-                  <option value="general">כללי</option>
-                  <option value="health">בריאות</option>
-                  <option value="science">מדע</option>
-                  <option value="sports">ספורט</option>
-                  <option value="technology">טכנולוגיה</option>
-                </select>
-              </div>
-
               <!-- Tags -->
               <div class="mb-3">
-                <label class="form-label">התחומי עניין שלי</label>
-                <div id="userTags">
-                  <!-- User tags will be loaded here -->
+                <label class="form-label">תגיות</label>
+                <div class="mb-2">
+                  <div id="systemTags" class="tag-container">
+                    <!-- System tags will be loaded here -->
+                  </div>
+                </div>
+              </div>
+
+              <!-- Active Filters -->
+              <div class="mb-3" id="activeFiltersSection" style="display: none">
+                <label class="form-label">פילטרים פעילים</label>
+                <div id="activeFilterTags" class="tag-container">
+                  <!-- Active filter tags will be shown here -->
                 </div>
                 <button
-                  class="btn btn-sm btn-outline-primary mt-2"
-                  onclick="openTagsModal()"
+                  class="btn btn-sm btn-outline-secondary mt-2"
+                  onclick="TagManager.clearAllFilters()"
                 >
-                  <i class="fas fa-plus"></i> נהל תגיות
+                  <i class="fas fa-times"></i> נקה פילטרים
                 </button>
               </div>
-
-              <!-- Country -->
-              <div class="mb-3">
-                <label class="form-label">מדינה</label>
-                <select class="form-select" id="countryFilter">
-                  <option value="us">ארצות הברית</option>
-                  <option value="il">ישראל</option>
-                  <option value="gb">בריטניה</option>
-                  <option value="fr">צרפת</option>
-                  <option value="de">גרמניה</option>
-                </select>
-              </div>
-
-              <button class="btn btn-primary w-100" onclick="loadNews()">
+              <button
+                class="btn btn-primary w-100"
+                onclick="NewsManager.loadNews()"
+              >
                 <i class="fas fa-sync-alt me-2"></i>טען חדשות
               </button>
+            </div>
+          </div>
+
+          <!-- Daily Summary Panel -->
+          <div class="card mt-3" id="dailySummaryPanel">
+            <div
+              class="card-header d-flex justify-content-between align-items-center"
+            >
+              <h6 class="mb-0">
+                <i class="fas fa-robot me-2 text-info"></i>AI Daily Summary
+              </h6>
+              <button
+                class="btn btn-sm btn-outline-info"
+                onclick="SummaryUtils.loadDailySummary()"
+                title="Load Summary"
+              >
+                <i class="fas fa-sync-alt"></i>
+              </button>
+            </div>
+            <div class="card-body p-2" id="dailySummaryContent">
+              <!-- Daily summary will be loaded here -->
+            </div>
+          </div>
+
+          <!-- Recently Viewed Articles -->
+          <div class="card">
+            <div class="card-header">
+              <h6 class="mb-0">
+                <i class="fas fa-history me-2"></i>כתבות שנצפו לאחרונה
+                <button
+                  class="btn btn-sm btn-outline-secondary float-end"
+                  onclick="clearRecentlyViewed()"
+                  title="נקה רשימה"
+                >
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+              </h6>
+            </div>
+            <div class="card-body p-2">
+              <div
+                id="recentlyViewedSidebar"
+                style="max-height: 300px; overflow-y: auto"
+              >
+                <p class="text-muted text-center small">
+                  אין כתבות שנצפו לאחרונה
+                </p>
+              </div>
             </div>
           </div>
         </div>
 
         <!-- News Content -->
         <div class="col-lg-9">
-          <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2><i class="fas fa-newspaper me-2"></i>חדשות אחרונות</h2>
-            <div class="btn-group" role="group">
+          <!-- AI Sentiment Analysis Toggle -->
+          <div class="sentiment-controls mb-3" style="display: none">
+            <div class="form-check form-switch">
               <input
-                type="radio"
-                class="btn-check"
-                name="viewType"
-                id="gridView"
-                checked
+                class="form-check-input"
+                type="checkbox"
+                id="sentimentToggle"
               />
-              <label class="btn btn-outline-primary" for="gridView">
-                <i class="fas fa-th-large"></i>
-              </label>
-              <input
-                type="radio"
-                class="btn-check"
-                name="viewType"
-                id="listView"
-              />
-              <label class="btn btn-outline-primary" for="listView">
-                <i class="fas fa-list"></i>
+              <label class="form-check-label" for="sentimentToggle">
+                <i class="fas fa-brain text-primary"></i> Show AI Sentiment
+                Analysis
               </label>
             </div>
+            <small class="text-muted">
+              AI analyzes article sentiment using Hugging Face models
+            </small>
+          </div>
+
+          <!-- Sentiment Filters -->
+          <div class="sentiment-filters mt-2" style="display: none">
+            <label class="form-label">Filter by Sentiment:</label>
+            <div class="btn-group" role="group" aria-label="Sentiment filters">
+              <input
+                type="checkbox"
+                class="btn-check"
+                id="filter-positive"
+                value="POSITIVE"
+              />
+              <label
+                class="btn btn-outline-success btn-sm"
+                for="filter-positive"
+              >
+                <i class="fas fa-smile"></i> Positive
+              </label>
+
+              <input
+                type="checkbox"
+                class="btn-check"
+                id="filter-neutral"
+                value="NEUTRAL"
+              />
+              <label
+                class="btn btn-outline-secondary btn-sm"
+                for="filter-neutral"
+              >
+                <i class="fas fa-meh"></i> Neutral
+              </label>
+
+              <input
+                type="checkbox"
+                class="btn-check"
+                id="filter-negative"
+                value="NEGATIVE"
+              />
+              <label
+                class="btn btn-outline-danger btn-sm"
+                for="filter-negative"
+              >
+                <i class="fas fa-frown"></i> Negative
+              </label>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2><i class="fas fa-newspaper me-2"></i>חדשות אחרונות</h2>
           </div>
 
           <!-- Loading Spinner -->
@@ -179,41 +212,6 @@
       </div>
     </div>
 
-    <!-- Tags Management Modal -->
-    <div class="modal fade" id="tagsModal" tabindex="-1">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">ניהול תחומי עניין</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-            ></button>
-          </div>
-          <div class="modal-body">
-            <div class="mb-3">
-              <label for="newTagInput" class="form-label"
-                >הוסף תחום עניין חדש</label
-              >
-              <div class="input-group">
-                <input
-                  type="text"
-                  class="form-control"
-                  id="newTagInput"
-                  placeholder="שם התחום..."
-                />
-                <button class="btn btn-primary" onclick="addTag()">הוסף</button>
-              </div>
-            </div>
-            <div id="allTags">
-              <!-- All tags will be loaded here -->
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <!-- Article Modal -->
     <div class="modal fade" id="articleModal" tabindex="-1">
       <div class="modal-dialog modal-lg">
@@ -235,14 +233,14 @@
             <button
               type="button"
               class="btn btn-success"
-              onclick="saveCurrentArticle()"
+              onclick="ArticleActions.saveCurrentArticle()"
             >
               <i class="fas fa-bookmark"></i> שמור כתבה
             </button>
             <button
               type="button"
               class="btn btn-primary"
-              onclick="shareCurrentArticle()"
+              onclick="ArticleActions.shareCurrentArticle()"
             >
               <i class="fas fa-share"></i> שתף
             </button>
@@ -258,12 +256,93 @@
       </div>
     </div>
 
+    <!-- Share Modal -->
+    <div
+      class="modal fade"
+      id="shareModal"
+      tabindex="-1"
+      aria-labelledby="shareModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="shareModalLabel">שתף כתבה</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              <label for="shareComment" class="form-label"
+                >הוסף תגובה (אופציונלי)</label
+              >
+              <textarea
+                class="form-control"
+                id="shareComment"
+                rows="3"
+                placeholder="מה דעתך על הכתבה הזאת?"
+              ></textarea>
+            </div>
+            <div class="article-preview p-3 bg-light rounded">
+              <h6 id="shareArticleTitle">כותרת הכתבה</h6>
+              <p id="shareArticleDescription" class="text-muted small">
+                תיאור הכתבה
+              </p>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              ביטול
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              onclick="NewsUtils.confirmShare()"
+            >
+              שתף
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alert Container -->
+    <div
+      id="alertContainer"
+      class="position-fixed top-0 start-50 translate-middle-x mt-3"
+      style="z-index: 1050"
+    ></div>
+
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
+    <script src="js/pagination.js"></script>
     <script src="js/ajaxCalls.js"></script>
-    <script src="js/auth.js"></script>
-    <script src="js/news.js"></script>
+    <script src="js/auth-jwt.js"></script>
+    <script src="js/navbar.js"></script>
+    <script src="js/sentiment-utils.js"></script>
+    <script src="js/summary-utils.js"></script>
+    <script src="js/news-utils.js"></script>
+    <script src="js/news-simple.js"></script>
+    <script src="js/api-service.js"></script>
+
+    <script>
+      // Initialize theme on page load
+      $(document).ready(function () {
+        if (typeof Utils !== "undefined" && Utils.darkMode) {
+          Utils.darkMode.init();
+        }
+      });
+    </script>
   </body>
 </html>

@@ -1,5 +1,5 @@
 // Login page functionality
-document.addEventListener("DOMContentLoaded", function () {
+$(document).ready(function () {
   // Check if user is already logged in
   if (authManager.isLoggedIn()) {
     if (authManager.isAdmin()) {
@@ -10,14 +10,14 @@ document.addEventListener("DOMContentLoaded", function () {
     return;
   }
 
-  const loginForm = document.getElementById("loginForm");
+  const $loginForm = $("#loginForm");
 
-  loginForm.addEventListener("submit", async function (e) {
+  $loginForm.on("submit", async function (e) {
     e.preventDefault();
 
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value;
-    const rememberMe = document.getElementById("rememberMe").checked;
+    const email = $("#email").val().trim();
+    const password = $("#password").val();
+    const rememberMe = $("#rememberMe").is(":checked");
 
     // Validation
     if (!email || !password) {
@@ -25,16 +25,11 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
-    if (!isValidEmail(email)) {
-      authManager.showAlert("אנא הזן כתובת אימייל תקינה", "warning");
-      return;
-    }
-
     // Disable form during login
-    const submitBtn = loginForm.querySelector('button[type="submit"]');
-    const originalText = submitBtn.innerHTML;
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>מתחבר...';
-    submitBtn.disabled = true;
+    const $submitBtn = $loginForm.find('button[type="submit"]');
+    const originalText = $submitBtn.html();
+    $submitBtn.html('<i class="fas fa-spinner fa-spin me-2"></i>מתחבר...');
+    $submitBtn.prop("disabled", true);
 
     try {
       const success = await authManager.login(email, password);
@@ -47,19 +42,14 @@ document.addEventListener("DOMContentLoaded", function () {
       authManager.showAlert("שגיאה בהתחברות", "danger");
     } finally {
       // Re-enable form
-      submitBtn.innerHTML = originalText;
-      submitBtn.disabled = false;
+      $submitBtn.html(originalText);
+      $submitBtn.prop("disabled", false);
     }
   });
 
   // Auto-fill admin credentials on admin login hint click
-  document.querySelector(".admin-login").addEventListener("click", function () {
-    document.getElementById("email").value = "admin@newshub.com";
-    document.getElementById("password").value = "admin";
+  $(".admin-login").on("click", function () {
+    $("#email").val("admin@newshub.com");
+    $("#password").val("admin");
   });
 });
-
-function isValidEmail(email) {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
-}

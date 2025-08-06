@@ -15,49 +15,6 @@
     <link href="css/style.css" rel="stylesheet" />
   </head>
   <body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-      <div class="container">
-        <a class="navbar-brand" href="index.html">
-          <i class="fas fa-newspaper me-2"></i>NewsHub
-        </a>
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav me-auto">
-            <li class="nav-item">
-              <a class="nav-link" href="index.html">בית</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="news.html">חדשות</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="saved-articles.html">כתבות שמורות</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link active" href="shared-content.html"
-                >תוכן משותף</a
-              >
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="advanced-features.html"
-                >תכונות מתקדמות</a
-              >
-            </li>
-          </ul>
-          <ul class="navbar-nav" id="navbarUser">
-            <!-- User navigation will be loaded here -->
-          </ul>
-        </div>
-      </div>
-    </nav>
-
     <!-- Main Content -->
     <div class="container mt-4">
       <div class="row">
@@ -78,16 +35,6 @@
                   placeholder="חפש בתוכן משותף..."
                 />
               </div>
-
-              <!-- Filter by user -->
-              <div class="mb-3">
-                <label class="form-label">סינון לפי משתמש</label>
-                <select class="form-select" id="userFilter">
-                  <option value="">כל המשתמשים</option>
-                  <!-- Users will be populated dynamically -->
-                </select>
-              </div>
-
               <!-- Blocked users -->
               <div class="mb-3">
                 <h6>משתמשים חסומים</h6>
@@ -101,13 +48,6 @@
                   <i class="fas fa-ban me-1"></i>חסום משתמש
                 </button>
               </div>
-
-              <button
-                class="btn btn-primary w-100"
-                onclick="filterSharedContent()"
-              >
-                <i class="fas fa-filter me-2"></i>סנן
-              </button>
             </div>
           </div>
         </div>
@@ -306,8 +246,20 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="js/config.js"></script>
+    <script src="js/utils.js"></script>
     <script src="js/ajaxCalls.js"></script>
-    <script src="js/auth.js"></script>
+    <script src="js/auth-jwt.js"></script>
+    <script src="js/navbar.js"></script>
+    <script src="js/news-utils.js"></script>
     <script src="js/shared-content.js"></script>
+
+    <script>
+      // Initialize theme on page load
+      $(document).ready(function () {
+        if (typeof Utils !== "undefined" && Utils.darkMode) {
+          Utils.darkMode.init();
+        }
+      });
+    </script>
   </body>
 </html>

@@ -1,22 +1,22 @@
 // Register page functionality
-document.addEventListener("DOMContentLoaded", function () {
+$(document).ready(function () {
   // Check if user is already logged in
   if (authManager.isLoggedIn()) {
     window.location.href = "index.html";
     return;
   }
 
-  const registerForm = document.getElementById("registerForm");
+  const $registerForm = $("#registerForm");
 
-  registerForm.addEventListener("submit", async function (e) {
+  $registerForm.on("submit", async function (e) {
     e.preventDefault();
 
-    const firstName = document.getElementById("firstName").value.trim();
-    const lastName = document.getElementById("lastName").value.trim();
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value;
-    const confirmPassword = document.getElementById("confirmPassword").value;
-    const agreeToTerms = document.getElementById("agreeToTerms").checked;
+    const firstName = $("#firstName").val().trim();
+    const lastName = $("#lastName").val().trim();
+    const email = $("#email").val().trim();
+    const password = $("#password").val();
+    const confirmPassword = $("#confirmPassword").val();
+    const agreeToTerms = $("#agreeToTerms").is(":checked");
 
     // Validation
     if (!firstName || !lastName || !email || !password || !confirmPassword) {
@@ -45,10 +45,10 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Disable form during registration
-    const submitBtn = registerForm.querySelector('button[type="submit"]');
-    const originalText = submitBtn.innerHTML;
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>נרשם...';
-    submitBtn.disabled = true;
+    const $submitBtn = $registerForm.find('button[type="submit"]');
+    const originalText = $submitBtn.html();
+    $submitBtn.html('<i class="fas fa-spinner fa-spin me-2"></i>נרשם...');
+    $submitBtn.prop("disabled", true);
 
     try {
       const userData = {
@@ -64,30 +64,30 @@ document.addEventListener("DOMContentLoaded", function () {
       authManager.showAlert("שגיאה ברישום", "danger");
     } finally {
       // Re-enable form
-      submitBtn.innerHTML = originalText;
-      submitBtn.disabled = false;
+      $submitBtn.html(originalText);
+      $submitBtn.prop("disabled", false);
     }
   });
 
   // Real-time password confirmation validation
-  const passwordInput = document.getElementById("password");
-  const confirmPasswordInput = document.getElementById("confirmPassword");
+  const $passwordInput = $("#password");
+  const $confirmPasswordInput = $("#confirmPassword");
 
   function validatePasswordMatch() {
     if (
-      confirmPasswordInput.value &&
-      passwordInput.value !== confirmPasswordInput.value
+      $confirmPasswordInput.val() &&
+      $passwordInput.val() !== $confirmPasswordInput.val()
     ) {
-      confirmPasswordInput.setCustomValidity("הסיסמאות אינן תואמות");
-      confirmPasswordInput.classList.add("is-invalid");
+      $confirmPasswordInput[0].setCustomValidity("הסיסמאות אינן תואמות");
+      $confirmPasswordInput.addClass("is-invalid");
     } else {
-      confirmPasswordInput.setCustomValidity("");
-      confirmPasswordInput.classList.remove("is-invalid");
+      $confirmPasswordInput[0].setCustomValidity("");
+      $confirmPasswordInput.removeClass("is-invalid");
     }
   }
 
-  passwordInput.addEventListener("input", validatePasswordMatch);
-  confirmPasswordInput.addEventListener("input", validatePasswordMatch);
+  $passwordInput.on("input", validatePasswordMatch);
+  $confirmPasswordInput.on("input", validatePasswordMatch);
 });
 
 function isValidEmail(email) {

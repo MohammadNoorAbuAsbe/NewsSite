@@ -87,7 +87,7 @@ namespace Server.Models
                 }
                 return new RegisterResponse
                 {
-                    Message = "User registered successfully",
+                    Message = "user registered successfully",
                     Success = true,
                     Id = registeredUser.Id,
                     Name = registeredUser.Name,

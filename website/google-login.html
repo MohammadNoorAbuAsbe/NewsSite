@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Google Login - News Site</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+  </head>
+  <body>
+    <div class="auth-container">
+      <div class="auth-card">
+        <h2>Login with Google</h2>
+
+        <!-- Traditional Login Form -->
+        <form id="loginForm" class="auth-form">
+          <div class="form-group">
+            <input type="email" id="email" placeholder="Email" required />
+          </div>
+          <div class="form-group">
+            <input
+              type="password"
+              id="password"
+              placeholder="Password"
+              required
+            />
+          </div>
+          <button type="submit" class="btn-primary">Login</button>
+        </form>
+
+        <div class="divider">
+          <span>OR</span>
+        </div>
+
+        <!-- Google Sign-In Button -->
+        <div
+          id="g_id_onload"
+          data-client_id="946684394155-egcnu1sk9d8fnr6qu4e75jhhjbb8010u.apps.googleusercontent.com"
+          data-callback="handleCredentialResponse"
+        ></div>
+        <div class="g_id_signin" data-type="standard"></div>
+
+        <p class="auth-switch">
+          Don't have an account? <a href="register.html">Register here</a>
+        </p>
+      </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/ajaxCalls.js"></script>
+    <script src="js/auth-jwt.js"></script>
+
+    <script>
+      // Handle traditional login
+      document
+        .getElementById("loginForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+
+          const email = document.getElementById("email").value;
+          const password = document.getElementById("password").value;
+
+          try {
+            const response = await apiCall("POST", "api/users/login", {
+              email: email,
+              password: password,
+            });
+
+            if (response && response.accessToken) {
+              // Store the token
+              localStorage.setItem("token", response.accessToken);
+              localStorage.setItem("refreshToken", response.refreshToken);
+              localStorage.setItem("user", JSON.stringify(response.user));
+
+              // Redirect to main page
+              window.location.href = "index.html";
+            } else {
+              alert("Login failed");
+            }
+          } catch (error) {
+            console.error("Login error:", error);
+            alert("Login failed: " + error.message);
+          }
+        });
+
+      // Handle Google Sign-In response
+      async function handleCredentialResponse(response) {
+        try {
+          const result = await apiCall("POST", "api/users/google-login", {
+            idToken: response.credential,
+          });
+
+          if (result && result.accessToken) {
+            // Store the token (same as traditional login)
+            localStorage.setItem("token", result.accessToken);
+            localStorage.setItem("refreshToken", result.refreshToken);
+            localStorage.setItem("user", JSON.stringify(result.user));
+
+            // Redirect to main page
+            window.location.href = "index.html";
+          } else {
+            alert("Google login failed");
+          }
+        } catch (error) {
+          console.error("Google login error:", error);
+          alert("Google login failed: " + error.message);
+        }
+      }
+    </script>
+
+    <style>
+      .divider {
+        text-align: center;
+        margin: 20px 0;
+        position: relative;
+      }
+
+      .divider::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: #ddd;
+      }
+
+      .divider span {
+        background: white;
+        padding: 0 15px;
+        color: #666;
+      }
+
+      .g_id_signin {
+        margin: 20px 0;
+        display: flex;
+        justify-content: center;
+      }
+    </style>
+  </body>
+</html>
