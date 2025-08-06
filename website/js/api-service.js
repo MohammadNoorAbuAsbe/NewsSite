@@ -112,7 +112,6 @@ class ApiService {
       }
     } catch (error) {
       if (showLoading) this.hideLoading();
-      this.log("API call error:", error);
       throw error;
     }
   }
@@ -125,7 +124,6 @@ class ApiService {
       urls.news.topHeadlinesWithSentiment
     );
 
-    this.log("Loading top headlines:", { page, pageSize, userId, endpoint });
 
     return this.makeApiCall(
       "GET",
@@ -146,7 +144,6 @@ class ApiService {
       urls.news.specificNewsWithSentiment
     );
 
-    this.log("Searching news:", { query, page, pageSize, userId });
 
     return this.makeApiCall(
       "GET",
@@ -169,7 +166,6 @@ class ApiService {
       urls.news.searchByTagsWithSentiment
     );
 
-    this.log("Searching by tags:", { tags, page, pageSize, userId });
 
     return this.makeApiCall(
       "POST",
@@ -184,7 +180,6 @@ class ApiService {
   }
 
   async loadTags() {
-    this.log("Loading tags");
     return this.makeApiCall("GET", `${TAGS_SERVER_PATH}/tags`, null, {
       useAuth: false,
     });
@@ -192,7 +187,6 @@ class ApiService {
 
   // Generic news response handler
   handleNewsResponse(response, page, container = "#newsContainer") {
-    this.log("News API Response:", response);
 
     if (
       response.status === "Ok" &&
@@ -209,7 +203,6 @@ class ApiService {
 
       return true;
     } else {
-      this.log("No articles found or invalid response");
       NewsUtils.showNoNewsMessage($(container));
       return false;
     }
