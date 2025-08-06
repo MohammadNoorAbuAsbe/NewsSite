@@ -465,7 +465,9 @@ function undislikeContent(contentId) {
     undislikeData,
     function (response) {
       if (response.message || response.success) {
-        Utils.toast.success(response.message || "ביטול חוסר חיבת התוכן בוצע בהצלחה");
+        Utils.toast.success(
+          response.message || "ביטול חוסר חיבת התוכן בוצע בהצלחה"
+        );
         // Refresh the content to get updated dislikes count
         loadSharedContent();
       } else {
@@ -650,11 +652,6 @@ function markContentAsReported(contentId) {
       }
     }
   });
-}
-
-function openBlockUserModal() {
-  const modal = new bootstrap.Modal(document.getElementById("blockUserModal"));
-  modal.show();
 }
 
 function blockUser(userId, userName) {

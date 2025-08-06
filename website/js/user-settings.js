@@ -65,7 +65,6 @@ function setupEventListeners() {
 
 // Load user settings from server
 function loadUserSettings() {
-
   // Load user profile using JWT authentication
   authenticatedFetch(`${USER_SETTINGS_SERVER_PATH}`, {
     method: "GET",

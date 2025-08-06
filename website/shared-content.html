@@ -41,12 +41,6 @@
                 <div id="blockedUsers">
                   <!-- Blocked users will be loaded here -->
                 </div>
-                <button
-                  class="btn btn-sm btn-outline-secondary mt-2"
-                  onclick="openBlockUserModal()"
-                >
-                  <i class="fas fa-ban me-1"></i>חסום משתמש
-                </button>
               </div>
             </div>
           </div>
@@ -141,46 +135,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Block User Modal -->
-    <div class="modal fade" id="blockUserModal" tabindex="-1">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">חסום משתמש</h5>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-            ></button>
-          </div>
-          <div class="modal-body">
-            <div class="mb-3">
-              <label for="userToBlock" class="form-label"
-                >בחר משתמש לחסימה</label
-              >
-              <select class="form-select" id="userToBlock" required>
-                <option value="">בחר משתמש...</option>
-                <!-- Users will be populated dynamically -->
-              </select>
-            </div>
-          </div>
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-bs-dismiss="modal"
-            >
-              ביטול
-            </button>
-            <button type="button" class="btn btn-danger" onclick="blockUser()">
-              חסום
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
     <!-- Report Content Modal -->
     <div class="modal fade" id="reportModal" tabindex="-1">
       <div class="modal-dialog modal-dialog-centered">

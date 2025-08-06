@@ -96,7 +96,6 @@ class NotificationManager {
   }
 
   handleNotification(notification) {
-
     // Add to notifications array
     this.notifications.unshift(notification);
     if (this.notifications.length > this.maxNotifications) {

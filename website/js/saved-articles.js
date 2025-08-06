@@ -120,10 +120,8 @@ function displaySavedArticles(articles) {
     return;
   }
 
-
   const articlesHTML = articles
     .map((article) => {
-
       // Handle the actual API response structure: lowercase property names first
       const actualArticle = article.article || article.Article || article;
       const articleId = article.id || article.Id;
@@ -502,7 +500,10 @@ function deleteAllArticles() {
     })
     .then((data) => {
       if (data && data.success) {
-        Utils.toast.success(data.message || "כל הכתבות נמחקו בהצלחה", "success");
+        Utils.toast.success(
+          data.message || "כל הכתבות נמחקו בהצלחה",
+          "success"
+        );
         loadSavedArticles();
         loadStatistics();
       } else {
@@ -546,7 +547,9 @@ function deleteAllArticlesIndividually() {
           if (errors === 0) {
             Utils.toast.success("כל הכתבות נמחקו בהצלחה");
           } else {
-            Utils.toast.warning(`נמחקו ${deletedCount} כתבות, ${errors} שגיאות`);
+            Utils.toast.warning(
+              `נמחקו ${deletedCount} כתבות, ${errors} שגיאות`
+            );
           }
           loadSavedArticles();
           loadStatistics();
@@ -559,7 +562,9 @@ function deleteAllArticlesIndividually() {
         // Check if this is the last article
         if (deletedCount + errors === totalArticles) {
           if (deletedCount > 0) {
-            Utils.toast.warning(`נמחקו ${deletedCount} כתבות, ${errors} שגיאות`);
+            Utils.toast.warning(
+              `נמחקו ${deletedCount} כתבות, ${errors} שגיאות`
+            );
           } else {
             Utils.toast.error("שגיאה במחיקת הכתבות");
           }
