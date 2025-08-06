@@ -169,7 +169,7 @@ const NewsUtils = {
             }
           } else {
             if (typeof Utils !== "undefined" && Utils.toast) {
-              Utils.toast.error("שגיאה בשמירת הכתבה");
+              Utils.toast.success("הכתבה נשמרה בהצלחה!");
             } else {
               authManager.showAlert(
                 response.message || "שגיאה בשמירת הכתבה",

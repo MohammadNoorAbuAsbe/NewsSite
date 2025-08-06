@@ -116,7 +116,6 @@ function loadTags() {
   apiService
     .loadTags()
     .then((response) => {
-      Utils.debug.log("Tags Response:", response);
       if (response.length > 0) {
         allTags = response;
         displayTagFilters(allTags);
