@@ -95,7 +95,6 @@ function loadSavedArticles(page = null) {
         // Load statistics after articles are loaded
         loadStatistics();
       } else {
-        Utils.debug.log("No articles found, showing no articles message");
         currentSavedArticles = []; // Set to empty array
         showNoArticlesMessage();
         // Update pagination to show no pages
@@ -116,20 +115,14 @@ function loadSavedArticles(page = null) {
 function displaySavedArticles(articles) {
   const $container = $("#articlesContainer");
 
-  Utils.debug.log("displaySavedArticles called with:", articles);
-  Utils.debug.log("Container element:", $container[0]);
-
   if (!articles || articles.length === 0) {
-    Utils.debug.log("No articles to display");
     showNoArticlesMessage();
     return;
   }
 
-  Utils.debug.log("Generating HTML for", articles.length, "articles");
 
   const articlesHTML = articles
     .map((article) => {
-      Utils.debug.log("Processing article:", article);
 
       // Handle the actual API response structure: lowercase property names first
       const actualArticle = article.article || article.Article || article;
@@ -201,12 +194,7 @@ function displaySavedArticles(articles) {
     })
     .join("");
 
-  Utils.debug.log(
-    "Setting container innerHTML with HTML length:",
-    articlesHTML.length
-  );
   $container.html(articlesHTML);
-  Utils.debug.log("Container innerHTML set successfully");
 }
 
 function openSavedArticle(articleId) {

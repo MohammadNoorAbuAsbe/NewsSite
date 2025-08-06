@@ -54,9 +54,6 @@ function setupEventListeners() {
   $(document).on("click", ".tag-filter", toggleTag);
   $(document).on("click", "#clearTags", clearAllTags);
 
-  // View mode toggle
-  $("#viewModeToggle").on("click", toggleViewMode);
-
   // Pagination
   $(document).on("click", ".pagination .page-link", handlePagination);
 }
@@ -230,10 +227,6 @@ function handlePagination(event) {
     // Load top headlines
     loadTopHeadlines(page);
   }
-}
-
-function toggleViewMode() {
-  Utils.debug.log("View mode toggle clicked");
 }
 
 // Utility function for debouncing search input

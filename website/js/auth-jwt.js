@@ -63,7 +63,6 @@ class AuthManager {
       };
       localStorage.setItem("currentUser", JSON.stringify(this.currentUser));
     } catch (error) {
-      Utils.debug.log("Token validation failed, logging out");
       this.logout();
     }
   }
@@ -289,7 +288,6 @@ class AuthManager {
 
       // Handle 401 Unauthorized
       if (response.status === 401 && this.accessToken) {
-        Utils.debug.log("Token expired, logging out");
         this.logout();
         return null;
       }
@@ -324,7 +322,6 @@ class AuthManager {
       error: (xhr, status, error) => {
         // Handle 401 Unauthorized
         if (xhr.status === 401) {
-          Utils.debug.log("Token expired, logging out");
           this.logout();
           return;
         }

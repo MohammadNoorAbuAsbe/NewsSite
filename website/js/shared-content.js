@@ -337,7 +337,6 @@ function submitShare() {
       }
     },
     function (error) {
-      console.error("Error sharing content:", error);
       authManager.showAlert("שגיאה בשיתוף התוכן", "danger");
     }
   );

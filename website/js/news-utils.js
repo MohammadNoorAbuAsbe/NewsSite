@@ -382,14 +382,11 @@ const NewsUtils = {
       userComment: comment,
     };
 
-    Utils.debug.log("Sharing content:", sharedContent);
-
     ajaxCall(
       "POST",
       urls.sharedContent.shareContent,
       JSON.stringify(sharedContent),
       function (response) {
-        Utils.debug.log("Share success:", response);
         authManager.showAlert("הכתבה שותפה בהצלחה!", "success");
 
         // Close the modal using jQuery
