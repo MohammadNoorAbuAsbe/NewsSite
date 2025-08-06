@@ -16,7 +16,6 @@ $(document).ready(function () {
     const email = $("#email").val().trim();
     const password = $("#password").val();
     const confirmPassword = $("#confirmPassword").val();
-    const agreeToTerms = $("#agreeToTerms").is(":checked");
 
     // Validation
     if (!firstName || !lastName || !email || !password || !confirmPassword) {
@@ -36,11 +35,6 @@ $(document).ready(function () {
 
     if (password !== confirmPassword) {
       authManager.showAlert("הסיסמאות אינן תואמות", "warning");
-      return;
-    }
-
-    if (!agreeToTerms) {
-      authManager.showAlert("עליך להסכים לתנאי השימוש", "warning");
       return;
     }
 

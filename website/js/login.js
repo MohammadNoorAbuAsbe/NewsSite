@@ -17,7 +17,6 @@ $(document).ready(function () {
 
     const email = $("#email").val().trim();
     const password = $("#password").val();
-    const rememberMe = $("#rememberMe").is(":checked");
 
     // Validation
     if (!email || !password) {
@@ -33,10 +32,6 @@ $(document).ready(function () {
 
     try {
       const success = await authManager.login(email, password);
-
-      if (success && rememberMe) {
-        localStorage.setItem("rememberLogin", "true");
-      }
     } catch (error) {
       console.error("Login error:", error);
       authManager.showAlert("שגיאה בהתחברות", "danger");
