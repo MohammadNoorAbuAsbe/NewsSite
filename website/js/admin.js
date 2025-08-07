@@ -147,14 +147,32 @@ function getActivityDescription(activity) {
       return "משתמש התחבר";
     case "save_article":
       return "כתבה נשמרה";
+    case "remove_article":
+      return "כתבה הוסרה";
     case "user_registration":
       return "משתמש חדש נרשם";
     case "news_request":
       return "בקשה לחדשות";
-    case "content_shared":
+    case "share_content":
       return "תוכן שותף";
-    case "content_reported":
+    case "like_content":
+      return "תוכן הועדף";
+    case "unlike_content":
+      return "העדפה הוסרה";
+    case "dislike_content":
+      return "תוכן לא הועדף";
+    case "undislike_content":
+      return "אי-העדפה הוסרה";
+    case "report_content":
       return "תוכן דווח";
+    case "block_user":
+      return "משתמש נחסם";
+    case "unblock_user":
+      return "חסימת משתמש הוסרה";
+    case "logout":
+      return "משתמש התנתק";
+    case "google-login":
+      return "התחברות עם גוגל";
     default:
       return activity.activityType || "פעילות";
   }

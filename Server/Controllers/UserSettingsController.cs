@@ -46,7 +46,9 @@ namespace Server.Controllers
                     {
                         return false;
                     }
-                    return UserSettings.BlockUser(userId, request.UserToBlockId);
+                    var result = UserSettings.BlockUser(userId, request.UserToBlockId);
+                    if (result) Models.User.LogUserActivity(userId, "block_user");
+                    return result;
                 },
                 "user blocked successfully",
                 "Cannot block yourself"
@@ -60,7 +62,11 @@ namespace Server.Controllers
         public IActionResult UnblockUser([FromBody] UnblockUserRequest request)
         {
             return ExecuteWithUserValidationConditional(
-                userId => UserSettings.UnblockUser(userId, request.UserToUnblockId),
+                userId => {
+                    var result = UserSettings.UnblockUser(userId, request.UserToUnblockId);
+                    if (result) Models.User.LogUserActivity(userId, "unblock_user");
+                    return result;
+                },
                 "user unblocked successfully",
                 "Failed to unblock user"
             );

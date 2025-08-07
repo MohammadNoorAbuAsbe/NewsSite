@@ -34,7 +34,9 @@ namespace Server.Controllers
                 userId =>
                 {
                     var sharedContent = new SharedContent(userId, request.Article, request.UserComment);
-                    return SharedContent.ShareContent(sharedContent);
+                    var result = SharedContent.ShareContent(sharedContent);
+                    if (result) Models.User.LogUserActivity(userId, "share_content");
+                    return result;
                 },
                 "Content shared successfully",
                 "Failed to share content"
@@ -48,7 +50,11 @@ namespace Server.Controllers
         public IActionResult ReportContent([FromBody] ReportRequest request)
         {
             return ExecuteWithConditionalResponse(
-                () => SharedContent.ReportContent(request.ContentId, request.ReporterId),
+                () => {
+                    var result = SharedContent.ReportContent(request.ContentId, request.ReporterId);
+                    if (result) Models.User.LogUserActivity(request.ReporterId, "report_content");
+                    return result;
+                },
                 "Content reported successfully",
                 "Failed to report content"
             );
@@ -96,9 +102,14 @@ namespace Server.Controllers
         private IActionResult HandleContentReaction(ContentReactionRequest request, ContentReactionType reactionType)
         {
             var (operation, successMessage, errorMessage) = GetReactionDetails(reactionType);
+            var activityType = GetActivityType(reactionType);
 
             return ExecuteWithConditionalResponse(
-                () => operation(request.ContentId, request.UserId),
+                () => {
+                    var result = operation(request.ContentId, request.UserId);
+                    if (result) Models.User.LogUserActivity(request.UserId, activityType);
+                    return result;
+                },
                 successMessage,
                 errorMessage
             );
@@ -115,6 +126,21 @@ namespace Server.Controllers
                 ContentReactionType.Unlike => (SharedContent.UnlikeContent, "Content unliked successfully", "Failed to unlike content"),
                 ContentReactionType.Dislike => (SharedContent.DislikeContent, "Content disliked successfully", "Failed to dislike content"),
                 ContentReactionType.Undislike => (SharedContent.UndislikeContent, "Content undisliked successfully", "Failed to undislike content"),
+                _ => throw new ArgumentException($"Unknown reaction type: {reactionType}")
+            };
+        }
+
+        /// <summary>
+        /// Get the activity type for logging based on the reaction type
+        /// </summary>
+        private static string GetActivityType(ContentReactionType reactionType)
+        {
+            return reactionType switch
+            {
+                ContentReactionType.Like => "like_content",
+                ContentReactionType.Unlike => "unlike_content",
+                ContentReactionType.Dislike => "dislike_content",
+                ContentReactionType.Undislike => "undislike_content",
                 _ => throw new ArgumentException($"Unknown reaction type: {reactionType}")
             };
         }

@@ -79,7 +79,11 @@ namespace Server.Controllers
         public IActionResult SaveArticle([FromBody] SaveArticleRequest request)
         {
             return ExecuteWithUserValidationConditional(
-                userId => SavedArticle.SaveArticle(request.Article, userId),
+                userId => {
+                    var result = SavedArticle.SaveArticle(request.Article, userId);
+                    if (result) Models.User.LogUserActivity(userId, "save_article");
+                    return result;
+                },
                 "Article saved successfully",
                 "Failed to save article"
             );
@@ -92,7 +96,11 @@ namespace Server.Controllers
         public IActionResult RemoveSavedArticle(int articleId)
         {
             return ExecuteWithUserValidationConditional(
-                userId => SavedArticle.RemoveSavedArticle(userId, articleId),
+                userId => {
+                    var result = SavedArticle.RemoveSavedArticle(userId, articleId);
+                    if (result) Models.User.LogUserActivity(userId, "remove_article");
+                    return result;
+                },
                 "Article removed successfully",
                 "Failed to remove article",
                 true
