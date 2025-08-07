@@ -77,33 +77,40 @@ namespace Server.Controllers
         [ProducesResponseType(typeof(string), 401)]
         public IActionResult Login([FromBody] LoginRequest request)
         {
-            var userResponse = Models.User.Login(request.Email, request.Password);
-            if (userResponse != null)
+            try
             {
-                // Check if user is disabled
-                var fullUser = Models.User.GetUserByEmail(request.Email);
-                if (fullUser != null && !fullUser.IsEnabled)
+                var userResponse = Models.User.Login(request.Email, request.Password);
+                if (userResponse != null)
                 {
-                    return Unauthorized("Account has been disabled");
+                    // Check if user is disabled
+                    var fullUser = Models.User.GetUserByEmail(request.Email);
+                    if (fullUser != null && !fullUser.IsEnabled)
+                    {
+                        return Unauthorized("Account has been disabled");
+                    }
+
+                    // Include admin status in response
+                    userResponse.IsAdmin = fullUser?.IsAdmin ?? false;
+
+                    // Generate JWT tokens
+                    var accessToken = _jwtService.GenerateToken(userResponse);
+                    var refreshToken = _jwtService.GenerateRefreshToken();
+
+                    return Ok(new LoginResponse
+                    {
+                        User = userResponse,
+                        AccessToken = accessToken,
+                        RefreshToken = refreshToken,
+                        TokenType = "Bearer",
+                        ExpiresIn = 86400 // 24 hours in seconds
+                    });
                 }
-
-                // Include admin status in response
-                userResponse.IsAdmin = fullUser?.IsAdmin ?? false;
-
-                // Generate JWT tokens
-                var accessToken = _jwtService.GenerateToken(userResponse);
-                var refreshToken = _jwtService.GenerateRefreshToken();
-
-                return Ok(new LoginResponse
-                {
-                    User = userResponse,
-                    AccessToken = accessToken,
-                    RefreshToken = refreshToken,
-                    TokenType = "Bearer",
-                    ExpiresIn = 86400 // 24 hours in seconds
-                });
+                return Unauthorized("Invalid email or password");
             }
-            return Unauthorized("Invalid email or password");
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = $"Login failed: {ex.Message}" });
+            }
         }
 
         /// <summary>
