@@ -122,66 +122,10 @@ namespace Server.Controllers
         {
             try
             {
-                // Verify the Google ID token
-                var settings = new GoogleJsonWebSignature.ValidationSettings()
-                {
-                    // Get Google Client ID from configuration
-                    Audience = new[] { _configuration["GoogleAuth:ClientId"] }
-                };
+                // Use the User class method for Google authentication
+                var userResponse = await Models.User.GoogleLogin(request.IdToken, _configuration["GoogleAuth:ClientId"]);
 
-                var payload = await GoogleJsonWebSignature.ValidateAsync(request.IdToken, settings);
-
-                if (payload == null)
-                {
-                    return Unauthorized("Invalid Google token");
-                }
-
-                // Check if user exists
-                var existingUser = Models.User.GetUserByEmail(payload.Email);
-
-                UserResponse userResponse;
-
-                if (existingUser == null)
-                {
-                    // Auto-register the user with Google info
-                    var newUser = new User
-                    {
-                        Name = payload.Name,
-                        Email = payload.Email,
-                        Password = GenerateRandomPassword() // Generate a random password since they'll use Google login
-                    };
-
-                    var registerResult = Models.User.Register(newUser);
-
-                    if (!registerResult.Success)
-                    {
-                        return Unauthorized($"Failed to create account: {registerResult.Message}");
-                    }
-
-                    // Get the newly created user
-                    existingUser = Models.User.GetUserByEmail(payload.Email);
-                    if (existingUser == null)
-                    {
-                        return Unauthorized("Failed to retrieve created account");
-                    }
-                }
-
-                // Check if user is disabled
-                if (!existingUser.IsEnabled)
-                {
-                    return Unauthorized("Account has been disabled");
-                }
-
-                // Create user response
-                userResponse = new UserResponse
-                {
-                    Id = existingUser.Id,
-                    Name = existingUser.Name,
-                    Email = existingUser.Email,
-                    IsAdmin = existingUser.IsAdmin
-                };
-
-                // Generate JWT tokens (same as regular login)
+                // Generate JWT tokens
                 var accessToken = _jwtService.GenerateToken(userResponse);
                 var refreshToken = _jwtService.GenerateRefreshToken();
 
@@ -194,21 +138,14 @@ namespace Server.Controllers
                     ExpiresIn = 86400 // 24 hours in seconds
                 });
             }
+            catch (UnauthorizedAccessException ex)
+            {
+                return Unauthorized(ex.Message);
+            }
             catch (Exception ex)
             {
                 return Unauthorized($"Google authentication failed: {ex.Message}");
             }
-        }
-
-        /// <summary>
-        /// Generates a random password for Google OAuth users
-        /// </summary>
-        private string GenerateRandomPassword()
-        {
-            var random = new Random();
-            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
-            return new string(Enumerable.Repeat(chars, 16)
-                .Select(s => s[random.Next(s.Length)]).ToArray());
         }
 
         /// <summary>

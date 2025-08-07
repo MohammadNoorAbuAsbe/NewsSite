@@ -1,4 +1,6 @@
 ﻿using Server.Controllers;
+using Google.Apis.Auth;
+using System.Linq;
 
 namespace Server.Models
 {
@@ -139,6 +141,85 @@ namespace Server.Models
             {
                 return null;
             }
+        }
+
+        /// <summary>
+        /// Authenticates a user with Google OAuth token and handles user registration if needed.
+        /// </summary>
+        /// <param name="idToken">The Google ID token to validate.</param>
+        /// <param name="googleClientId">The Google Client ID from configuration.</param>
+        /// <returns>UserResponse object on successful authentication; throws exception on failure.</returns>
+        public static async Task<UserResponse> GoogleLogin(string idToken, string googleClientId)
+        {
+            // Verify the Google ID token
+            var settings = new GoogleJsonWebSignature.ValidationSettings()
+            {
+                Audience = new[] { googleClientId }
+            };
+
+            var payload = await GoogleJsonWebSignature.ValidateAsync(idToken, settings);
+
+            if (payload == null)
+            {
+                throw new UnauthorizedAccessException("Invalid Google token");
+            }
+
+            // Check if user exists
+            var existingUser = GetUserByEmail(payload.Email);
+
+            if (existingUser == null)
+            {
+                // Auto-register the user with Google info
+                var newUser = new User
+                {
+                    Name = payload.Name,
+                    Email = payload.Email,
+                    Password = GenerateRandomPassword() // Generate a random password since they'll use Google login
+                };
+
+                var registerResult = Register(newUser);
+
+                if (!registerResult.Success)
+                {
+                    throw new Exception($"Failed to create account: {registerResult.Message}");
+                }
+
+                // Get the newly created user
+                existingUser = GetUserByEmail(payload.Email);
+                if (existingUser == null)
+                {
+                    throw new Exception("Failed to retrieve created account");
+                }
+            }
+
+            // Check if user is disabled
+            if (!existingUser.IsEnabled)
+            {
+                throw new UnauthorizedAccessException("Account has been disabled");
+            }
+
+            // Log successful Google login for admin statistics
+            LogUserActivity(existingUser.Id, "google-login");
+
+            // Create and return user response
+            return new UserResponse
+            {
+                Id = existingUser.Id,
+                Name = existingUser.Name,
+                Email = existingUser.Email,
+                IsAdmin = existingUser.IsAdmin
+            };
+        }
+
+        /// <summary>
+        /// Generates a random password for Google OAuth users
+        /// </summary>
+        private static string GenerateRandomPassword()
+        {
+            var random = new Random();
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
+            return new string(Enumerable.Repeat(chars, 16)
+                .Select(s => s[random.Next(s.Length)]).ToArray());
         }
 
         /// <summary>
