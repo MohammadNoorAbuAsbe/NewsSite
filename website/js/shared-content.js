@@ -92,70 +92,80 @@ function displaySharedContent(content) {
 
 function createSharedContentItem(item) {
   const $item = $("<div>").addClass("shared-content-item");
-  const $row = $("<div>").addClass("row");
-  const $col = $("<div>").addClass("col");
-  const $mainFlex = $("<div>").addClass("d-flex align-items-start");
+
+  // Header with user info and actions
+  const $header = $("<div>").addClass("shared-content-header");
+
+  const $userInfo = $("<div>").addClass("shared-content-user-info");
 
   // User avatar
   const $avatar = $("<div>")
-    .addClass("user-avatar me-3")
+    .addClass("user-avatar")
     .text(Utils.getUserInitials(item.userName));
 
-  // Content container
-  const $contentContainer = $("<div>").addClass("flex-grow-1");
-
-  // Header with user info and dropdown
-  const $header = createContentHeader(item);
-  $contentContainer.append($header);
-
-  // Main content
-  const $content = createMainContent(item);
-  $contentContainer.append($content);
-
-  // Action buttons
-  const $actions = createActionButtons(item);
-  $contentContainer.append($actions);
-
-  // Comments section
-  const $comments = createCommentsSection(item);
-  $contentContainer.append($comments);
-
-  $mainFlex.append($avatar, $contentContainer);
-  $col.append($mainFlex);
-  $row.append($col);
-  $item.append($row);
-
-  return $item;
-}
-
-function createContentHeader(item) {
-  const $header = $("<div>").addClass(
-    "d-flex justify-content-between align-items-start"
-  );
-
-  const $userInfo = $("<div>");
-  const $userName = $("<h6>").addClass("mb-1").text(item.userName);
-  const $time = $("<small>")
-    .addClass("text-muted")
+  // User details
+  const $userDetails = $("<div>").addClass("shared-content-user-details");
+  const $userName = $("<h6>")
+    .addClass("shared-content-username")
+    .text(item.userName);
+  const $time = $("<div>")
+    .addClass("shared-content-time")
     .append($("<i>").addClass("fas fa-clock me-1"))
     .append(Utils.formatDate(item.sharedAt));
 
-  $userInfo.append($userName, $time);
+  $userDetails.append($userName, $time);
+  $userInfo.append($avatar, $userDetails);
 
+  // Actions dropdown
+  const $actions = $("<div>").addClass("shared-content-actions");
   const $dropdown = createDropdownMenu(item);
+  $actions.append($dropdown);
 
-  $header.append($userInfo, $dropdown);
-  return $header;
+  $header.append($userInfo, $actions);
+
+  // Content body
+  const $body = $("<div>").addClass("shared-content-body");
+
+  // User comment
+  if (item.userComment) {
+    const $comment = $("<p>")
+      .addClass("shared-content-comment")
+      .text(item.userComment);
+    $body.append($comment);
+  }
+
+  // Article card if exists
+  if (item.article && item.article.title) {
+    const $articleContainer = $("<div>").addClass("shared-content-article");
+    const $articleCard = NewsUtils.createArticleCard({ article: item.article });
+    if ($articleCard) {
+      const $cardContent = $articleCard.find(".card").first();
+      $cardContent.addClass("border-0 bg-transparent");
+      $articleContainer.append($cardContent);
+    }
+    $body.append($articleContainer);
+  }
+
+  // Footer with interactions
+  const $footer = $("<div>").addClass("shared-content-footer");
+  const $interactions = createInteractionButtons(item);
+  $footer.append($interactions);
+
+  $item.append($header, $body, $footer);
+  return $item;
 }
 
+// Removed old functions as they are no longer needed with the new structure
+
 function createDropdownMenu(item) {
-  const $dropdown = $("<div>").addClass("dropdown");
+  const $dropdown = $("<div>").addClass("dropdown shared-content-dropdown");
   const $button = $("<button>")
-    .addClass("btn btn-sm btn-outline-secondary dropdown-toggle")
+    .addClass("dropdown-toggle")
     .attr("data-bs-toggle", "dropdown")
+    .attr("aria-expanded", "false")
     .append($("<i>").addClass("fas fa-ellipsis-h"));
 
-  const $menu = $("<ul>").addClass("dropdown-menu");
+  const $menu = $("<ul>").addClass("dropdown-menu dropdown-menu-end");
 
   const $reportItem = $("<li>");
   const $reportLink = $("<a>")
@@ -187,26 +197,10 @@ function createDropdownMenu(item) {
   return $dropdown;
 }
 
-function createMainContent(item) {
-  const $content = $("<div>").addClass("mt-3");
-  const $comment = $("<p>").addClass("mb-2").text(item.userComment);
-  $content.append($comment);
+// Removed old createMainContent function as it's now integrated into the main structure
 
-  if (item.article && item.article.title) {
-    const $articleCard = NewsUtils.createArticleCard({ article: item.article });
-    if ($articleCard) {
-      const $cardContent = $articleCard.find(".card").first();
-      $content.append($cardContent);
-    }
-  }
-
-  return $content;
-}
-
-function createActionButtons(item) {
-  const $actions = $("<div>").addClass(
-    "mt-3 d-flex justify-content-between align-items-center"
-  );
+function createInteractionButtons(item) {
+  const $interactions = $("<div>").addClass("shared-content-interactions");
 
   const $buttonGroup = $("<div>").addClass("btn-group btn-group-sm");
 
@@ -244,54 +238,15 @@ function createActionButtons(item) {
         .text(item.dislikesCount || 0)
     );
 
-  const $commentsButton = $("<button>")
-    .addClass("btn btn-outline-secondary")
-    .click(() => toggleComments(item.id))
-    .append($("<i>").addClass("fas fa-comments"))
-    .append(" תגובות");
+  $buttonGroup.append($likeButton, $dislikeButton);
+  $interactions.append($buttonGroup);
 
-  $buttonGroup.append($likeButton, $dislikeButton, $commentsButton);
-
-  const $views = $("<small>")
-    .addClass("text-muted")
-    .append($("<i>").addClass("fas fa-eye me-1"))
-    .append(`${item.viewsCount || 0} צפיות`);
-
-  $actions.append($buttonGroup, $views);
-  return $actions;
+  return $interactions;
 }
 
-function createCommentsSection(item) {
-  const $commentsSection = $("<div>")
-    .addClass("comments-section mt-3")
-    .attr("id", `comments-${item.id}`)
-    .hide();
-
-  const $commentBox = $("<div>").addClass("comment-box");
-  const $inputGroup = $("<div>").addClass("input-group input-group-sm");
-
-  const $input = $("<input>")
-    .addClass("form-control")
-    .attr({
-      type: "text",
-      placeholder: "כתב תגובה...",
-      id: `comment-input-${item.id}`,
-    });
-
-  const $button = $("<button>")
-    .addClass("btn btn-primary")
-    .click(() => addComment(item.id))
-    .append($("<i>").addClass("fas fa-paper-plane"));
-
-  $inputGroup.append($input, $button);
-  $commentBox.append($inputGroup);
-
-  const $commentsList = $("<div>")
-    .addClass("mt-2")
-    .attr("id", `comments-list-${item.id}`);
-
-  $commentsSection.append($commentBox, $commentsList);
-  return $commentsSection;
+function createActionButtons(item) {
+  // This function is kept for backward compatibility but now uses the new structure
+  return createInteractionButtons(item);
 }
 
 function openShareModal() {

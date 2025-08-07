@@ -974,11 +974,35 @@ blockquote {
   margin-bottom: 20px;
   overflow: hidden;
   border: 1px solid var(--border-color);
+  padding: 20px;
+  transition: all 0.3s ease;
+}
+
+.shared-content-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px var(--card-shadow-hover);
+  border-color: var(--btn-primary);
+}
+
+.shared-content-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-color-light);
+}
+
+.shared-content-user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
 }
 
 .user-avatar {
-  width: 40px;
-  height: 40px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   background: linear-gradient(135deg, #0d6efd, #6610f2);
   display: flex;
@@ -986,6 +1010,122 @@ blockquote {
   justify-content: center;
   color: white;
   font-weight: bold;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(13, 110, 253, 0.3);
+}
+
+.shared-content-user-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.shared-content-username {
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+  font-size: 1rem;
+}
+
+.shared-content-time {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.shared-content-actions {
+  flex-shrink: 0;
+  margin-left: 10px;
+}
+
+.shared-content-body {
+  margin-bottom: 20px;
+}
+
+.shared-content-comment {
+  color: var(--text-primary);
+  margin-bottom: 15px;
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+.shared-content-article {
+  border: 1px solid var(--border-color-light);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--bg-tertiary);
+  transition: all 0.2s ease;
+}
+
+.shared-content-article:hover {
+  border-color: var(--btn-primary);
+  background: var(--bg-secondary);
+}
+
+.shared-content-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 15px;
+  border-top: 1px solid var(--border-color-light);
+}
+
+.shared-content-interactions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.shared-content-interactions .btn-group {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.shared-content-interactions .btn {
+  border-radius: 0;
+  font-size: 0.85rem;
+  padding: 6px 12px;
+  font-weight: 500;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.shared-content-interactions .btn:first-child {
+  border-top-left-radius: 20px;
+  border-bottom-left-radius: 20px;
+}
+
+.shared-content-interactions .btn:last-child {
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+}
+
+.shared-content-interactions .btn i {
+  margin-right: 4px;
+}
+
+.shared-content-dropdown .dropdown-toggle {
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  padding: 4px 8px;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.shared-content-dropdown .dropdown-toggle:hover {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
 }
 
 .comment-box {
@@ -1095,6 +1235,57 @@ blockquote {
   .news-list-item img {
     width: 100px;
     height: 80px;
+  }
+
+  /* Shared content mobile adjustments */
+  .shared-content-item {
+    padding: 15px;
+    margin-bottom: 15px;
+  }
+
+  .shared-content-header {
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+  }
+
+  .user-avatar {
+    width: 40px;
+    height: 40px;
+    font-size: 0.9rem;
+  }
+
+  .shared-content-user-info {
+    gap: 10px;
+  }
+
+  .shared-content-username {
+    font-size: 0.9rem;
+  }
+
+  .shared-content-time {
+    font-size: 0.8rem;
+  }
+
+  .shared-content-comment {
+    font-size: 0.9rem;
+    margin-bottom: 12px;
+  }
+
+  .shared-content-footer {
+    padding-top: 12px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .shared-content-interactions {
+    align-self: stretch;
+    justify-content: center;
+  }
+
+  .shared-content-interactions .btn {
+    font-size: 0.8rem;
+    padding: 5px 10px;
   }
 }
 

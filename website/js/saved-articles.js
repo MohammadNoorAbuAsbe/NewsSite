@@ -1,6 +1,5 @@
 // Saved Articles functionality
 let currentSavedArticles = [];
-let currentArticle = null;
 let paginationManager;
 
 $(document).ready(function () {
@@ -150,9 +149,15 @@ function displaySavedArticles(articles) {
                     </div>
                     <div class="col-auto">
                         <div class="btn-group">
-                            <button class="btn btn-sm btn-outline-primary" onclick="openSavedArticle('${articleId}')">
-                                <i class="fas fa-eye"></i> צפה
-                            </button>
+                            ${
+                              actualArticle.url
+                                ? `<a href="${actualArticle.url}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-external-link-alt"></i> קרא כתבה
+                                </a>`
+                                : `<button class="btn btn-sm btn-outline-primary" disabled title="קישור לא זמין">
+                                    <i class="fas fa-external-link-alt"></i> קרא כתבה
+                                </button>`
+                            }
                             <button class="btn btn-sm btn-outline-success" onclick="shareArticle('${articleId}')">
                                 <i class="fas fa-share"></i> שתף
                             </button>
@@ -195,136 +200,11 @@ function displaySavedArticles(articles) {
   $container.html(articlesHTML);
 }
 
-function openSavedArticle(articleId) {
-  const article = currentSavedArticles.find((a) => (a.id || a.Id) == articleId);
-  if (!article) return;
+// Function removed - articles now open directly via URL
 
-  currentArticle = article;
+// Function removed - sharing now handled directly via shareArticle function
 
-  // Handle the actual API response structure: lowercase property names first
-  const actualArticle = article.article || article.Article || article;
-  const savedAt = article.savedAt || article.SavedAt;
-
-  $("#articleTitle").text(actualArticle.title || "כותרת לא זמינה");
-
-  const content = `
-        <div class="article-content">
-            ${
-              actualArticle.urlToImage
-                ? `
-                <img src="${actualArticle.urlToImage}" class="img-fluid rounded mb-3" alt="${actualArticle.title}"
-                     onerror="this.style.display='none'">
-            `
-                : ""
-            }
-            <div class="article-meta mb-3">
-                <small class="text-muted">
-                    <i class="fas fa-newspaper me-1"></i>${
-                      actualArticle.source?.name ||
-                      actualArticle.source ||
-                      "מקור לא ידוע"
-                    }
-                    <i class="fas fa-calendar me-1 ms-3"></i>נשמר ב-${
-                      typeof Utils !== "undefined" && Utils.formatDate
-                        ? Utils.formatDate(savedAt, "absolute")
-                        : new Date(savedAt).toLocaleDateString("he-IL")
-                    }
-                    ${
-                      actualArticle.publishedAt
-                        ? `<i class="fas fa-clock me-1 ms-3"></i>פורסם ב-${
-                            typeof Utils !== "undefined" && Utils.formatDate
-                              ? Utils.formatDate(
-                                  actualArticle.publishedAt,
-                                  "absolute"
-                                )
-                              : new Date(
-                                  actualArticle.publishedAt
-                                ).toLocaleDateString("he-IL")
-                          }`
-                        : ""
-                    }
-                </small>
-            </div>
-            <div class="article-text">
-                <p>${actualArticle.description || ""}</p>
-                ${
-                  actualArticle.content ? `<p>${actualArticle.content}</p>` : ""
-                }
-            </div>
-            ${
-              actualArticle.url
-                ? `
-                <div class="article-link mt-3">
-                    <a href="${actualArticle.url}" target="_blank" class="btn btn-outline-primary">
-                        <i class="fas fa-external-link-alt me-2"></i>קרא את הכתבה המלאה
-                    </a>
-                </div>
-            `
-                : ""
-            }
-        </div>
-    `;
-
-  $("#articleContent").html(content);
-
-  const modal = new bootstrap.Modal($("#articleModal")[0]);
-  modal.show();
-}
-
-function shareCurrentArticle() {
-  if (!currentArticle) return;
-
-  // Convert saved article to the format expected by sharing
-  const articleToShare = {
-    title:
-      currentArticle.article?.title ||
-      currentArticle.Article?.title ||
-      currentArticle.title,
-    description:
-      currentArticle.article?.description ||
-      currentArticle.Article?.description ||
-      currentArticle.description,
-    url:
-      currentArticle.article?.url ||
-      currentArticle.Article?.url ||
-      currentArticle.url,
-    urlToImage:
-      currentArticle.article?.urlToImage ||
-      currentArticle.Article?.urlToImage ||
-      currentArticle.urlToImage,
-    publishedAt:
-      currentArticle.article?.publishedAt ||
-      currentArticle.Article?.publishedAt ||
-      currentArticle.publishedAt,
-    source: {
-      name:
-        currentArticle.article?.source?.name ||
-        currentArticle.Article?.source?.name ||
-        currentArticle.source ||
-        "מקור לא ידוע",
-    },
-  };
-
-  // Show the sharing modal
-  showShareModal(articleToShare);
-}
-
-function deleteCurrentArticle() {
-  if (!currentArticle) return;
-
-  const articleId = currentArticle.id || currentArticle.Id;
-
-  $("#confirmDeleteBtn")
-    .off("click")
-    .on("click", function () {
-      deleteSavedArticle(articleId);
-      bootstrap.Modal.getInstance($("#deleteModal")[0]).hide();
-      bootstrap.Modal.getInstance($("#articleModal")[0]).hide();
-    });
-
-  const modal = new bootstrap.Modal($("#deleteModal")[0]);
-  modal.show();
-}
+// Function removed - delete now handled directly via deleteSavedArticle function
 
 function shareArticle(articleId) {
   if (!AuthJWT.isLoggedIn()) {
