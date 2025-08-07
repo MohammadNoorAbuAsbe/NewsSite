@@ -3,8 +3,23 @@ const Utils = {
   // Dark Mode Management
   darkMode: {
     init: function () {
-      // Check for saved theme preference or default to light mode
-      const savedTheme = localStorage.getItem("theme") || "light";
+      // Check for saved theme preference or detect system preference
+      let savedTheme = localStorage.getItem("theme");
+
+      // If no saved theme, detect system preference
+      if (!savedTheme) {
+        if (
+          window.matchMedia &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches
+        ) {
+          savedTheme = "dark";
+        } else {
+          savedTheme = "light";
+        }
+        // Save the detected preference
+        localStorage.setItem("theme", savedTheme);
+      }
+
       this.setTheme(savedTheme);
       this.setupToggleButton();
     },
