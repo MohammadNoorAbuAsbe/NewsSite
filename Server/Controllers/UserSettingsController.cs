@@ -18,7 +18,7 @@ namespace Server.Controllers
         {
             public int UserToUnblockId { get; set; }
         }
-        
+
         /// <summary>
         /// Get user settings and preferences for the authenticated user
         /// </summary>
@@ -30,8 +30,8 @@ namespace Server.Controllers
                 return (object)UserSettings.GetUserSettings(userId);
             });
         }
-        
-        
+
+
         /// <summary>
         /// Block another user
         /// </summary>
@@ -39,12 +39,20 @@ namespace Server.Controllers
         public IActionResult BlockUser([FromBody] BlockUserRequest request)
         {
             return ExecuteWithUserValidationConditional(
-                userId => UserSettings.BlockUser(userId, request.UserToBlockId),
+                userId =>
+                {
+                    // Prevent users from blocking themselves
+                    if (userId == request.UserToBlockId)
+                    {
+                        return false;
+                    }
+                    return UserSettings.BlockUser(userId, request.UserToBlockId);
+                },
                 "user blocked successfully",
-                "Failed to block user"
+                "Cannot block yourself"
             );
         }
-        
+
         /// <summary>
         /// Unblock a user
         /// </summary>

@@ -165,77 +165,115 @@ function createDropdownMenu(item) {
 
   const $menu = $("<ul>").addClass("dropdown-menu dropdown-menu-end");
 
-  const $reportItem = $("<li>");
-  const $reportLink = $("<a>")
-    .addClass("dropdown-item")
-    .attr("href", "#")
-    .click((e) => {
-      e.preventDefault();
-      reportContent(item.id);
-    })
-    .append($("<i>").addClass("fas fa-flag me-2"))
-    .append("דווח כפוגעני");
+  // Only show report option if the current user is not the author of the content
+  const isCurrentUserTheAuthor = item.userId === authManager.currentUser.Id;
 
-  const $blockItem = $("<li>");
-  const $blockLink = $("<a>")
-    .addClass("dropdown-item")
-    .attr("href", "#")
-    .click((e) => {
-      e.preventDefault();
-      blockUser(item.userId, item.userName);
-    })
-    .append($("<i>").addClass("fas fa-ban me-2"))
-    .append("חסום משתמש");
+  if (!isCurrentUserTheAuthor) {
+    const $reportItem = $("<li>");
+    const $reportLink = $("<a>")
+      .addClass("dropdown-item")
+      .attr("href", "#")
+      .click((e) => {
+        e.preventDefault();
+        reportContent(item.id);
+      })
+      .append($("<i>").addClass("fas fa-flag me-2"))
+      .append("דווח כפוגעני");
 
-  $reportItem.append($reportLink);
-  $blockItem.append($blockLink);
-  $menu.append($reportItem, $blockItem);
+    $reportItem.append($reportLink);
+    $menu.append($reportItem);
+  }
+
+  // Only show block user option if it's not the current user
+  if (!isCurrentUserTheAuthor) {
+    const $blockItem = $("<li>");
+    const $blockLink = $("<a>")
+      .addClass("dropdown-item")
+      .attr("href", "#")
+      .click((e) => {
+        e.preventDefault();
+        blockUser(item.userId, item.userName);
+      })
+      .append($("<i>").addClass("fas fa-ban me-2"))
+      .append("חסום משתמש");
+
+    $blockItem.append($blockLink);
+    $menu.append($blockItem);
+  }
+
+  // If no menu items are added, don't show the dropdown at all
+  if ($menu.children().length === 0) {
+    return $("<div>"); // Return empty div instead of dropdown
+  }
+
   $dropdown.append($button, $menu);
-
   return $dropdown;
 }
 
 function createInteractionButtons(item) {
   const $interactions = $("<div>").addClass("shared-content-interactions");
 
-  const $buttonGroup = $("<div>").addClass("btn-group btn-group-sm");
+  // Check if current user is the author of the content
+  const isCurrentUserTheAuthor = item.userId === authManager.currentUser.Id;
 
-  // Determine button styles based on user's current reaction
-  const likeButtonClass = item.userHasLiked
-    ? "btn btn-primary"
-    : "btn btn-outline-primary";
-  const dislikeButtonClass = item.userHasDisliked
-    ? "btn btn-danger"
-    : "btn btn-outline-danger";
+  // Only show like/dislike buttons if the current user is not the author
+  if (!isCurrentUserTheAuthor) {
+    const $buttonGroup = $("<div>").addClass("btn-group btn-group-sm");
 
-  const $likeButton = $("<button>")
-    .addClass(likeButtonClass)
-    .attr("data-content-id", item.id)
-    .attr("data-user-liked", item.userHasLiked || false)
-    .click(() => toggleLike(item.id))
-    .append($("<i>").addClass("fas fa-thumbs-up"))
-    .append(" ")
-    .append(
-      $("<span>")
-        .attr("id", `likes-${item.id}`)
-        .text(item.likesCount || 0)
+    // Determine button styles based on user's current reaction
+    const likeButtonClass = item.userHasLiked
+      ? "btn btn-primary"
+      : "btn btn-outline-primary";
+    const dislikeButtonClass = item.userHasDisliked
+      ? "btn btn-danger"
+      : "btn btn-outline-danger";
+
+    const $likeButton = $("<button>")
+      .addClass(likeButtonClass)
+      .attr("data-content-id", item.id)
+      .attr("data-user-liked", item.userHasLiked || false)
+      .click(() => toggleLike(item.id))
+      .append($("<i>").addClass("fas fa-thumbs-up"))
+      .append(" ")
+      .append(
+        $("<span>")
+          .attr("id", `likes-${item.id}`)
+          .text(item.likesCount || 0)
+      );
+
+    const $dislikeButton = $("<button>")
+      .addClass(dislikeButtonClass)
+      .attr("data-content-id", item.id)
+      .attr("data-user-disliked", item.userHasDisliked || false)
+      .click(() => toggleDislike(item.id))
+      .append($("<i>").addClass("fas fa-thumbs-down"))
+      .append(" ")
+      .append(
+        $("<span>")
+          .attr("id", `dislikes-${item.id}`)
+          .text(item.dislikesCount || 0)
+      );
+
+    $buttonGroup.append($likeButton, $dislikeButton);
+    $interactions.append($buttonGroup);
+  } else {
+    // For own content, show counts without interaction buttons
+    const $countsContainer = $("<div>").addClass(
+      "content-stats text-muted small"
     );
-
-  const $dislikeButton = $("<button>")
-    .addClass(dislikeButtonClass)
-    .attr("data-content-id", item.id)
-    .attr("data-user-disliked", item.userHasDisliked || false)
-    .click(() => toggleDislike(item.id))
-    .append($("<i>").addClass("fas fa-thumbs-down"))
-    .append(" ")
-    .append(
+    $countsContainer.append(
       $("<span>")
-        .attr("id", `dislikes-${item.id}`)
-        .text(item.dislikesCount || 0)
+        .addClass("me-3")
+        .append($("<i>").addClass("fas fa-thumbs-up me-1"))
+        .append(`${item.likesCount || 0}`)
     );
-
-  $buttonGroup.append($likeButton, $dislikeButton);
-  $interactions.append($buttonGroup);
+    $countsContainer.append(
+      $("<span>")
+        .append($("<i>").addClass("fas fa-thumbs-down me-1"))
+        .append(`${item.dislikesCount || 0}`)
+    );
+    $interactions.append($countsContainer);
+  }
 
   return $interactions;
 }

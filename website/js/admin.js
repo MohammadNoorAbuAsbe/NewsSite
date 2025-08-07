@@ -248,27 +248,33 @@ function displayUsers(users) {
                             </td>
                             <td>
                                 <div class="btn-group btn-group-sm">
-                                    <button class="btn ${
-                                      user.isEnabled ?? user.IsEnabled
-                                        ? "btn-warning"
-                                        : "btn-success"
-                                    }" 
-                                            onclick="toggleUserLock(${
-                                              user.id || user.Id
-                                            }, '${user.name || user.Name}', ${!(
-                          user.isEnabled ?? user.IsEnabled
-                        )})">
-                                        <i class="fas ${
-                                          user.isEnabled ?? user.IsEnabled
-                                            ? "fa-lock"
-                                            : "fa-unlock"
-                                        }"></i>
-                                        ${
-                                          user.isEnabled ?? user.IsEnabled
-                                            ? "נעל"
-                                            : "בטל נעילה"
-                                        }
-                                    </button>
+                                    ${
+                                      user.isAdmin ?? user.IsAdmin
+                                        ? `<span class="badge bg-info text-dark">חשבון מנהל</span>`
+                                        : `<button class="btn ${
+                                            user.isEnabled ?? user.IsEnabled
+                                              ? "btn-warning"
+                                              : "btn-success"
+                                          }" 
+                                                  onclick="toggleUserLock(${
+                                                    user.id || user.Id
+                                                  }, '${
+                                            user.name || user.Name
+                                          }', ${!(
+                                            user.isEnabled ?? user.IsEnabled
+                                          )})">
+                                              <i class="fas ${
+                                                user.isEnabled ?? user.IsEnabled
+                                                  ? "fa-lock"
+                                                  : "fa-unlock"
+                                              }"></i>
+                                              ${
+                                                user.isEnabled ?? user.IsEnabled
+                                                  ? "נעל"
+                                                  : "בטל נעילה"
+                                              }
+                                          </button>`
+                                    }
                                 </div>
                             </td>
                         </tr>`
