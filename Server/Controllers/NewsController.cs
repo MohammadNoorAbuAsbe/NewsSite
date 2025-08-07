@@ -17,7 +17,7 @@ namespace Server.Controllers
         private readonly NewsApiService _newsApiService;
         private readonly SentimentAnalysisService _sentimentAnalysisService;
         private readonly SummaryService _summaryService;
-        
+
         /// <summary>
         /// Initializes a new instance of the NewsController class with dependencies.
         /// </summary>
@@ -31,7 +31,14 @@ namespace Server.Controllers
             _summaryService = summaryService;
         }
 
-
+        /// <summary>
+        /// Retrieves specific news articles based on a search query without sentiment analysis.
+        /// </summary>
+        /// <param name="query">The search query for filtering news articles.</param>
+        /// <param name="userId">The ID of the user making the request.</param>
+        /// <param name="page">The page number for pagination (default: 1).</param>
+        /// <param name="pageSize">The number of articles per page (default: 12).</param>
+        /// <returns>A tagged articles result containing the news articles.</returns>
         [HttpGet("SpecificNews")]
         public async Task<ActionResult<TaggedArticlesResult>> GetSpecificNews(string query, int userId, int page = 1, int pageSize = 12)
         {
@@ -40,6 +47,14 @@ namespace Server.Controllers
                 false);
         }
 
+        /// <summary>
+        /// Retrieves specific news articles based on a search query with sentiment analysis included.
+        /// </summary>
+        /// <param name="query">The search query for filtering news articles.</param>
+        /// <param name="userId">The ID of the user making the request.</param>
+        /// <param name="page">The page number for pagination (default: 1).</param>
+        /// <param name="pageSize">The number of articles per page (default: 12).</param>
+        /// <returns>A tagged articles result containing the news articles with sentiment analysis.</returns>
         [HttpGet("SpecificNewsWithSentiment")]
         public async Task<ActionResult<TaggedArticlesResult>> GetSpecificNewsWithSentiment(string query, int userId, int page = 1, int pageSize = 12)
         {
@@ -48,6 +63,13 @@ namespace Server.Controllers
                 true);
         }
 
+        /// <summary>
+        /// Retrieves top headlines without sentiment analysis.
+        /// </summary>
+        /// <param name="page">The page number for pagination.</param>
+        /// <param name="pageSize">The number of articles per page.</param>
+        /// <param name="userId">The ID of the user making the request.</param>
+        /// <returns>A tagged articles result containing the top headlines.</returns>
         [HttpGet("TopHeadlines")]
         public async Task<ActionResult<TaggedArticlesResult>> GetTopHeadlines(int page, int pageSize, int userId)
         {
@@ -56,6 +78,13 @@ namespace Server.Controllers
                 false);
         }
 
+        /// <summary>
+        /// Retrieves top headlines with sentiment analysis included.
+        /// </summary>
+        /// <param name="page">The page number for pagination.</param>
+        /// <param name="pageSize">The number of articles per page.</param>
+        /// <param name="userId">The ID of the user making the request.</param>
+        /// <returns>A tagged articles result containing the top headlines with sentiment analysis.</returns>
         [HttpGet("TopHeadlinesWithSentiment")]
         public async Task<ActionResult<TaggedArticlesResult>> GetTopHeadlinesWithSentiment(int page, int pageSize, int userId)
         {
@@ -64,18 +93,38 @@ namespace Server.Controllers
                 true);
         }
 
+        /// <summary>
+        /// Searches for news articles by specific tags without sentiment analysis.
+        /// </summary>
+        /// <param name="tagNames">The list of tag names to search for.</param>
+        /// <param name="userId">The ID of the user making the request.</param>
+        /// <param name="page">The page number for pagination (default: 1).</param>
+        /// <param name="pageSize">The number of articles per page (default: 12).</param>
+        /// <returns>A tagged articles result containing articles matching the specified tags.</returns>
         [HttpPost("SearchByTags")]
         public async Task<ActionResult<TaggedArticlesResult>> SearchByTags([FromBody] List<string> tagNames, int userId, int page = 1, int pageSize = 12)
         {
             return await SearchByTagsWithOptionalSentiment(tagNames, userId, page, pageSize, false);
         }
 
+        /// <summary>
+        /// Searches for news articles by specific tags with sentiment analysis included.
+        /// </summary>
+        /// <param name="tagNames">The list of tag names to search for.</param>
+        /// <param name="userId">The ID of the user making the request.</param>
+        /// <param name="page">The page number for pagination (default: 1).</param>
+        /// <param name="pageSize">The number of articles per page (default: 12).</param>
+        /// <returns>A tagged articles result containing articles matching the specified tags with sentiment analysis.</returns>
         [HttpPost("SearchByTagsWithSentiment")]
         public async Task<ActionResult<TaggedArticlesResult>> SearchByTagsWithSentiment([FromBody] List<string> tagNames, int userId, int page = 1, int pageSize = 12)
         {
             return await SearchByTagsWithOptionalSentiment(tagNames, userId, page, pageSize, true);
         }
 
+        /// <summary>
+        /// Generates a daily summary of top news articles.
+        /// </summary>
+        /// <returns>A daily summary result containing summarized news content.</returns>
         [HttpGet("DailySummary")]
         public async Task<ActionResult> GetDailySummary()
         {
@@ -83,15 +132,15 @@ namespace Server.Controllers
             {
                 // Get today's top news articles - use userId = 0 for anonymous daily summary
                 var result = await NewsApiResponse.GetTopHeadlines(_newsApiService, 1, 20, 0); // Get more articles for better summary
-                
+
                 if (result?.Articles != null && result.Articles.Any())
                 {
                     var summaryResult = await _summaryService.GenerateDailySummaryAsync(result.Articles);
                     return Ok(summaryResult);
                 }
 
-                return Ok(new DailySummaryResult 
-                { 
+                return Ok(new DailySummaryResult
+                {
                     Summary = "No news articles available for today's summary",
                     Success = false,
                     ArticleCount = 0,
@@ -101,8 +150,8 @@ namespace Server.Controllers
             catch (Exception ex)
             {
                 Console.WriteLine($"Daily summary error: {ex.Message}");
-                return StatusCode(500, new DailySummaryResult 
-                { 
+                return StatusCode(500, new DailySummaryResult
+                {
                     Summary = "Error generating daily summary",
                     Success = false,
                     ArticleCount = 0,
@@ -118,13 +167,13 @@ namespace Server.Controllers
         /// <param name="includeSentiment">Whether to include sentiment analysis</param>
         /// <returns>ActionResult with TaggedArticlesResult</returns>
         private async Task<ActionResult<TaggedArticlesResult>> GetNewsWithOptionalSentiment(
-            Func<Task<ArticlesResult>> fetchArticlesFunc, 
+            Func<Task<ArticlesResult>> fetchArticlesFunc,
             bool includeSentiment)
         {
             try
             {
                 var result = await fetchArticlesFunc();
-                
+
                 if (result?.Articles != null)
                 {
                     if (includeSentiment)
@@ -139,7 +188,7 @@ namespace Server.Controllers
                         return Ok(enhanced);
                     }
                 }
-                
+
                 return Ok(new TaggedArticlesResult { Status = "Error", TotalResults = 0, Articles = new List<TaggedArticle>() });
             }
             catch (Exception ex)
@@ -159,10 +208,10 @@ namespace Server.Controllers
         /// <param name="includeSentiment">Whether to include sentiment analysis</param>
         /// <returns>ActionResult with TaggedArticlesResult</returns>
         private async Task<ActionResult<TaggedArticlesResult>> SearchByTagsWithOptionalSentiment(
-            List<string> tagNames, 
-            int userId, 
-            int page, 
-            int pageSize, 
+            List<string> tagNames,
+            int userId,
+            int page,
+            int pageSize,
             bool includeSentiment)
         {
             if (tagNames == null || tagNames.Count == 0)
@@ -219,10 +268,10 @@ namespace Server.Controllers
                 else
                 {
                     // For regular search, create tagged articles first, then paginate
-                    var searchResults = uniqueArticles.Select(a => 
+                    var searchResults = uniqueArticles.Select(a =>
                     {
                         // Find the tag that matched this article for proper categorization
-                        var matchingTag = allTags.FirstOrDefault(t => 
+                        var matchingTag = allTags.FirstOrDefault(t =>
                             tagNames.Any(tn => tn.Equals(t.Name, StringComparison.OrdinalIgnoreCase)));
                         return TaggedArticle.FromArticle(a, !matchingTag?.Custom == true ? matchingTag?.Name : null);
                     }).ToList();

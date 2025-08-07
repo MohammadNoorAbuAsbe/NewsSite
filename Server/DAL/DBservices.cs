@@ -14,14 +14,19 @@ using System.Web;
 /// </summary>
 public class DBservices
 {
+    /// <summary>
+    /// Initializes a new instance of the DBservices class.
+    /// </summary>
     public DBservices()
     {
 
     }
 
-    //--------------------------------------------------------------------------------------------------
-    // This method creates a connection to the database according to the connectionString name in the appsettings.json 
-    //--------------------------------------------------------------------------------------------------
+    /// <summary>
+    /// Creates a connection to the database according to the connectionString name in the appsettings.json.
+    /// </summary>
+    /// <param name="conString">The connection string name (not currently used, reads from appsettings.json).</param>
+    /// <returns>An opened SqlConnection to the database.</returns>
     public SqlConnection connect(String conString)
     {
 
@@ -35,6 +40,10 @@ public class DBservices
     }
 
     #region Tag Management
+    /// <summary>
+    /// Retrieves all available tags from the database.
+    /// </summary>
+    /// <returns>A list of all tags in the system.</returns>
     public List<Tag> GetAllTags()
     {
         var paramDic = new Dictionary<string, object>();
@@ -43,6 +52,11 @@ public class DBservices
     #endregion
 
     #region Saved Articles
+    /// <summary>
+    /// Retrieves all saved articles for a specific user.
+    /// </summary>
+    /// <param name="userId">The ID of the user whose saved articles to retrieve.</param>
+    /// <returns>A list of saved articles for the specified user.</returns>
     public List<SavedArticle> GetUserSavedArticles(int userId)
     {
         var paramDic = new Dictionary<string, object>
@@ -52,6 +66,12 @@ public class DBservices
         return ExecuteSqlCommandReturnList(paramDic, "SP_NewsSite_GetUserSavedArticles", MapSavedArticle);
     }
 
+    /// <summary>
+    /// Searches through a user's saved articles based on a search term.
+    /// </summary>
+    /// <param name="userId">The ID of the user whose saved articles to search.</param>
+    /// <param name="searchTerm">The term to search for in the saved articles.</param>
+    /// <returns>A list of saved articles matching the search criteria.</returns>
     public List<SavedArticle> SearchUserSavedArticles(int userId, string searchTerm)
     {
         var paramDic = new Dictionary<string, object>
@@ -62,6 +82,13 @@ public class DBservices
         return ExecuteSqlCommandReturnList(paramDic, "SP_NewsSite_SearchUserSavedArticles", MapSavedArticle);
     }
 
+    /// <summary>
+    /// Saves an article to a user's saved articles collection.
+    /// First adds the article to the database if it doesn't exist, then associates it with the user.
+    /// </summary>
+    /// <param name="article">The article to save.</param>
+    /// <param name="userID">The ID of the user saving the article.</param>
+    /// <returns>True if the article was successfully saved, false otherwise.</returns>
     public bool SaveArticle(Article article, int userID)
     {
         // First, add the article and get its ID
@@ -76,6 +103,12 @@ public class DBservices
         return ExecuteSQLCommand(paramDic, "SP_NewsSite_SaveArticle") > 0;
     }
 
+    /// <summary>
+    /// Removes a saved article from a user's collection.
+    /// </summary>
+    /// <param name="userId">The ID of the user removing the article.</param>
+    /// <param name="articleId">The ID of the article to remove.</param>
+    /// <returns>True if the article was successfully removed, false otherwise.</returns>
     public bool RemoveSavedArticle(int userId, int articleId)
     {
         var paramDic = new Dictionary<string, object>
@@ -88,6 +121,11 @@ public class DBservices
     #endregion
 
     #region Shared Content
+    /// <summary>
+    /// Retrieves all shared content from all users, excluding content from blocked users.
+    /// </summary>
+    /// <param name="currentUserId">The ID of the current user requesting the content.</param>
+    /// <returns>A list of all shared content visible to the current user.</returns>
     public List<SharedContent> GetAllSharedContent(int currentUserId)
     {
         var paramDic = new Dictionary<string, object>
@@ -97,6 +135,11 @@ public class DBservices
         return ExecuteSqlCommandReturnList(paramDic, "SP_NewsSite_GetAllSharedContent", MapSharedContent);
     }
 
+    /// <summary>
+    /// Retrieves shared content filtered according to the current user's preferences and blocked users.
+    /// </summary>
+    /// <param name="currentUserId">The ID of the current user requesting the filtered content.</param>
+    /// <returns>A list of filtered shared content based on user preferences.</returns>
     public List<SharedContent> GetFilteredSharedContent(int currentUserId)
     {
         var paramDic = new Dictionary<string, object>
@@ -106,6 +149,11 @@ public class DBservices
         return ExecuteSqlCommandReturnList(paramDic, "SP_NewsSite_GetFilteredSharedContent", MapSharedContent);
     }
 
+    /// <summary>
+    /// Adds a new article to the database or retrieves the existing article ID if it already exists.
+    /// </summary>
+    /// <param name="article">The article to add to the database.</param>
+    /// <returns>The ID of the added or existing article.</returns>
     public int AddArticle(Article article)
     {
         var paramDic = new Dictionary<string, object>
@@ -120,6 +168,12 @@ public class DBservices
         return ExecuteSQLCommand_ReturnInt(paramDic, "SP_NewsSite_AddArticle");
     }
 
+    /// <summary>
+    /// Shares content (article with optional comment) from a user to the shared content feed.
+    /// First adds the article to the database if it doesn't exist, then creates a shared content entry.
+    /// </summary>
+    /// <param name="content">The shared content containing the article and user comment.</param>
+    /// <returns>True if the content was successfully shared, false otherwise.</returns>
     public bool ShareContent(SharedContent content)
     {
         // First, add the article and get its ID
@@ -135,6 +189,12 @@ public class DBservices
         return ExecuteSQLCommand(paramDic, "SP_NewsSite_ShareContent") > 0;
     }
 
+    /// <summary>
+    /// Reports a piece of shared content as inappropriate or spam.
+    /// </summary>
+    /// <param name="contentId">The ID of the content to report.</param>
+    /// <param name="reporterId">The ID of the user making the report.</param>
+    /// <returns>True if the content was successfully reported, false otherwise.</returns>
     public bool ReportContent(int contentId, int reporterId)
     {
         var paramDic = new Dictionary<string, object>
@@ -145,6 +205,12 @@ public class DBservices
         return ExecuteSQLCommand(paramDic, "SP_NewsSite_ReportContent") > 0;
     }
 
+    /// <summary>
+    /// Records a like for a piece of shared content from a specific user.
+    /// </summary>
+    /// <param name="contentId">The ID of the content to like.</param>
+    /// <param name="userId">The ID of the user liking the content.</param>
+    /// <returns>True if the like was successfully recorded, false otherwise.</returns>
     public bool LikeContent(int contentId, int userId)
     {
         var paramDic = new Dictionary<string, object>
@@ -155,6 +221,12 @@ public class DBservices
         return ExecuteSQLCommand(paramDic, "SP_NewsSite_LikeContent") > 0;
     }
 
+    /// <summary>
+    /// Removes a like from a piece of shared content for a specific user.
+    /// </summary>
+    /// <param name="contentId">The ID of the content to unlike.</param>
+    /// <param name="userId">The ID of the user removing their like.</param>
+    /// <returns>True if the like was successfully removed, false otherwise.</returns>
     public bool UnlikeContent(int contentId, int userId)
     {
         var paramDic = new Dictionary<string, object>
@@ -165,6 +237,12 @@ public class DBservices
         return ExecuteSQLCommand(paramDic, "SP_NewsSite_UnlikeContent") > 0;
     }
 
+    /// <summary>
+    /// Records a dislike for a piece of shared content from a specific user.
+    /// </summary>
+    /// <param name="contentId">The ID of the content to dislike.</param>
+    /// <param name="userId">The ID of the user disliking the content.</param>
+    /// <returns>True if the dislike was successfully recorded, false otherwise.</returns>
     public bool DislikeContent(int contentId, int userId)
     {
         var paramDic = new Dictionary<string, object>
@@ -175,6 +253,12 @@ public class DBservices
         return ExecuteSQLCommand(paramDic, "SP_NewsSite_DislikeContent") > 0;
     }
 
+    /// <summary>
+    /// Removes a dislike from a piece of shared content for a specific user.
+    /// </summary>
+    /// <param name="contentId">The ID of the content to remove dislike from.</param>
+    /// <param name="userId">The ID of the user removing their dislike.</param>
+    /// <returns>True if the dislike was successfully removed, false otherwise.</returns>
     public bool UndislikeContent(int contentId, int userId)
     {
         var paramDic = new Dictionary<string, object>
@@ -187,6 +271,11 @@ public class DBservices
     #endregion
 
     #region User Settings
+    /// <summary>
+    /// Retrieves the user settings and preferences for a specific user.
+    /// </summary>
+    /// <param name="userId">The ID of the user whose settings to retrieve.</param>
+    /// <returns>The user settings object containing preferences and blocked users list.</returns>
     public UserSettings GetUserSettings(int userId)
     {
         var paramDic = new Dictionary<string, object>
@@ -208,6 +297,11 @@ public class DBservices
         return userSettings;
     }
 
+    /// <summary>
+    /// Retrieves the names and details of blocked users based on their IDs.
+    /// </summary>
+    /// <param name="blockedUserIds">A list of user IDs that are blocked.</param>
+    /// <returns>A list of BlockedUser objects containing ID and name information.</returns>
     public List<BlockedUser> GetBlockedUsersWithNames(List<int> blockedUserIds)
     {
         if (blockedUserIds == null || blockedUserIds.Count == 0)
@@ -232,6 +326,12 @@ public class DBservices
         return blockedUsers;
     }
 
+    /// <summary>
+    /// Adds a user to another user's blocked list, preventing them from seeing each other's shared content.
+    /// </summary>
+    /// <param name="userId">The ID of the user who is blocking another user.</param>
+    /// <param name="userToBlockId">The ID of the user to be blocked.</param>
+    /// <returns>True if the user was successfully blocked, false otherwise.</returns>
     public bool BlockUser(int userId, int userToBlockId)
     {
         var paramDic = new Dictionary<string, object>
@@ -242,6 +342,12 @@ public class DBservices
         return ExecuteSQLCommand(paramDic, "SP_NewsSite_BlockUser") > 0;
     }
 
+    /// <summary>
+    /// Removes a user from another user's blocked list, allowing them to see each other's shared content again.
+    /// </summary>
+    /// <param name="userId">The ID of the user who is unblocking another user.</param>
+    /// <param name="userToUnblockId">The ID of the user to be unblocked.</param>
+    /// <returns>True if the user was successfully unblocked, false otherwise.</returns>
     public bool UnblockUser(int userId, int userToUnblockId)
     {
         var paramDic = new Dictionary<string, object>
@@ -254,6 +360,11 @@ public class DBservices
     #endregion
 
     #region Admin Functions
+    /// <summary>
+    /// Retrieves administrative statistics for a specific date, including user activity and content metrics.
+    /// </summary>
+    /// <param name="date">The date for which to retrieve statistics.</param>
+    /// <returns>An AdminStats object containing metrics for the specified date.</returns>
     public AdminStats GetAdminStats(DateTime date)
     {
         var paramDic = new Dictionary<string, object>
@@ -263,6 +374,12 @@ public class DBservices
         return ExecuteSqlCommandReturnList(paramDic, "SP_NewsSite_GetAdminStats", MapAdminStats).FirstOrDefault() ?? new AdminStats();
     }
 
+    /// <summary>
+    /// Retrieves administrative statistics for a date range, useful for trend analysis.
+    /// </summary>
+    /// <param name="fromDate">The start date of the range.</param>
+    /// <param name="toDate">The end date of the range.</param>
+    /// <returns>A list of AdminStats objects for each date in the specified range.</returns>
     public List<AdminStats> GetStatsRange(DateTime fromDate, DateTime toDate)
     {
         var paramDic = new Dictionary<string, object>
@@ -273,18 +390,32 @@ public class DBservices
         return ExecuteSqlCommandReturnList(paramDic, "SP_NewsSite_GetStatsRange", MapAdminStats);
     }
 
+    /// <summary>
+    /// Retrieves recent user activity logs for administrative monitoring.
+    /// </summary>
+    /// <returns>A list of recent activity log entries.</returns>
     public List<ActivityLog> GetRecentActivity()
     {
         var paramDic = new Dictionary<string, object>();
         return ExecuteSqlCommandReturnList(paramDic, "SP_NewsSite_GetRecentActivity", MapActivityLog);
     }
 
+    /// <summary>
+    /// Retrieves all users along with their activity statistics for administrative purposes.
+    /// </summary>
+    /// <returns>A list of users with their associated activity statistics.</returns>
     public List<User> GetAllUsersWithStats()
     {
         var paramDic = new Dictionary<string, object>();
         return ExecuteSqlCommandReturnList(paramDic, "SP_NewsSite_GetAllUsersWithStats", MapUserWithStats);
     }
 
+    /// <summary>
+    /// Enables or disables a user account, typically used for administrative moderation.
+    /// </summary>
+    /// <param name="userId">The ID of the user whose status to toggle.</param>
+    /// <param name="isEnabled">True to enable the user, false to disable them.</param>
+    /// <returns>True if the status was successfully toggled, false otherwise.</returns>
     public bool ToggleUserStatus(int userId, bool isEnabled)
     {
         var paramDic = new Dictionary<string, object>
@@ -295,12 +426,22 @@ public class DBservices
         return ExecuteSQLCommand(paramDic, "SP_NewsSite_ToggleUserStatus") > 0;
     }
 
+    /// <summary>
+    /// Retrieves all shared content that has been reported by users for administrative review.
+    /// </summary>
+    /// <returns>A list of reported shared content entries.</returns>
     public List<SharedContent> GetReportedContent()
     {
         var paramDic = new Dictionary<string, object>();
         return ExecuteSqlCommandReturnList(paramDic, "SP_NewsSite_GetReportedContent", MapSharedContent);
     }
 
+    /// <summary>
+    /// Handles administrative action on reported content, either removing it or dismissing the report.
+    /// </summary>
+    /// <param name="contentId">The ID of the reported content to handle.</param>
+    /// <param name="removeContent">True to remove the content, false to dismiss the report.</param>
+    /// <returns>True if the action was successfully completed, false otherwise.</returns>
     public bool HandleReportedContent(int contentId, bool removeContent)
     {
         var paramDic = new Dictionary<string, object>
@@ -311,6 +452,11 @@ public class DBservices
         return ExecuteSQLCommand(paramDic, "SP_NewsSite_HandleReportedContent") > 0;
     }
 
+    /// <summary>
+    /// Logs user activity for administrative monitoring and analytics purposes.
+    /// </summary>
+    /// <param name="userId">The ID of the user performing the activity.</param>
+    /// <param name="activityType">The type of activity being performed.</param>
     public void LogUserActivity(int userId, string activityType)
     {
         var paramDic = new Dictionary<string, object>
@@ -467,6 +613,12 @@ public class DBservices
         };
     }
 
+    /// <summary>
+    /// Checks if a column exists in the SqlDataReader to safely access optional columns.
+    /// </summary>
+    /// <param name="reader">The SqlDataReader to check.</param>
+    /// <param name="columnName">The name of the column to check for existence.</param>
+    /// <returns>True if the column exists, false otherwise.</returns>
     private bool HasColumn(SqlDataReader reader, string columnName)
     {
         try
@@ -479,6 +631,11 @@ public class DBservices
         }
     }
 
+    /// <summary>
+    /// Maps a SqlDataReader row to a UserSettings object, extracting blocked user relationships.
+    /// </summary>
+    /// <param name="reader">The SqlDataReader containing user settings data.</param>
+    /// <returns>A UserSettings object populated with data from the reader.</returns>
     private UserSettings MapUserSettings(SqlDataReader reader)
     {
         var blockedUserIds = new List<int>();
@@ -494,6 +651,11 @@ public class DBservices
         };
     }
 
+    /// <summary>
+    /// Maps a SqlDataReader row to an AdminStats object containing administrative metrics.
+    /// </summary>
+    /// <param name="reader">The SqlDataReader containing admin statistics data.</param>
+    /// <returns>An AdminStats object populated with metrics from the reader.</returns>
     private AdminStats MapAdminStats(SqlDataReader reader)
     {
         return new AdminStats
@@ -508,6 +670,11 @@ public class DBservices
         };
     }
 
+    /// <summary>
+    /// Maps a SqlDataReader row to an ActivityLog object containing user activity information.
+    /// </summary>
+    /// <param name="reader">The SqlDataReader containing activity log data.</param>
+    /// <returns>An ActivityLog object populated with activity data from the reader.</returns>
     private ActivityLog MapActivityLog(SqlDataReader reader)
     {
         return new ActivityLog
@@ -521,6 +688,13 @@ public class DBservices
     #endregion
 
     #region SQL commands
+    /// <summary>
+    /// Executes a stored procedure and returns an integer result, typically used for operations that return a count or ID.
+    /// </summary>
+    /// <param name="paramDic">Dictionary of parameter names and values for the stored procedure.</param>
+    /// <param name="spName">Name of the stored procedure to execute.</param>
+    /// <returns>The integer result from the stored procedure execution.</returns>
+    /// <exception cref="Exception">Propagates any exceptions thrown during database operations.</exception>
     public int ExecuteSQLCommand_ReturnInt(Dictionary<string, object> paramDic, string spName)
     {
         SqlConnection con = null;
@@ -601,6 +775,13 @@ public class DBservices
         return resultList;
     }
 
+    /// <summary>
+    /// Executes a stored procedure without returning data, typically used for INSERT, UPDATE, DELETE operations.
+    /// </summary>
+    /// <param name="paramDic">Dictionary of parameter names and values for the stored procedure.</param>
+    /// <param name="spName">Name of the stored procedure to execute.</param>
+    /// <returns>The number of rows affected by the operation.</returns>
+    /// <exception cref="Exception">Propagates any exceptions thrown during database operations.</exception>
     public int ExecuteSQLCommand(Dictionary<string, object> paramDic, string spName)
     {
 

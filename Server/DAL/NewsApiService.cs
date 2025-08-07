@@ -10,6 +10,10 @@ namespace NewsSite.Server.Services
     {
         private readonly NewsApiClient newsApiClient;
 
+        /// <summary>
+        /// Initializes a new instance of the NewsApiService class.
+        /// Reads the API key from appsettings.json and creates a NewsApiClient instance.
+        /// </summary>
         public NewsApiService()
         {
             // Read the API key from configuration
@@ -39,7 +43,12 @@ namespace NewsSite.Server.Services
             return await newsApiClient.GetEverythingAsync(request);
         }
 
-
+        /// <summary>
+        /// Asynchronously retrieves top headlines from the United States.
+        /// </summary>
+        /// <param name="page">The page number for pagination.</param>
+        /// <param name="pageSize">The number of articles to retrieve per page.</param>
+        /// <returns>A task representing the asynchronous operation, with a result of type ArticlesResult containing the top headlines.</returns>
         public async Task<ArticlesResult> GetTopHeadlinesAsync(int page, int pageSize)
         {
             var request = new TopHeadlinesRequest
@@ -52,6 +61,15 @@ namespace NewsSite.Server.Services
             return await newsApiClient.GetTopHeadlinesAsync(request);
         }
 
+        /// <summary>
+        /// Asynchronously retrieves top headlines grouped by categories.
+        /// Fetches news articles for each specified category and returns them in a dictionary.
+        /// </summary>
+        /// <param name="categories">The list of news categories to retrieve headlines for.</param>
+        /// <param name="page">The page number for pagination (default: 1).</param>
+        /// <param name="pageSize">The number of articles to retrieve per page per category (default: 12).</param>
+        /// <returns>A task representing the asynchronous operation, with a dictionary mapping categories to their corresponding ArticlesResult.</returns>
+        /// <exception cref="ArgumentException">Thrown when the categories list is null or empty.</exception>
         public async Task<Dictionary<Categories, ArticlesResult>> GetTopHeadlinesByCategoriesAsync(List<Categories> categories, int page = 1, int pageSize = 12)
         {
             if (categories == null || categories.Count == 0)

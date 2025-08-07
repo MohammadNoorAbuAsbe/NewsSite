@@ -13,15 +13,22 @@ namespace Server.Services
         {
             _httpClient = httpClient;
             _huggingFaceApiKey = configuration["HuggingFace:ApiKey"] ?? "";
-            
+
             // Set up the HTTP client with authorization header
             if (!string.IsNullOrEmpty(_huggingFaceApiKey))
             {
-                _httpClient.DefaultRequestHeaders.Authorization = 
+                _httpClient.DefaultRequestHeaders.Authorization =
                     new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", _huggingFaceApiKey);
             }
         }
 
+        /// <summary>
+        /// Asynchronously analyzes the sentiment of the provided text using an external model API.
+        /// Returns a <see cref="SentimentResult"/> with the sentiment label, score, and confidence level.
+        /// If the input is empty or an error occurs, returns a default neutral sentiment.
+        /// </summary>
+        /// <param name="text">The input text to analyze.</param>
+        /// <returns>A task that represents the asynchronous operation, containing the sentiment analysis result.</returns>
         public async Task<SentimentResult> AnalyzeSentimentAsync(string text)
         {
             try
@@ -47,10 +54,10 @@ namespace Server.Services
                     {
                         var bestSentiment = results.First().OrderByDescending(x => x.Score).First();
                         var mappedLabel = MapSentimentLabel(bestSentiment.Label);
-                        
-                        return new SentimentResult 
-                        { 
-                            Label = mappedLabel, 
+
+                        return new SentimentResult
+                        {
+                            Label = mappedLabel,
                             Score = bestSentiment.Score,
                             Confidence = GetConfidenceLevel(bestSentiment.Score)
                         };
@@ -65,6 +72,11 @@ namespace Server.Services
             return new SentimentResult { Label = "NEUTRAL", Score = 0.5f, Confidence = "LOW" };
         }
 
+        /// <summary>
+        /// Asynchronously analyzes the sentiment of a list of articles and returns a list of articles with their associated sentiment.
+        /// </summary>
+        /// <param name="articles">The list of articles to analyze.</param>
+        /// <returns>A task that represents the asynchronous operation. The task result contains a list of articles with sentiment analysis results.</returns>
         public async Task<List<ArticleWithSentiment>> AnalyzeArticlesSentimentAsync(List<NewsAPI.Models.Article> articles)
         {
             var results = new List<ArticleWithSentiment>();
@@ -73,7 +85,7 @@ namespace Server.Services
             {
                 var textToAnalyze = $"{article.Title} {article.Description}";
                 var sentiment = await AnalyzeSentimentAsync(textToAnalyze);
-                
+
                 results.Add(new ArticleWithSentiment
                 {
                     Article = article,
@@ -84,13 +96,18 @@ namespace Server.Services
             return results;
         }
 
+        /// <summary>
+        /// Cleans the input text by normalizing whitespace, trimming, and limiting its length to 512 characters.
+        /// </summary>
+        /// <param name="text">The input string to clean.</param>
+        /// <returns>The cleaned string.</returns>
         private string CleanText(string text)
         {
             if (string.IsNullOrWhiteSpace(text))
                 return "";
 
             text = System.Text.RegularExpressions.Regex.Replace(text, @"\s+", " ").Trim();
-            
+
             if (text.Length > 512)
             {
                 text = text.Substring(0, 512);
@@ -99,20 +116,33 @@ namespace Server.Services
             return text;
         }
 
+        /// <summary>
+        /// Maps sentiment labels from the API response to standardized labels.
+        /// Handles both text-based labels (NEGATIVE, NEUTRAL, POSITIVE) and numeric labels (LABEL_0, LABEL_1, LABEL_2).
+        /// </summary>
+        /// <param name="originalLabel">The original sentiment label from the API response.</param>
+        /// <returns>A standardized sentiment label (NEGATIVE, NEUTRAL, or POSITIVE).</returns>
         private string MapSentimentLabel(string originalLabel)
         {
             return originalLabel.ToUpper() switch
             {
                 "NEGATIVE" => "NEGATIVE",
-                "NEUTRAL" => "NEUTRAL", 
+                "NEUTRAL" => "NEUTRAL",
                 "POSITIVE" => "POSITIVE",
                 "LABEL_0" => "NEGATIVE",
-                "LABEL_1" => "NEUTRAL", 
+                "LABEL_1" => "NEUTRAL",
                 "LABEL_2" => "POSITIVE",
                 _ => "NEUTRAL"
             };
         }
 
+        /// <summary>
+        /// Determines the confidence level based on the sentiment analysis score.
+        /// Scores of 0.8 and above are considered HIGH confidence, scores between 0.6 and 0.8 are MEDIUM confidence,
+        /// and scores below 0.6 are LOW confidence.
+        /// </summary>
+        /// <param name="score">The sentiment analysis score (typically between 0 and 1).</param>
+        /// <returns>A string representing the confidence level: "HIGH", "MEDIUM", or "LOW".</returns>
         private string GetConfidenceLevel(float score)
         {
             return score switch

@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using Server.Models;
 using Server.Services;
@@ -130,7 +130,7 @@ namespace Server.Controllers
                 };
 
                 var payload = await GoogleJsonWebSignature.ValidateAsync(request.IdToken, settings);
-                
+
                 if (payload == null)
                 {
                     return Unauthorized("Invalid Google token");
@@ -138,9 +138,9 @@ namespace Server.Controllers
 
                 // Check if user exists
                 var existingUser = Models.User.GetUserByEmail(payload.Email);
-                
+
                 UserResponse userResponse;
-                
+
                 if (existingUser == null)
                 {
                     // Auto-register the user with Google info
@@ -150,14 +150,14 @@ namespace Server.Controllers
                         Email = payload.Email,
                         Password = GenerateRandomPassword() // Generate a random password since they'll use Google login
                     };
-                    
+
                     var registerResult = Models.User.Register(newUser);
-                    
+
                     if (!registerResult.Success)
                     {
                         return Unauthorized($"Failed to create account: {registerResult.Message}");
                     }
-                    
+
                     // Get the newly created user
                     existingUser = Models.User.GetUserByEmail(payload.Email);
                     if (existingUser == null)

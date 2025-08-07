@@ -9,6 +9,11 @@ namespace Server.Services
         private readonly string _huggingFaceApiKey;
         private readonly string _modelUrl = "https://router.huggingface.co/hf-inference/models/Falconsai/text_summarization";
 
+        /// <summary>
+        /// Initializes a new instance of the SummaryService class, configuring the HTTP client with a longer timeout and setting the authorization header using the HuggingFace API key from configuration.
+        /// </summary>
+        /// <param name="httpClient">The HTTP client used for making requests.</param>
+        /// <param name="configuration">The configuration provider for accessing settings.</param>
         public SummaryService(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
@@ -25,6 +30,13 @@ namespace Server.Services
             }
         }
 
+        /// <summary>
+        /// Asynchronously summarizes the provided text using an external model API.
+        /// Cleans the input, sends it for summarization, and returns the summary result.
+        /// Returns a failure result if the input is empty or if an error occurs during processing.
+        /// </summary>
+        /// <param name="text">The text to be summarized.</param>
+        /// <returns>A <see cref="SummaryResult"/> containing the summary and success status.</returns>
         public async Task<SummaryResult> SummarizeTextAsync(string text)
         {
             try
@@ -69,6 +81,13 @@ namespace Server.Services
             return new SummaryResult { Summary = "Unable to generate summary", Success = false };
         }
 
+        /// <summary>
+        /// Asynchronously generates a daily news summary from a list of articles by combining the titles and descriptions of the top 10 articles and summarizing the result.
+        /// Returns a <see cref="DailySummaryResult"/> indicating the summary, success status, article count, and generation time.
+        /// Handles cases where no articles or content are available, and logs errors if exceptions occur.
+        /// </summary>
+        /// <param name="articles">A list of news articles to summarize.</param>
+        /// <returns>A task representing the asynchronous operation, with a <see cref="DailySummaryResult"/> containing the summary and related information.</returns>
         public async Task<DailySummaryResult> GenerateDailySummaryAsync(List<NewsAPI.Models.Article> articles)
         {
             try
@@ -121,6 +140,12 @@ namespace Server.Services
             }
         }
 
+        /// <summary>
+        /// Cleans and preprocesses the input text by removing extra whitespace and limiting its length to 1024 characters,
+        /// attempting to end at a sentence boundary if truncated. Returns an empty string if input is null or whitespace.
+        /// </summary>
+        /// <param name="text">The input string to be cleaned.</param>
+        /// <returns>The cleaned and truncated string suitable for summarization models.</returns>
         private string CleanText(string text)
         {
             if (string.IsNullOrWhiteSpace(text))
