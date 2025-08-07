@@ -97,7 +97,7 @@ public class DBservices
         return ExecuteSqlCommandReturnList(paramDic, "SP_NewsSite_GetAllSharedContent", MapSharedContent);
     }
 
-    public List<SharedContent> GetFilteredSharedContent(int currentUserId, List<int> blockedUserIds)
+    public List<SharedContent> GetFilteredSharedContent(int currentUserId)
     {
         var paramDic = new Dictionary<string, object>
         {

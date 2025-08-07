@@ -88,14 +88,6 @@
     $("<li>").append(
       $("<a>", {
         class: "dropdown-item",
-        href: "user-settings.html",
-        text: "הגדרות",
-      })
-    ),
-    $("<li>").append($("<hr>", { class: "dropdown-divider" })),
-    $("<li>").append(
-      $("<a>", {
-        class: "dropdown-item",
         href: "#",
         text: "התנתקות",
       }).on("click", function (e) {

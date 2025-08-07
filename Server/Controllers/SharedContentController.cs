@@ -20,7 +20,7 @@ namespace Server.Controllers
             return ExecuteWithUserValidation(userId =>
             {
                 var userSettings = UserSettings.GetUserSettings(userId);
-                return (object)SharedContent.GetFilteredSharedContent(userId, userSettings.BlockedUserIds);
+                return (object)SharedContent.GetFilteredSharedContent(userId);
             });
         }
 

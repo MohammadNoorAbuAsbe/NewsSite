@@ -97,9 +97,6 @@ class AuthManager {
         localStorage.setItem("currentUser", JSON.stringify(this.currentUser));
         localStorage.setItem("jwtToken", this.accessToken);
         localStorage.setItem("refreshToken", this.refreshToken);
-
-        // Remove old token format if it exists
-        localStorage.removeItem("authToken");
       } else if (response.email) {
         // Old response format (fallback)
         this.currentUser = {
@@ -192,7 +189,6 @@ class AuthManager {
     localStorage.removeItem("currentUser");
     localStorage.removeItem("jwtToken");
     localStorage.removeItem("refreshToken");
-    localStorage.removeItem("authToken"); // Remove old token format
 
     this.updateUI();
     this.showAlert("התנתקת בהצלחה", "info");
@@ -230,7 +226,6 @@ class AuthManager {
                             <i class="fas fa-user"></i> ${this.currentUser.Name}
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="profile.html">פרופיל</a></li>
                             <li><a class="dropdown-item" href="saved-articles.html">מאמרים שמורים</a></li>
                             ${
                               this.currentUser.IsAdmin

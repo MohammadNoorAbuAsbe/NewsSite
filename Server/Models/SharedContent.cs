@@ -32,9 +32,9 @@ namespace Server.Models
             return DataService.ExecuteList(db => db.GetAllSharedContent(currentUserId));
         }
 
-        public static List<SharedContent> GetFilteredSharedContent(int currentUserId, List<int> blockedUserIds)
+        public static List<SharedContent> GetFilteredSharedContent(int currentUserId)
         {
-            return DataService.ExecuteList(db => db.GetFilteredSharedContent(currentUserId, blockedUserIds));
+            return DataService.ExecuteList(db => db.GetFilteredSharedContent(currentUserId));
         }
 
         public static bool ShareContent(SharedContent content)
