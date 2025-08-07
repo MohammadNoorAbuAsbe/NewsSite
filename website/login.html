@@ -134,7 +134,6 @@
     <script>
       // Handle Google Sign-In response
       async function handleCredentialResponse(response) {
-
         // Wait for ajaxCall to be available (not apiCall)
         const waitForAjaxCall = () => {
           return new Promise((resolve) => {
@@ -155,9 +154,8 @@
           // Wait for dependencies to load
           await waitForAjaxCall();
 
-
           // Use the correct server URL for Google login
-          const googleLoginUrl = `https://localhost:7259/api/users/google-login`;
+          const googleLoginUrl = `${USERS_SERVER_PATH}/google-login`;
 
           // Use ajaxCall with callback functions instead of await
           ajaxCall(
@@ -165,7 +163,6 @@
             googleLoginUrl,
             JSON.stringify({ idToken: response.credential }),
             function (result) {
-
               if (result && result.accessToken) {
                 // Store the token (same format as traditional login)
                 localStorage.setItem("jwtToken", result.accessToken);
@@ -229,7 +226,6 @@
 
       // Initialize theme on page load
       $(document).ready(function () {
-
         // Test if ajaxCall is in global scope after a delay
 
         if (typeof Utils !== "undefined" && Utils.darkMode) {

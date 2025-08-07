@@ -42,6 +42,12 @@
         font-size: 0.875rem;
         margin: 1rem 0;
       }
+
+      [data-theme="dark"] .code-snippet {
+        background: #2d3748;
+        border: 1px solid #4a5568;
+        color: #e2e8f0;
+      }
       .hero-advanced {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
@@ -96,13 +102,21 @@
                 </h5>
                 <p class="card-text">
                   השימוש במודל DistilRoBERTa של Hugging Face לניתוח רגשות של
-                  כתבות חדשות בזמן אמת.
+                  כתבות חדשות בזמן אמת. המודל מותאם לניתוח רגשות פיננסיים ומספק
+                  דיוק גבוה בזיהוי רגשות בתוכן חדשותי.
                 </p>
                 <div class="mb-2">
                   <span class="tech-badge">Hugging Face API</span>
                   <span class="tech-badge">DistilRoBERTa</span>
                   <span class="tech-badge">Financial Sentiment</span>
                 </div>
+
+                <div class="alert alert-info small mb-3">
+                  <strong>דוגמה:</strong> כתבה על עליית מניות תזוהה כ"חיובית" עם
+                  רמת ביטחון גבוהה, בעוד כתבה על משבר כלכלי תזוהה כ"שלילית" עם
+                  אייקון אדום מתאים.
+                </div>
+
                 <ul class="list-unstyled">
                   <li>
                     <i class="fas fa-check text-success me-2"></i>זיהוי רגש
@@ -110,17 +124,24 @@
                   </li>
                   <li>
                     <i class="fas fa-check text-success me-2"></i>רמת ביטחון
-                    (גבוהה/בינונית/נמוכה)
+                    (גבוהה/בינונית/נמוכה) - אחוזי דיוק
                   </li>
                   <li>
                     <i class="fas fa-check text-success me-2"></i>סינון לפי
-                    רגשות
+                    רגשות - מציאת חדשות חיוביות/שליליות
                   </li>
                   <li>
                     <i class="fas fa-check text-success me-2"></i>תצוגה ויזואלית
-                    עם אייקונים
+                    עם אייקונים צבעוניים
                   </li>
                 </ul>
+
+                <div class="code-snippet">
+                  <strong>יישום טכני:</strong><br />
+                  POST → Hugging Face API → DistilRoBERTa Model → JSON
+                  Response<br />
+                  → עיבוד בצד שרת → שמירה במסד נתונים → תצוגה דינמית
+                </div>
               </div>
             </div>
           </div>
@@ -133,29 +154,45 @@
                 </h5>
                 <p class="card-text">
                   יצירת סיכום יומי חכם של החדשות באמצעות מודל AI לסיכום טקסטים.
+                  המערכת אוספת את 10 הכתבות המובילות, מעבדת אותן ויוצרת סיכום
+                  תמציתי וקריא.
                 </p>
                 <div class="mb-2">
                   <span class="tech-badge">Text Summarization</span>
                   <span class="tech-badge">Falconsai Model</span>
                   <span class="tech-badge">Auto-Generated</span>
                 </div>
+
+                <div class="alert alert-success small mb-3">
+                  <strong>איך זה עובד:</strong> המערכת רצה מדי יום, אוספת כתבות
+                  מובילות, שולחת לעיבוד AI, ומציגה סיכום של 2-3 פסקאות עם
+                  הנקודות החשובות ביותר.
+                </div>
+
                 <ul class="list-unstyled">
                   <li>
                     <i class="fas fa-check text-success me-2"></i>עיבוד אוטומטי
-                    של 10 כתבות מובילות
+                    של 10 כתבות מובילות מהיום
                   </li>
                   <li>
                     <i class="fas fa-check text-success me-2"></i>סיכום תמציתי
-                    וקריא
+                    וקריא (2-3 פסקאות)
                   </li>
                   <li>
                     <i class="fas fa-check text-success me-2"></i>עדכון זמן
-                    יצירה
+                    יצירה בפורמט ידידותי
                   </li>
                   <li>
-                    <i class="fas fa-check text-success me-2"></i>רענון ידני
+                    <i class="fas fa-check text-success me-2"></i>כפתור רענון
+                    ידני למנהלים
                   </li>
                 </ul>
+
+                <div class="code-snippet">
+                  <strong>תהליך יצירה:</strong><br />
+                  1. שליפת כתבות → 2. ניקוי טקסט → 3. AI Processing<br />
+                  → 4. פורמט תוצאה → 5. שמירה → 6. תצוגה באתר
+                </div>
               </div>
             </div>
           </div>
@@ -446,31 +483,46 @@
                   <i class="fas fa-key text-primary me-2"></i>JWT Authentication
                 </h5>
                 <p class="card-text">
-                  מערכת אימות מבוססת טוקנים עם תקן JWT מתקדם.
+                  מערכת אימות מבוססת טוקנים עם תקן JWT מתקדם. כל בקשה מאומתת
+                  באמצעות Bearer Token הנשלח בכותרת Authorization, מה שמבטיח
+                  אבטחה גבוהה.
                 </p>
                 <div class="mb-2">
                   <span class="tech-badge">JWT Tokens</span>
                   <span class="tech-badge">Bearer Authentication</span>
                   <span class="tech-badge">Role-based Access</span>
                 </div>
+
+                <div class="alert alert-warning small mb-3">
+                  <strong>מה זה JWT?</strong> JSON Web Token - תקן פתוח (RFC
+                  7519) לעברת מידע מאובטח. הטוקן מכיל claims מוצפנים על המשתמש,
+                  התפקיד שלו וזמן התפוגה.
+                </div>
+
                 <ul class="list-unstyled">
                   <li>
                     <i class="fas fa-check text-success me-2"></i>אבטחת API עם
-                    Bearer Tokens
+                    Bearer Tokens - כל בקשה מוגנת
                   </li>
                   <li>
                     <i class="fas fa-check text-success me-2"></i>תוקף טוקן 24
-                    שעות
+                    שעות - למניעת שימוש לרעה
                   </li>
                   <li>
                     <i class="fas fa-check text-success me-2"></i>Claims מותאמים
-                    אישית
+                    אישית - ID, שם, תפקיד
                   </li>
                   <li>
                     <i class="fas fa-check text-success me-2"></i>הרשאות מבוססות
-                    תפקידים
+                    תפקידים - User/Admin
                   </li>
                 </ul>
+
+                <div class="code-snippet">
+                  <strong>מבנה הטוקן:</strong><br />
+                  Header.Payload.Signature<br />
+                  Payload: {"userId": 123, "role": "Admin", "exp": timestamp}
+                </div>
               </div>
             </div>
           </div>
@@ -896,7 +948,7 @@
                 </h5>
                 <p class="card-text">
                   ייצוא רשימת משתמשים מלאה לקובץ CSV עם תמיכה מלאה בעברית וקידוד
-                  UTF-8.
+                  UTF-8. הפונקציה פותרת בעיות נפוצות של הצגת עברית בקבצי CSV.
                 </p>
                 <div class="mb-2">
                   <span class="tech-badge">CSV Format</span>
@@ -904,6 +956,13 @@
                   <span class="tech-badge">Hebrew Support</span>
                   <span class="tech-badge">Admin Only</span>
                 </div>
+
+                <div class="alert alert-primary small mb-3">
+                  <strong>למה זה חשוב?</strong> מנהלים יכולים לייצא נתונים לצורך
+                  ניתוחים, גיבויים, או העברת מידע למערכות חיצוניות. הקובץ נפתח
+                  מושלם ב-Excel.
+                </div>
+
                 <ul class="list-unstyled">
                   <li>
                     <i class="fas fa-check text-success me-2"></i>פרטי משתמשים
@@ -911,17 +970,23 @@
                   </li>
                   <li>
                     <i class="fas fa-check text-success me-2"></i>קידוד UTF-8 עם
-                    BOM לתמיכה מלאה בעברית
+                    BOM לתמיכה מושלמת בעברית
                   </li>
                   <li>
                     <i class="fas fa-check text-success me-2"></i>הורדה ישירה
-                    ללא שרת
+                    ללא שרת - JavaScript טהור
                   </li>
                   <li>
                     <i class="fas fa-check text-success me-2"></i>פתיחה מושלמת
-                    ב-Excel
+                    ב-Excel וכלי spreadsheet אחרים
                   </li>
                 </ul>
+
+                <div class="code-snippet">
+                  <strong>דוגמת תוכן הקובץ:</strong><br />
+                  שם,אימייל,תפקיד,סטטוס,תאריך יצירה<br />
+                  "יוסי כהן","yossi@email.com","משתמש","פעיל","2024-01-15"
+                </div>
               </div>
             </div>
           </div>
@@ -1042,6 +1107,202 @@
         </div>
       </div>
 
+      <!-- Real-World Use Cases -->
+      <div class="feature-section">
+        <div class="d-flex align-items-center mb-4">
+          <div class="feature-icon me-3">
+            <i class="fas fa-lightbulb"></i>
+          </div>
+          <div>
+            <h2 class="mb-1">תרחישי שימוש בחיים האמיתיים</h2>
+            <p class="text-muted mb-0">
+              איך התכונות הללו משפרות את חווית המשתמש
+            </p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-4">
+            <div class="card h-100 border-success">
+              <div class="card-header bg-success text-white">
+                <h5 class="card-title mb-0">
+                  <i class="fas fa-user me-2"></i>משתמש רגיל
+                </h5>
+              </div>
+              <div class="card-body">
+                <p class="card-text">
+                  <strong>תרחיש:</strong> רוצה לקרוא חדשות מעודכנות ולהישאר
+                  מעודכן
+                </p>
+                <ul class="list-unstyled">
+                  <li class="mb-2">
+                    <i class="fas fa-arrow-left text-success me-2"></i>
+                    <strong>ניתוח רגשות:</strong> מוצא במהירות חדשות חיוביות
+                    כשרוצה להרגיש טוב
+                  </li>
+                  <li class="mb-2">
+                    <i class="fas fa-arrow-left text-success me-2"></i>
+                    <strong>סיכום יומי:</strong> חוסך זמן - קורא סיכום של 2 דקות
+                    במקום לגלול שעות
+                  </li>
+                  <li class="mb-2">
+                    <i class="fas fa-arrow-left text-success me-2"></i>
+                    <strong>כתבות שמורות:</strong> שומר מאמרים חשובים לקריאה
+                    מאוחרת
+                  </li>
+                  <li class="mb-2">
+                    <i class="fas fa-arrow-left text-success me-2"></i>
+                    <strong>מצב כהה:</strong> קריאה נוחה בערב ללא עומס על
+                    העיניים
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="card h-100 border-warning">
+              <div class="card-header bg-warning text-dark">
+                <h5 class="card-title mb-0">
+                  <i class="fas fa-briefcase me-2"></i>איש עסקים
+                </h5>
+              </div>
+              <div class="card-body">
+                <p class="card-text">
+                  <strong>תרחיש:</strong> צריך לעקוב אחר חדשות עסקיות ופיננסיות
+                </p>
+                <ul class="list-unstyled">
+                  <li class="mb-2">
+                    <i class="fas fa-arrow-left text-warning me-2"></i>
+                    <strong>ניתוח רגשות פיננסי:</strong> מזהה מהר חדשות שעלולות
+                    להשפיע על השקעות
+                  </li>
+                  <li class="mb-2">
+                    <i class="fas fa-arrow-left text-warning me-2"></i>
+                    <strong>סינון לפי תגיות:</strong> מתמקד רק בחדשות עסקיות
+                    רלוונטיות
+                  </li>
+                  <li class="mb-2">
+                    <i class="fas fa-arrow-left text-warning me-2"></i>
+                    <strong>ייצוא נתונים:</strong> שומר רשימות למחקר ואנליזה
+                  </li>
+                  <li class="mb-2">
+                    <i class="fas fa-arrow-left text-warning me-2"></i>
+                    <strong>חיפוש מתקדם:</strong> מוצא במהירות מידע ספציפי לפי
+                    תאריכים
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="card h-100 border-primary">
+              <div class="card-header bg-primary text-white">
+                <h5 class="card-title mb-0">
+                  <i class="fas fa-shield-alt me-2"></i>מנהל מערכת
+                </h5>
+              </div>
+              <div class="card-body">
+                <p class="card-text">
+                  <strong>תרחיש:</strong> מנהל את הפלטפורמה ועוקב אחר הפעילות
+                </p>
+                <ul class="list-unstyled">
+                  <li class="mb-2">
+                    <i class="fas fa-arrow-left text-primary me-2"></i>
+                    <strong>לוח בקרה:</strong> רואה במבט מהיר כמה משתמשים פעילים
+                    וסטטיסטיקות
+                  </li>
+                  <li class="mb-2">
+                    <i class="fas fa-arrow-left text-primary me-2"></i>
+                    <strong>ניהול דיווחים:</strong> מטפל בתוכן מדווח ומנהל
+                    מודרציה
+                  </li>
+                  <li class="mb-2">
+                    <i class="fas fa-arrow-left text-primary me-2"></i>
+                    <strong>ייצוא למנהלים:</strong> מוציא דוחות משתמשים לניתוח
+                    והערכה
+                  </li>
+                  <li class="mb-2">
+                    <i class="fas fa-arrow-left text-primary me-2"></i>
+                    <strong>אבטחה מתקדמת:</strong> מבטיח שהמערכת מוגנת עם JWT
+                    ו-BCrypt
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Performance Benefits -->
+      <div class="feature-section">
+        <div class="d-flex align-items-center mb-4">
+          <div class="feature-icon me-3">
+            <i class="fas fa-trophy"></i>
+          </div>
+          <div>
+            <h2 class="mb-1">יעדים שהושגו בפרויקט</h2>
+            <p class="text-muted mb-0">מדידת ההצלחה והשיפור שהושג</p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-3 text-center">
+            <div class="card h-100">
+              <div class="card-body">
+                <div class="display-4 text-success mb-3">
+                  <i class="fas fa-tachometer-alt"></i>
+                </div>
+                <h5>ביצועים משופרים</h5>
+                <p class="text-muted small">
+                  טעינת עמודים מהירה יותר עם pagination וטעינה אסינכרונית
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 text-center">
+            <div class="card h-100">
+              <div class="card-body">
+                <div class="display-4 text-info mb-3">
+                  <i class="fas fa-brain"></i>
+                </div>
+                <h5>חכמה מלאכותית</h5>
+                <p class="text-muted small">
+                  אוטומציה של משימות עם AI - ניתוח רגשות וסיכומים
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 text-center">
+            <div class="card h-100">
+              <div class="card-body">
+                <div class="display-4 text-warning mb-3">
+                  <i class="fas fa-users"></i>
+                </div>
+                <h5>חוויית משתמש</h5>
+                <p class="text-muted small">
+                  ממשק ידידותי ונגיש עם תכונות מתקדמות
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3 text-center">
+            <div class="card h-100">
+              <div class="card-body">
+                <div class="display-4 text-danger mb-3">
+                  <i class="fas fa-shield-alt"></i>
+                </div>
+                <h5>אבטחה מתקדמת</h5>
+                <p class="text-muted small">
+                  הגנה מקיפה עם תקני תעשייה מודרניים
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Summary -->
       <div class="card border-primary mb-5">
         <div class="card-header bg-primary text-white">
@@ -1142,7 +1403,10 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="js/config.js"></script>
     <script src="js/utils.js"></script>
+    <script src="js/ajaxCalls.js"></script>
+    <script src="js/auth-jwt.js"></script>
     <script src="js/navbar.js"></script>
 
     <script>
