@@ -200,12 +200,6 @@ function displaySavedArticles(articles) {
   $container.html(articlesHTML);
 }
 
-// Function removed - articles now open directly via URL
-
-// Function removed - sharing now handled directly via shareArticle function
-
-// Function removed - delete now handled directly via deleteSavedArticle function
-
 function shareArticle(articleId) {
   if (!AuthJWT.isLoggedIn()) {
     Utils.toast.warning("נדרש להתחבר כדי לשתף כתבות");

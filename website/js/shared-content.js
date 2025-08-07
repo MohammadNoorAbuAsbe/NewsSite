@@ -155,8 +155,6 @@ function createSharedContentItem(item) {
   return $item;
 }
 
-// Removed old functions as they are no longer needed with the new structure
-
 function createDropdownMenu(item) {
   const $dropdown = $("<div>").addClass("dropdown shared-content-dropdown");
   const $button = $("<button>")
@@ -196,8 +194,6 @@ function createDropdownMenu(item) {
 
   return $dropdown;
 }
-
-// Removed old createMainContent function as it's now integrated into the main structure
 
 function createInteractionButtons(item) {
   const $interactions = $("<div>").addClass("shared-content-interactions");

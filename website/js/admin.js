@@ -346,9 +346,7 @@ function viewUserDetails(userId) {
 }
 
 function displayUserDetails(user) {
-  // Create a modal or update existing content to show user details
   Utils.toast.info(`פרטי משתמש: ${user.FirstName} ${user.LastName}`);
-  // TODO: Implement detailed user view
 }
 
 function filterUsers() {
@@ -553,7 +551,6 @@ function displayReports(reports) {
 }
 
 function viewReportedContent(reportId) {
-  // TODO: Implement view reported content
   Utils.toast.info("צפייה בתוכן המדווח תהיה זמינה בקרוב");
 }
 

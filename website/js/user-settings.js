@@ -402,9 +402,7 @@ function addCustomTag() {
 
 // Load blocked users
 function loadBlockedUsers() {
-  // For now, just display the placeholder
   displayBlockedUsers();
-  // TODO: Implement actual blocked users loading when backend support is added
 }
 
 // Display blocked users (placeholder)
