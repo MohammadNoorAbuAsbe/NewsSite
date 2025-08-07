@@ -31,7 +31,8 @@ namespace Server.Controllers
         public IActionResult ShareContent([FromBody] ShareContentRequest request)
         {
             return ExecuteWithUserValidationConditional(
-                userId => {
+                userId =>
+                {
                     var sharedContent = new SharedContent(userId, request.Article, request.UserComment);
                     return SharedContent.ShareContent(sharedContent);
                 },
@@ -95,7 +96,7 @@ namespace Server.Controllers
         private IActionResult HandleContentReaction(ContentReactionRequest request, ContentReactionType reactionType)
         {
             var (operation, successMessage, errorMessage) = GetReactionDetails(reactionType);
-            
+
             return ExecuteWithConditionalResponse(
                 () => operation(request.ContentId, request.UserId),
                 successMessage,

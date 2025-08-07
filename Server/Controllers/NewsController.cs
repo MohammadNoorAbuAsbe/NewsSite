@@ -221,77 +221,20 @@ namespace Server.Controllers
 
             try
             {
-                var allTags = Tag.GetAllTags();
-                var allArticles = new List<Article>();
+                var result = await TaggedArticlesResult.SearchByTagsAsync(
+                    tagNames,
+                    userId,
+                    page,
+                    pageSize,
+                    includeSentiment,
+                    GetArticlesForTag,
+                    includeSentiment ? _sentimentAnalysisService : null);
 
-                // Collect all articles for the specified tags
-                foreach (var tagName in tagNames)
-                {
-                    var tag = allTags.FirstOrDefault(t => t.Name.Equals(tagName, StringComparison.OrdinalIgnoreCase));
-                    if (tag != null)
-                    {
-                        var articleResult = await GetArticlesForTag(tag, userId);
-                        if (articleResult?.Articles != null)
-                        {
-                            allArticles.AddRange(articleResult.Articles);
-                        }
-                    }
-                }
-
-                // Remove duplicates based on URL
-                var uniqueArticles = allArticles
-                    .GroupBy(a => a.Url)
-                    .Select(g => g.First())
-                    .ToList();
-
-                if (!uniqueArticles.Any())
-                {
-                    return Ok(new TaggedArticlesResult { Status = "Ok", TotalResults = 0, Articles = new List<TaggedArticle>() });
-                }
-
-                var totalResults = uniqueArticles.Count;
-
-                if (includeSentiment)
-                {
-                    // For sentiment analysis, paginate before processing to avoid unnecessary API calls
-                    var skip = (page - 1) * pageSize;
-                    var paginatedArticles = uniqueArticles
-                        .Skip(skip)
-                        .Take(pageSize)
-                        .ToList();
-
-                    var articlesWithSentiment = await _sentimentAnalysisService.AnalyzeArticlesSentimentAsync(paginatedArticles);
-                    var enhanced = TaggedArticlesResult.FromArticlesWithSentiment(articlesWithSentiment);
-                    enhanced.TotalResults = totalResults; // Set the correct total count
-                    return Ok(enhanced);
-                }
-                else
-                {
-                    // For regular search, create tagged articles first, then paginate
-                    var searchResults = uniqueArticles.Select(a =>
-                    {
-                        // Find the tag that matched this article for proper categorization
-                        var matchingTag = allTags.FirstOrDefault(t =>
-                            tagNames.Any(tn => tn.Equals(t.Name, StringComparison.OrdinalIgnoreCase)));
-                        return TaggedArticle.FromArticle(a, !matchingTag?.Custom == true ? matchingTag?.Name : null);
-                    }).ToList();
-
-                    // Apply pagination
-                    var skip = (page - 1) * pageSize;
-                    var paginatedResults = searchResults
-                        .Skip(skip)
-                        .Take(pageSize)
-                        .ToList();
-
-                    var response = new TaggedArticlesResult
-                    {
-                        Status = "Ok",
-                        TotalResults = totalResults,
-                        Articles = paginatedResults
-                    };
-
-                    return Ok(response);
-                }
+                return Ok(result);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
             }
             catch (Exception ex)
             {
